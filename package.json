@@ -2,7 +2,7 @@
   "name": "twitch-healthbar-overlay",
   "version": "1.0.0",
   "description": "OBS healthbar overlay controlled by Twitch emote/redeem events",
-  "main": "index.tsx",
+  "main": "index.ts",
   "scripts": {
     "build": "npx tsc",
     "start": "node dist/index.js",
@@ -19,6 +19,7 @@
   "devDependencies": {
     "@types/express": "^4.17.18",
     "@types/node": "^20.6.5",
+    "@types/tmi.js": "^1.8.4",
     "concurrently": "^8.2.1",
     "nodemon": "^3.0.1",
     "typescript": "^5.2.2"
