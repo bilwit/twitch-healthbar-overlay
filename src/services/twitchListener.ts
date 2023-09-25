@@ -31,17 +31,33 @@ export default async function twitchListener (e: EventEmitter) {
 
   try {
     // authenticate
-    const opts: Options = await auth();
+    const tokens = await auth();
 
-    // // Create a client with our options
-    // const client = new tmi.client(opts);
+    if (tokens?.access_token && tokens?.refresh_token) {
 
-    // // Register our event handlers (defined below)
-    // client.on('message', onMessageHandler);
-    // client.on('connected', onConnectedHandler);
+      console.log(tokens);
 
-    // // Connect to Twitch:
-    // client.connect();
+      // // Define configuration options
+      // const opts: Options = {
+      //   identity: {
+      //     username: process.env.BOT_CLIENT_USERNAME,
+      //     password: 'oauth:' + tokens.access_token, //oauth:token
+      //   },
+      //   channels: [
+      //     process.env.CHANNEL_NAME || '',
+      //   ]
+      // };
+
+      // // Create a client with our options
+      // const client = new tmi.client(opts);
+
+      // // Register our event handlers (defined below)
+      // client.on('message', onMessageHandler);
+      // client.on('connected', onConnectedHandler);
+
+      // // Connect to Twitch:
+      // client.connect();
+    }
   } catch (err) {
     console.error(err);
   }
