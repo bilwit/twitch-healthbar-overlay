@@ -1,5 +1,5 @@
-import fs from 'fs';
 import dotenv from 'dotenv';
+import { writeFile, readFile } from 'fs';
 
 interface tokens {
   access_token: string,
@@ -8,112 +8,77 @@ interface tokens {
 
 dotenv.config();
 
-function randString (): String {
-  return Math.random().toString(36).substring(2,7);
-}
+export default async function auth(): Promise<tokens> {
 
-export default async function auth (): Promise<tokens> {
-
-  // Get auth code in order to request auth tokens
-  function getCode (): Promise<string> {
-    return new Promise((resolve, reject) => {
-      // check if persistent file contains an already issued auth code
-      fs.access('../storage/code', fs.constants.F_OK, async (err) => {
-        // no file exists
+  function checkRefresh(): Promise<string> {
+    return new Promise((resolve, _reject) => {
+      readFile('src/storage/refresh_token', 'utf8', (err, data) => {
         if (err) {
-          const state = randString();
-          try {
-            const response = await fetch(
-              'https://id.twitch.tv/oauth2/authorize?' + 
-              'response_type=code' + '&' +
-              'client_id=' + (process.env.BOT_CLIENT_ID || '') + '&' +
-              'redirect_uri=http://localhost:' + process.env.PORT + '&' +
-              'scope=channel:read:redemptions+moderator:read:chatters+chat:read&state=' + state,
-              {
-                method: 'GET',
-                redirect: 'follow',
-              }
-            );
-            if (response?.url) {
-      
-              const params = new URLSearchParams(response.url);
-
-              const code = params.get('code');
-      
-              if (params.get('state') !== state || !code) {
-                if (params.get('redirect_params')) {
-                  throw new Error('Auth Code has probably already been issued...')
-                }
-                throw new Error('CSRF Invalid');
-              } else {
-                // store code for future use
-                fs.writeFile('../services/code', code, err => {
-                  if (err) {
-                    console.error(err);
-                  }
-                  // file written successfully
-                });
-                resolve(code);
-              }
-      
-            } else {
-              throw true;
-            }
-          } catch (e) {
-            reject(e);
-          }
+          console.error(err);
+          resolve('');
         } else {
-          fs.readFile('../services/code', 'utf8', (err, data) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve(data.toString());
-            }
-          })
+          resolve(data);
         }
-      });
+      })
     })
+  }
 
+  async function requestTokens(body: URLSearchParams): Promise<tokens> {
+    // request auth tokens
+    const response = await fetch(
+      'https://id.twitch.tv/oauth2/token',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+        },
+        body: body
+      }
+    );
+
+    if (response) {
+      const ret = await response.json();
+      if (ret?.access_token && ret?.refresh_token) {
+        writeFile('src/storage/refresh_token', ret?.refresh_token, {
+          flag: 'w',
+        }, (err) => {
+          if (err) {
+            console.error('Could not save refresh_token');
+          }
+        })
+        return {
+          access_token: ret.access_token,
+          refresh_token: ret.refresh_token,
+        }
+      } else {
+        console.log(ret);
+        throw new Error('Could not negotiate access tokens');
+      }
+
+    } else {
+      throw new Error('Could not contact auth endpoint');
+    }
   }
 
   try {
-    const code: string = await getCode();
 
-    if (code) {
-      // request auth tokens
-      const response = await fetch(
-        'https://id.twitch.tv/oauth2/token',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-          },
-          body: new URLSearchParams({
-            client_id: process.env.BOT_CLIENT_ID || '',
-            client_secret: process.env.BOT_CLIENT_SECRET || '',
-            code: code,
-            grant_type: 'authorization_code',
-            redirect_uri: 'http://localhost:' + process.env.PORT,
-          })
-        }
-      );
+    const refresh = await checkRefresh();
 
-      if (response) {
-        const ret = await response.json();
-        if (ret?.access_token && ret?.refresh_token) {
-          return {
-            access_token: ret.access_token,
-            refresh_token: ret.refresh_token,
-          }
-        } else {
-          throw new Error('Could not negotiate access tokens');
-        }
-
-      } else {
-        throw new Error('Could not contact auth endpoint');
-      }
+    if (refresh) {
+      return await requestTokens(new URLSearchParams({
+        client_id: process.env.BOT_CLIENT_ID || '',
+        client_secret: process.env.BOT_CLIENT_SECRET || '',
+        grant_type: 'refresh_token',
+        refresh_token: encodeURIComponent(refresh),
+      }));
     } else {
-      throw new Error('Could not negotiate authorization code');
+      return await requestTokens(new URLSearchParams({
+        client_id: process.env.BOT_CLIENT_ID || '',
+        client_secret: process.env.BOT_CLIENT_SECRET || '',
+        code: process.env.BOT_CLIENT_AUTH || '',
+        grant_type: 'authorization_code',
+        redirect_uri: 'http://localhost:' + process.env.PORT,
+      }));
     }
 
   } catch (e) {
