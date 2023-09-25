@@ -46,6 +46,7 @@ export default async function auth(): Promise<tokens> {
             console.error('Could not save refresh_token');
           }
         })
+        console.log(ret);
         return {
           access_token: ret.access_token,
           refresh_token: ret.refresh_token,

@@ -1,7 +1,7 @@
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import EventEmitter from 'events';
-import twitchListener from './services/twitchListener';
+import chatListener from './services/chatListener';
 
 dotenv.config();
 
@@ -17,7 +17,7 @@ app.listen(port, () => {
 
   // emitter to interface with twitch chat
   const twitchEmitter = new EventEmitter();
-  twitchListener(twitchEmitter); 
+  chatListener(twitchEmitter); 
 
   twitchEmitter.on('connected', (ret: string) => {
     console.log(ret);

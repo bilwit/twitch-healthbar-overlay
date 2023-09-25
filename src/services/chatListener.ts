@@ -7,7 +7,7 @@ dotenv.config();
 
 const triggers = (process.env.TRIGGERS || '').trim().split(',');
 
-export default async function twitchListener (e: EventEmitter) {
+export default async function chatListener (e: EventEmitter) {
 
   // Called every time a message comes in
   function onMessageHandler (_target: string, _context: any, msg: string, self: any) {
