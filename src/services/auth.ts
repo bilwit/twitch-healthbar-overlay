@@ -46,7 +46,6 @@ export default async function auth(): Promise<tokens> {
             console.error('Could not save refresh_token');
           }
         })
-        console.log(ret);
         return {
           access_token: ret.access_token,
           refresh_token: ret.refresh_token,
@@ -88,3 +87,32 @@ export default async function auth(): Promise<tokens> {
 
 }
 
+export async function validate(access_token: string): Promise<boolean> {
+  try {
+    const response = await fetch(
+      'https://id.twitch.tv/oauth2/validate',
+      {
+        method: 'GET',
+        headers: {
+          'Authorization': 'OAuth ' + access_token,
+        },
+      }
+    );
+  
+    if (response) {
+      const ret = await response.json();
+      if (ret?.client_id && ret?.client_id) {
+        return true;
+      } else {
+        throw new Error('Could not validate Access Token');
+      }
+  
+    } else {
+      throw new Error('Could not reach validation server');
+    }
+    
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
