@@ -1,33 +1,13 @@
 import tmi, { Options } from 'tmi.js';
 import dotenv from 'dotenv';
 import EventEmitter from 'events';
+import auth from './auth';
 
 dotenv.config();
 
-// Define configuration options
-const opts: Options = {
-  identity: {
-    username: process.env.BOT_LISTENER_USERNAME,
-    password: process.env.BOT_LISTENER_TOKEN,
-  },
-  channels: [
-    process.env.CHANNEL_NAME || '',
-  ]
-};
-
 const triggers = (process.env.TRIGGERS || '').trim().split(',');
 
-export default function twitchListener (e: EventEmitter) {
-
-  // Create a client with our options
-  const client = new tmi.client(opts);
-
-  // Register our event handlers (defined below)
-  client.on('message', onMessageHandler);
-  client.on('connected', onConnectedHandler);
-
-  // Connect to Twitch:
-  client.connect();
+export default async function twitchListener (e: EventEmitter) {
 
   // Called every time a message comes in
   function onMessageHandler (_target: string, _context: any, msg: string, self: any) {
@@ -46,7 +26,24 @@ export default function twitchListener (e: EventEmitter) {
 
   // Called every time the bot connects to Twitch chat
   function onConnectedHandler (addr: string, port: number) {
-    e.emit('connected', '* Connected to ' + addr + ':' + port + ' (' + process.env.CHANNEL_NAME + ')');
+    e.emit('connected', '* Connected to ' + addr + ':' + port + ' (' + process.env.BOT_LISTENER_USERNAME + ')');
+  }
+
+  try {
+    // authenticate
+    const opts: Options = await auth();
+
+    // // Create a client with our options
+    // const client = new tmi.client(opts);
+
+    // // Register our event handlers (defined below)
+    // client.on('message', onMessageHandler);
+    // client.on('connected', onConnectedHandler);
+
+    // // Connect to Twitch:
+    // client.connect();
+  } catch (err) {
+    console.error(err);
   }
 
 }
