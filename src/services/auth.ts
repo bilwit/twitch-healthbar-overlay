@@ -1,3 +1,4 @@
+import fs from 'fs';
 import dotenv from 'dotenv';
 
 interface tokens {
@@ -14,43 +15,69 @@ function randString (): String {
 export default async function auth (): Promise<tokens> {
 
   // Get auth code in order to request auth tokens
-  async function getCode () {
-    const state = randString();
-    try {
-      const response = await fetch(
-        'https://id.twitch.tv/oauth2/authorize?' + 
-        'response_type=code' + '&' +
-        'client_id=' + (process.env.BOT_CLIENT_ID || '') + '&' +
-        'redirect_uri=http://localhost:' + process.env.PORT + '&' +
-        'scope=channel:read:redemptions+moderator:read:chatters+chat:read&state=' + state,
-        {
-          method: 'GET',
-          redirect: 'follow',
-        }
-      );
-      if (response?.url) {
+  function getCode (): Promise<string> {
+    return new Promise((resolve, reject) => {
+      // check if persistent file contains an already issued auth code
+      fs.access('../storage/code', fs.constants.F_OK, async (err) => {
+        // no file exists
+        if (err) {
+          const state = randString();
+          try {
+            const response = await fetch(
+              'https://id.twitch.tv/oauth2/authorize?' + 
+              'response_type=code' + '&' +
+              'client_id=' + (process.env.BOT_CLIENT_ID || '') + '&' +
+              'redirect_uri=http://localhost:' + process.env.PORT + '&' +
+              'scope=channel:read:redemptions+moderator:read:chatters+chat:read&state=' + state,
+              {
+                method: 'GET',
+                redirect: 'follow',
+              }
+            );
+            if (response?.url) {
+      
+              const params = new URLSearchParams(response.url);
 
-        const params = new URLSearchParams(response.url);
-
-        if (params.get('state') !== state || !params.get('code')) {
-          if (params.get('redirect_params')) {
-            throw new Error('Auth Code has probably already been issued...')
+              const code = params.get('code');
+      
+              if (params.get('state') !== state || !code) {
+                if (params.get('redirect_params')) {
+                  throw new Error('Auth Code has probably already been issued...')
+                }
+                throw new Error('CSRF Invalid');
+              } else {
+                // store code for future use
+                fs.writeFile('../services/code', code, err => {
+                  if (err) {
+                    console.error(err);
+                  }
+                  // file written successfully
+                });
+                resolve(code);
+              }
+      
+            } else {
+              throw true;
+            }
+          } catch (e) {
+            reject(e);
           }
-          throw new Error('CSRF Invalid');
         } else {
-          return params.get('code');
+          fs.readFile('../services/code', 'utf8', (err, data) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(data.toString());
+            }
+          })
         }
+      });
+    })
 
-      } else {
-        throw true;
-      }
-    } catch (e) {
-      throw(e);
-    }
   }
 
   try {
-    const code = await getCode();
+    const code: string = await getCode();
 
     if (code) {
       // request auth tokens
