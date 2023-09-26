@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import EventEmitter from 'events';
 import auth, { validate } from './auth';
 import parser from './parser';
+import health from './health';
 
 const TWITCH_IRC_ADDRESS = 'ws://irc-ws.chat.twitch.tv:80';
 
@@ -22,15 +23,17 @@ export default async function chatListener (e: EventEmitter) {
       }
     }
     if (triggerCount > 0) {
-      e.emit('increment', triggerCount);
+      // e.emit('increment', triggerCount);
     }
   }
 
   try {
     // authenticate
-    const tokens = await auth();
+    const tokens = await auth('');
 
-    if (tokens?.access_token && tokens?.refresh_token && await validate(tokens.access_token)) {
+    const user_id = await validate(tokens.access_token);
+
+    if (tokens?.access_token && tokens?.refresh_token && user_id) {
 
       const client = new WebSocketClient();
 
@@ -54,6 +57,8 @@ export default async function chatListener (e: EventEmitter) {
           console.log(`!   Description: ${connection.closeDescription}`);
           console.log(`!   Code: ${connection.closeReasonCode}`);
         });
+
+        const Health = health(tokens, user_id);
   
         connection.on('message', (message) => {
           const parsed = parser(message);
@@ -65,6 +70,7 @@ export default async function chatListener (e: EventEmitter) {
                 connection.sendUTF('PONG ' + parsed.parameters);
                 break;
               case 'PRIVMSG': // chatter message
+                console.log(parsed.parameters)
                 checkTriggerWords(parsed.parameters);
                 break;
               default:
@@ -83,7 +89,7 @@ export default async function chatListener (e: EventEmitter) {
         if (!isValidated) {
           console.log('! Access token expired');
           // get new tokens if invalid
-          const newTokens = await auth();
+          const newTokens = await auth(tokens.BroadcasterId);
           console.log('* New tokens issued');
           tokens.access_token = newTokens.access_token;
           tokens.refresh_token = newTokens.refresh_token;

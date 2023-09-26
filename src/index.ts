@@ -19,7 +19,7 @@ app.listen(port, () => {
   const twitchEmitter = new EventEmitter();
   chatListener(twitchEmitter); 
 
-  twitchEmitter.on('increment', (count: number) => {
+  twitchEmitter.on('update', (update) => {
     // Update client with the updated health
   });
 });

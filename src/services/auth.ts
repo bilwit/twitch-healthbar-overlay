@@ -1,14 +1,15 @@
 import dotenv from 'dotenv';
 import { writeFile, readFile } from 'fs';
 
-interface tokens {
+export interface Tokens {
   access_token: string,
   refresh_token: string,
+  BroadcasterId: string,
 }
 
 dotenv.config();
 
-export default async function auth(): Promise<tokens> {
+export default async function auth(BroadcasterId: string): Promise<Tokens> {
 
   function checkRefresh(): Promise<string> {
     return new Promise((resolve, _reject) => {
@@ -23,7 +24,7 @@ export default async function auth(): Promise<tokens> {
     })
   }
 
-  async function requestTokens(body: URLSearchParams): Promise<tokens> {
+  async function requestTokens(BroadcasterId: string, body: URLSearchParams): Promise<Tokens> {
     // request auth tokens
     const response = await fetch(
       'https://id.twitch.tv/oauth2/token',
@@ -46,9 +47,15 @@ export default async function auth(): Promise<tokens> {
             console.error('Could not save refresh_token');
           }
         })
+
+        if (!BroadcasterId) {
+          BroadcasterId =  await requestBroadcasterId(ret.access_token);
+        }
+
         return {
           access_token: ret.access_token,
           refresh_token: ret.refresh_token,
+          BroadcasterId: BroadcasterId,
         }
       } else {
         console.log(ret);
@@ -60,25 +67,56 @@ export default async function auth(): Promise<tokens> {
     }
   }
 
+  async function requestBroadcasterId(access_token: string): Promise<string> {
+    const response = await fetch(
+      'https://api.twitch.tv/helix/users?login=' + process.env.CHANNEL_NAME,
+      {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer ' + access_token,
+          'Client-Id': process.env.BOT_CLIENT_ID || '',
+        },
+      }
+    );
+
+    if (response) {
+      const ret = await response.json();
+
+      if (ret?.data && Array.isArray(ret.data) && ret.data.length > 0) {
+        return ret.data[0].id;
+      } else {
+        return '';
+      }
+    } else {
+      return '';
+    }
+  }
+
   try {
 
     const refresh = await checkRefresh();
 
     if (refresh) {
-      return await requestTokens(new URLSearchParams({
-        client_id: process.env.BOT_CLIENT_ID || '',
-        client_secret: process.env.BOT_CLIENT_SECRET || '',
-        grant_type: 'refresh_token',
-        refresh_token: encodeURIComponent(refresh),
-      }));
+      return await requestTokens(
+          BroadcasterId,
+          new URLSearchParams({
+          client_id: process.env.BOT_CLIENT_ID || '',
+          client_secret: process.env.BOT_CLIENT_SECRET || '',
+          grant_type: 'refresh_token',
+          refresh_token: encodeURIComponent(refresh),
+        })
+      );
     } else {
-      return await requestTokens(new URLSearchParams({
-        client_id: process.env.BOT_CLIENT_ID || '',
-        client_secret: process.env.BOT_CLIENT_SECRET || '',
-        code: process.env.BOT_CLIENT_AUTH || '',
-        grant_type: 'authorization_code',
-        redirect_uri: 'http://localhost:' + process.env.PORT,
-      }));
+      return await requestTokens(
+        BroadcasterId,
+        new URLSearchParams({
+          client_id: process.env.BOT_CLIENT_ID || '',
+          client_secret: process.env.BOT_CLIENT_SECRET || '',
+          code: process.env.BOT_CLIENT_AUTH || '',
+          grant_type: 'authorization_code',
+          redirect_uri: 'http://localhost:' + process.env.PORT,
+        })
+      );
     }
 
   } catch (e) {
@@ -87,7 +125,7 @@ export default async function auth(): Promise<tokens> {
 
 }
 
-export async function validate(access_token: string): Promise<boolean> {
+export async function validate(access_token: string): Promise<string> {
   try {
     const response = await fetch(
       'https://id.twitch.tv/oauth2/validate',
@@ -101,8 +139,9 @@ export async function validate(access_token: string): Promise<boolean> {
   
     if (response) {
       const ret = await response.json();
-      if (ret?.client_id && ret?.client_id) {
-        return true;
+      console.log(ret)
+      if (ret?.client_id && ret?.client_id && ret?.user_id) {
+        return ret.user_id;
       } else {
         throw new Error('Could not validate Access Token');
       }
@@ -113,6 +152,6 @@ export async function validate(access_token: string): Promise<boolean> {
     
   } catch (e) {
     console.log(e);
-    return false;
+    return '';
   }
 }
