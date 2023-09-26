@@ -1,5 +1,5 @@
 const dictionary: { [key: string]: string } = {
-  // Black: '\u001b[30m',
+  black: '\u001b[30m',
   error: '\u001b[31m',
   success: '\u001b[32m',
   warning: '\u001b[33m',

@@ -69,7 +69,7 @@ export default async function chatListener (e: EventEmitter) {
           if (parsed) {
             switch (parsed.command.command) {
               case 'PING': // keepalive
-                console.log('* KeepAlive');
+                console.log(consoleLogStyling('black', '* KeepAlive'));
                 connection.sendUTF('PONG ' + parsed.parameters);
                 break;
               case 'PRIVMSG': // chatter message

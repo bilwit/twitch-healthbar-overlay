@@ -245,10 +245,10 @@ function parseCommand(rawCommandComponent: string) {
     case '372':
     case '375':
     case '376':
-      console.log(`! numeric message: ${commandParts[0]}`)
+      // console.log(`! numeric message: ${commandParts[0]}`)
       return null;
     default:
-      console.log(`\nUnexpected command: ${commandParts[0]}\n`);
+      console.log(consoleLogStyling('warning', `\nUnexpected command: ${commandParts[0]}\n`));
       return null;
   }
 

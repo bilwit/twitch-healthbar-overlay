@@ -17,10 +17,17 @@ export default async function health(tokens: Tokens, user_id: string): Promise<a
     if (tokens?.access_token) {
       MaxHealth = (await fetchChatters(tokens, user_id)) * HEALTH_MULTIPLIER;
 
-      const updateMaxHealthInterval = setInterval(async () => {
-        MaxHealth = (await fetchChatters(tokens, user_id)) * HEALTH_MULTIPLIER;
+      setInterval(async () => {
+        try {
+          const MaxHealthUpdated = (await fetchChatters(tokens, user_id)) * HEALTH_MULTIPLIER;
+          if (MaxHealth !== MaxHealthUpdated) {
+            MaxHealth = MaxHealthUpdated;
+            console.log(consoleLogStyling('health', 'Updated Max Health: ' + MaxHealthUpdated));
+          }
+        } catch (e) {
+          console.log(consoleLogStyling('warning', '! Could not update Max Health'));
+        }
       }, 15000);
-
     }
 
     console.log(consoleLogStyling('health', 'Initial Health: ' + CurrentHealth));
