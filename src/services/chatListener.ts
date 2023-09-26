@@ -66,6 +66,7 @@ export default async function chatListener (e: EventEmitter) {
       setInterval(async () => {
         const isValidated = await validate(tokens.access_token);
         if (!isValidated) {
+          console.log('* Access token expired');
           // get new tokens if invalid
           const newTokens = await auth();
           console.log('* New tokens issued');
