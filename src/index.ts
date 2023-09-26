@@ -8,7 +8,7 @@ dotenv.config();
 const app: Express = express();
 const port = process.env.PORT;
 
-app.get('/', (req: Request, res: Response) => {
+app.get('/', (_req: Request, res: Response) => {
   res.send('Express + TypeScript Server');
 });
 
@@ -19,12 +19,8 @@ app.listen(port, () => {
   const twitchEmitter = new EventEmitter();
   chatListener(twitchEmitter); 
 
-  twitchEmitter.on('connected', (ret: string) => {
-    console.log(ret);
-  });
-
-  twitchEmitter.on('increment', (ret: boolean) => {
-    // to do
+  twitchEmitter.on('increment', (count: number) => {
+    // Update client with the updated health
   });
 });
 
