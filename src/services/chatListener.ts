@@ -19,6 +19,9 @@ export default async function chatListener (e: EventEmitter) {
     // To Do
     console.log(message)
 
+    // scale health based on number of chatters
+    // https://dev.twitch.tv/docs/api/reference/#get-chatters
+
     // If the command is known, let's execute it
     for (const trigger of triggers) {
       if (message.includes(trigger)) {
@@ -65,6 +68,7 @@ export default async function chatListener (e: EventEmitter) {
         if (!isValidated) {
           // get new tokens if invalid
           const newTokens = await auth();
+          console.log('* New tokens issued');
           tokens.access_token = newTokens.access_token;
           tokens.refresh_token = newTokens.refresh_token;
 
