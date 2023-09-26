@@ -139,7 +139,6 @@ export async function validate(access_token: string): Promise<string> {
   
     if (response) {
       const ret = await response.json();
-      console.log(ret)
       if (ret?.client_id && ret?.client_id && ret?.user_id) {
         return ret.user_id;
       } else {

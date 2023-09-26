@@ -4,6 +4,7 @@ import EventEmitter from 'events';
 import auth, { validate } from './auth';
 import parser from './parser';
 import health from './health';
+import consoleLogStyling from './consoleLogStyling';
 
 const TWITCH_IRC_ADDRESS = 'ws://irc-ws.chat.twitch.tv:80';
 
@@ -14,7 +15,7 @@ export default async function chatListener (e: EventEmitter) {
   const triggers = 'CurseLit,lit'.trim().split(','); // (process.env.TRIGGERS || '').trim().split(',');
 
   // counts the amount of times trigger words are found in the message
-  function checkTriggerWords (message: string) {
+  function checkTriggerWords (message: string, Health: any) {
     let triggerCount = 0;
     for (const trigger of triggers) {
       const triggerFound = message.split(trigger).length-1;
@@ -23,6 +24,7 @@ export default async function chatListener (e: EventEmitter) {
       }
     }
     if (triggerCount > 0) {
+      Health(-triggerCount);
       // e.emit('increment', triggerCount);
     }
   }
@@ -38,8 +40,9 @@ export default async function chatListener (e: EventEmitter) {
       const client = new WebSocketClient();
 
       // Register our event handlers (defined below)
-      client.on('connect', (connection) => {
-        console.log('* Connected to ' + TWITCH_IRC_ADDRESS);
+      client.on('connect', async (connection) => {
+        
+        console.log(consoleLogStyling('success', '* Connected to ' + TWITCH_IRC_ADDRESS));
 
         // authenticate
         // connection.sendUTF('CAP REQ :twitch.tv/membership'); // track chatters on join/leave -- it doesn't give you the initial list of chatters & massive delay on join/leave
@@ -49,16 +52,16 @@ export default async function chatListener (e: EventEmitter) {
         connection.sendUTF('JOIN #billywhitmore');
 
         connection.on('error', (error) => {
-          console.log('! Connection Error: ' + error.toString());
+          console.log(consoleLogStyling('error', '! Connection Error: ' + error.toString()));
         });
 
         connection.on('close', () => {
-          console.log('! Connection Closed');
-          console.log(`!   Description: ${connection.closeDescription}`);
-          console.log(`!   Code: ${connection.closeReasonCode}`);
+          console.log(consoleLogStyling('warning', '! Connection Closed'));
+          console.log(consoleLogStyling('warning', `!   Description: ${connection.closeDescription}`));
+          console.log(consoleLogStyling('warning', `!   Code: ${connection.closeReasonCode}`));
         });
 
-        const Health = health(tokens, user_id);
+        const Health = await health(tokens, user_id);
   
         connection.on('message', (message) => {
           const parsed = parser(message);
@@ -70,8 +73,7 @@ export default async function chatListener (e: EventEmitter) {
                 connection.sendUTF('PONG ' + parsed.parameters);
                 break;
               case 'PRIVMSG': // chatter message
-                console.log(parsed.parameters)
-                checkTriggerWords(parsed.parameters);
+                checkTriggerWords(parsed.parameters, Health);
                 break;
               default:
                 break;
@@ -87,10 +89,10 @@ export default async function chatListener (e: EventEmitter) {
       setInterval(async () => {
         const isValidated = await validate(tokens.access_token);
         if (!isValidated) {
-          console.log('! Access token expired');
+          console.log(consoleLogStyling('warning', '! Access token expired'));
           // get new tokens if invalid
           const newTokens = await auth(tokens.BroadcasterId);
-          console.log('* New tokens issued');
+          console.log(consoleLogStyling('success', '* New tokens issued'));
           tokens.access_token = newTokens.access_token;
           tokens.refresh_token = newTokens.refresh_token;
 

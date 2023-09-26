@@ -2,6 +2,7 @@ import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import EventEmitter from 'events';
 import chatListener from './services/chatListener';
+import consoleLogStyling from './services/consoleLogStyling';
 
 dotenv.config();
 
@@ -13,7 +14,7 @@ app.get('/', (_req: Request, res: Response) => {
 });
 
 app.listen(port, () => {
-  console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
+  console.log(consoleLogStyling('important', `⚡️[server]: Server is running at http://localhost:${port}`));
 
   // emitter to interface with twitch chat
   const twitchEmitter = new EventEmitter();

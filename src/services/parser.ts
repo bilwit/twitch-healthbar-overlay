@@ -4,6 +4,8 @@
 // Expects the caller to pass a single message. (Remember, the Twitch 
 // IRC server may send one or more IRC messages in a single message.)
 
+import consoleLogStyling from './consoleLogStyling';
+
 interface ParsedMessage {
   tags: any,
   source: any,
@@ -229,7 +231,7 @@ function parseCommand(rawCommandComponent: string) {
         console.log(`! Unsupported IRC command: ${commandParts[2]}`)
         return null;
     case '001':  // Logged in (successfully authenticated). 
-      console.log('* Connected to ' + process.env.CHANNEL_NAME + ' Stream Chat');
+      console.log(consoleLogStyling('success', '* Connected to ' + process.env.CHANNEL_NAME + ' Stream Chat'));
       parsedCommand = {
         command: commandParts[0],
         channel: commandParts[1]
