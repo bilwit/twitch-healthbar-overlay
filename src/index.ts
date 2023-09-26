@@ -17,10 +17,10 @@ app.listen(port, () => {
   console.log(consoleLogStyling('important', `⚡️[server]: Server is running at http://localhost:${port}`));
 
   // emitter to interface with twitch chat
-  const twitchEmitter = new EventEmitter();
-  chatListener(twitchEmitter); 
+  const TwitchEmitter = new EventEmitter();
+  chatListener(TwitchEmitter); 
 
-  twitchEmitter.on('update', (update) => {
+  TwitchEmitter.on('update', (update) => {
     // Update client with the updated health
   });
 });

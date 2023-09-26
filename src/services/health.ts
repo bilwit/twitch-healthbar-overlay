@@ -12,7 +12,10 @@ export default async function health(tokens: Tokens, user_id: string): Promise<a
   try {
     // initialize health
     let MaxHealth = 1 * HEALTH_MULTIPLIER;
-    let CurrentHealth = MaxHealth;
+    let CurrentHealth = {
+      maxHealth: MaxHealth,
+      value: MaxHealth,
+    };
 
     if (tokens?.access_token) {
       MaxHealth = (await fetchChatters(tokens, user_id)) * HEALTH_MULTIPLIER;
@@ -30,11 +33,14 @@ export default async function health(tokens: Tokens, user_id: string): Promise<a
       }, 15000);
     }
 
-    console.log(consoleLogStyling('health', 'Initial Health: ' + CurrentHealth));
+    console.log(consoleLogStyling('health', 'Initial Health: ' + MaxHealth));
 
-    return function damage(amount: number) {
-      CurrentHealth += amount;
-      console.log(consoleLogStyling('health', 'Current Health: ' + CurrentHealth));
+    return function(amount: number) {
+      if (CurrentHealth.maxHealth !== MaxHealth) {
+        CurrentHealth.value = (CurrentHealth.value / CurrentHealth.maxHealth) * MaxHealth + amount;
+        CurrentHealth.maxHealth = MaxHealth;
+      }
+      console.log(consoleLogStyling('health', 'Current Health: ' + CurrentHealth.value));
     }
   } catch (e) {
     console.log(e);
