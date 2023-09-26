@@ -43,6 +43,10 @@ export default async function chatListener (e: EventEmitter) {
 
       // Define configuration options
       const opts: Options = {
+        options: {
+          skipMembership: true,
+          skipUpdatingEmotesets: true,
+        },
         identity: {
           username: process.env.BOT_CLIENT_USERNAME,
           password: 'oauth:' + tokens.access_token, //oauth:token
@@ -66,7 +70,7 @@ export default async function chatListener (e: EventEmitter) {
       setInterval(async () => {
         const isValidated = await validate(tokens.access_token);
         if (!isValidated) {
-          console.log('* Access token expired');
+          console.log('! Access token expired');
           // get new tokens if invalid
           const newTokens = await auth();
           console.log('* New tokens issued');
