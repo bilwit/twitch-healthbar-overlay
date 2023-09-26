@@ -6,9 +6,15 @@ import consoleLogStyling from './consoleLogStyling';
 dotenv.config();
 
 const TWITCH_GET_CHATTERS_ADDRESS = 'https://api.twitch.tv/helix/chat/chatters';
+
+// change to database unique to monster entry
 const HEALTH_MULTIPLIER = 10;
 
 export default async function health(tokens: Tokens, user_id: string): Promise<any> {
+
+  // TO DO
+  // get a list of Monster entries for database and initialize MaxHealth & CurrentHealth for each
+
   try {
     // initialize health
     let MaxHealth = 1 * HEALTH_MULTIPLIER;
