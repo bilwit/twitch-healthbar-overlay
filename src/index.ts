@@ -10,6 +10,7 @@ const app: Express = express();
 
 app.use(express.static(path.join(__dirname, '..', 'client/dist')));
 
+// serve React client directly from Express
 app.get('/', (_req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, "../client/dist", "index.html"));
 });
@@ -17,6 +18,6 @@ app.get('/', (_req: Request, res: Response) => {
 app.listen(process.env.PORT, () => {
   console.log(consoleLogStyling('important', '⚡️[server]: Server is running at http://localhost:' + process.env.PORT));
 
+  // initialize Twitch connection if settings.is_connected === true
   connectToTwitch();
-
 });
