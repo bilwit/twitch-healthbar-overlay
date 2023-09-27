@@ -8,16 +8,15 @@ import path from 'path';
 dotenv.config();
 
 const app: Express = express();
-const port = process.env.PORT;
 
-app.use(express.static('../client/dist/index.html'));
+app.use(express.static(path.join(__dirname, '..', 'client/dist')));
 
 app.get('/', (_req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, "../client/dist", "index.html"));
 });
 
-app.listen(port, () => {
-  console.log(consoleLogStyling('important', `⚡️[server]: Server is running at http://localhost:${port}`));
+app.listen(process.env.PORT, () => {
+  console.log(consoleLogStyling('important', '⚡️[server]: Server is running at http://localhost:' + process.env.PORT));
 
   // emitter to interface with twitch chat
   const TwitchEmitter = new EventEmitter();
