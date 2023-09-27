@@ -1,9 +1,7 @@
 // Get Max Health - scale health based on number of chatters
 // https://dev.twitch.tv/docs/api/reference/#get-chatters
-import dotenv from 'dotenv';
 import { Tokens } from './auth';
 import consoleLogStyling from '../utils/consoleLogStyling';
-dotenv.config();
 
 const TWITCH_GET_CHATTERS_ADDRESS = 'https://api.twitch.tv/helix/chat/chatters';
 

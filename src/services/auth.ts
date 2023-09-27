@@ -10,6 +10,9 @@ export interface Tokens {
 
 dotenv.config();
 
+const TWITCH_GET_BROADCASTER_ID = 'https://api.twitch.tv/helix/users?login=';
+const TWITCH_GET_OAUTH2 = 'https://id.twitch.tv/oauth2/';
+
 export default async function auth(BroadcasterId: string, settings: Settings): Promise<Tokens> {
 
   async function checkRefresh(): Promise<string> {
@@ -35,7 +38,7 @@ export default async function auth(BroadcasterId: string, settings: Settings): P
   async function requestTokens(BroadcasterId: string, body: URLSearchParams): Promise<Tokens> {
     // request auth tokens
     const response = await fetch(
-      'https://id.twitch.tv/oauth2/token',
+      TWITCH_GET_OAUTH2 + 'token',
       {
         method: 'POST',
         headers: {
@@ -72,7 +75,7 @@ export default async function auth(BroadcasterId: string, settings: Settings): P
 
   async function requestBroadcasterId(access_token: string, settings: Settings): Promise<string> {
     const response = await fetch(
-      'https://api.twitch.tv/helix/users?login=' + settings.channel_name,
+      TWITCH_GET_BROADCASTER_ID + settings.channel_name,
       {
         method: 'GET',
         headers: {
@@ -131,7 +134,7 @@ export default async function auth(BroadcasterId: string, settings: Settings): P
 export async function validate(access_token: string): Promise<string> {
   try {
     const response = await fetch(
-      'https://id.twitch.tv/oauth2/validate',
+      TWITCH_GET_OAUTH2 + 'validate',
       {
         method: 'GET',
         headers: {
