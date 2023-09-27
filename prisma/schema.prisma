@@ -1,0 +1,29 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Monster {
+  id                  Int       @id @default(autoincrement())
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  name                String    @db.VarChar(255)
+  published           Boolean   @default(false)
+  hpMultiplier        Int       @default(10)
+}
+
+model Settings {
+  id                  Int       @id @default(autoincrement())
+  listenerAuthCode    String    @db.VarChar(255)
+  listenerClientId    String    @db.VarChar(255)
+  listenerSecret      String    @db.VarChar(255)
+  listenerUserName    String    @db.VarChar(255)
+  channelName         String    @db.VarChar(255)
+}
