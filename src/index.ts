@@ -20,4 +20,3 @@ app.listen(process.env.PORT, () => {
   connectToTwitch();
 
 });
-

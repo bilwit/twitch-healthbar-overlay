@@ -7,16 +7,16 @@ export async function connectToTwitch() {
     const prisma = new PrismaClient();
     const settings = await prisma.settings.findFirst({
       select: {
-        listenerAuthCode: true,
-        listenerClientId: true,
-        listenerSecret: true,
-        listenerUserName: true,
-        channelName: true,
-        connectToTwitch: true,
+        listener_auth_code: true,
+        listener_client_id: true,
+        listener_secret: true,
+        listener_user_name: true,
+        channel_name: true,
+        is_connected: true,
       },
     })
   
-    if (settings && settings?.connectToTwitch) {
+    if (settings && settings?.is_connected) {
       // emitter to interface with twitch chat
       const TwitchEmitter = new EventEmitter();
       chatListener(TwitchEmitter, settings); 
@@ -28,10 +28,10 @@ export async function connectToTwitch() {
 
 export interface Settings {
   id?: number,
-  listenerAuthCode: string,
-  listenerClientId: string,
-  listenerSecret: string,
-  listenerUserName: string,
-  channelName: string,
-  connectToTwitch: boolean,
+  listener_auth_code: string,
+  listener_client_id: string,
+  listener_secret: string,
+  listener_user_name: string,
+  channel_name: string,
+  is_connected: boolean,
 }

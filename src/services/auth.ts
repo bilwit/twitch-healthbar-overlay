@@ -70,12 +70,12 @@ export default async function auth(BroadcasterId: string, settings: Settings): P
 
   async function requestBroadcasterId(access_token: string, settings: Settings): Promise<string> {
     const response = await fetch(
-      'https://api.twitch.tv/helix/users?login=' + settings.channelName,
+      'https://api.twitch.tv/helix/users?login=' + settings.channel_name,
       {
         method: 'GET',
         headers: {
           'Authorization': 'Bearer ' + access_token,
-          'Client-Id': settings.listenerClientId || '',
+          'Client-Id': settings.listener_client_id || '',
         },
       }
     );
@@ -101,8 +101,8 @@ export default async function auth(BroadcasterId: string, settings: Settings): P
       return await requestTokens(
           BroadcasterId,
           new URLSearchParams({
-          client_id: settings.listenerClientId || '',
-          client_secret: settings.listenerSecret || '',
+          client_id: settings.listener_client_id || '',
+          client_secret: settings.listener_secret || '',
           grant_type: 'refresh_token',
           refresh_token: encodeURIComponent(refresh),
         })
@@ -111,9 +111,9 @@ export default async function auth(BroadcasterId: string, settings: Settings): P
       return await requestTokens(
         BroadcasterId,
         new URLSearchParams({
-          client_id: settings.listenerClientId || '',
-          client_secret: settings.listenerSecret || '',
-          code: settings.listenerAuthCode || '',
+          client_id: settings.listener_client_id || '',
+          client_secret: settings.listener_secret || '',
+          code: settings.listener_auth_code || '',
           grant_type: 'authorization_code',
           redirect_uri: 'http://localhost:' + process.env.PORT,
         })

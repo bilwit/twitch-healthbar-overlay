@@ -10,28 +10,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Monster {
+model monster {
   id                  Int       @id @default(autoincrement())
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  created_at          DateTime  @default(now())
+  updated_at          DateTime  @updatedAt @default(now())
   name                String    @db.VarChar(255)
   published           Boolean   @default(false)
-  hpMultiplier        Int       @default(10)
+  hp_multiplier       Int       @default(10)
 }
 
-model Settings {
+model settings {
   id                  Int       @id @default(autoincrement())
-  listenerAuthCode    String    @db.VarChar(255)
-  listenerClientId    String    @db.VarChar(255)
-  listenerSecret      String    @db.VarChar(255)
-  listenerUserName    String    @db.VarChar(255)
-  channelName         String    @db.VarChar(255)
-  connectToTwitch     Boolean   @default(false)
+  listener_auth_code  String    @db.VarChar(255)
+  listener_client_id  String    @db.VarChar(255)
+  listener_secret     String    @db.VarChar(255)
+  listener_user_name  String    @db.VarChar(255)
+  channel_name        String    @db.VarChar(255)
+  is_connected        Boolean   @default(false)
 }
 
-model RefreshToken {
+model refresh_token {
   id                  Int       @id @default(autoincrement())
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  created_at          DateTime  @default(now())
+  updated_at          DateTime  @updatedAt @default(now())
   value               String    @db.VarChar(255)
 }

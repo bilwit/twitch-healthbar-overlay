@@ -48,7 +48,7 @@ export default async function chatListener (e: EventEmitter, settings: Settings)
         // authenticate
         // connection.sendUTF('CAP REQ :twitch.tv/membership'); // track chatters on join/leave -- it doesn't give you the initial list of chatters & massive delay on join/leave
         connection.sendUTF('PASS oauth:' + tokens.access_token);
-        connection.sendUTF('NICK ' + settings.listenerUserName);   
+        connection.sendUTF('NICK ' + settings.listener_user_name);   
 
         connection.sendUTF('JOIN #billywhitmore');
 
@@ -62,7 +62,7 @@ export default async function chatListener (e: EventEmitter, settings: Settings)
           console.log(consoleLogStyling('warning', `!   Code: ${connection.closeReasonCode}`));
         });
 
-        const Health = await health(tokens, user_id, settings.listenerClientId);
+        const Health = await health(tokens, user_id, settings.listener_client_id);
   
         connection.on('message', (message) => {
           const parsed = parser(message);
