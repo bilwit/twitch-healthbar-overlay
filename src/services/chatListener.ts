@@ -4,13 +4,14 @@ import EventEmitter from 'events';
 import auth, { validate } from './auth';
 import parser from './parser';
 import health from './health';
-import consoleLogStyling from './consoleLogStyling';
+import consoleLogStyling from '../utils/consoleLogStyling';
+import { Settings } from '../utils/twitch';
 
 const TWITCH_IRC_ADDRESS = 'ws://irc-ws.chat.twitch.tv:80';
 
 dotenv.config();
 
-export default async function chatListener (e: EventEmitter) {
+export default async function chatListener (e: EventEmitter, settings: Settings) {
 
   const triggers = 'CurseLit,lit'.trim().split(','); // (process.env.TRIGGERS || '').trim().split(',');
 
@@ -31,7 +32,7 @@ export default async function chatListener (e: EventEmitter) {
 
   try {
     // authenticate
-    const tokens = await auth('');
+    const tokens = await auth('', settings);
 
     const user_id = await validate(tokens.access_token);
 
@@ -47,7 +48,7 @@ export default async function chatListener (e: EventEmitter) {
         // authenticate
         // connection.sendUTF('CAP REQ :twitch.tv/membership'); // track chatters on join/leave -- it doesn't give you the initial list of chatters & massive delay on join/leave
         connection.sendUTF('PASS oauth:' + tokens.access_token);
-        connection.sendUTF('NICK ' + process.env.BOT_CLIENT_USERNAME);   
+        connection.sendUTF('NICK ' + settings.listenerUserName);   
 
         connection.sendUTF('JOIN #billywhitmore');
 
@@ -61,7 +62,7 @@ export default async function chatListener (e: EventEmitter) {
           console.log(consoleLogStyling('warning', `!   Code: ${connection.closeReasonCode}`));
         });
 
-        const Health = await health(tokens, user_id);
+        const Health = await health(tokens, user_id, settings.listenerClientId);
   
         connection.on('message', (message) => {
           const parsed = parser(message);
@@ -91,7 +92,7 @@ export default async function chatListener (e: EventEmitter) {
         if (!isValidated) {
           console.log(consoleLogStyling('warning', '! Access token expired'));
           // get new tokens if invalid
-          const newTokens = await auth(tokens.BroadcasterId);
+          const newTokens = await auth(tokens.BroadcasterId, settings);
           console.log(consoleLogStyling('success', '* New tokens issued'));
           tokens.access_token = newTokens.access_token;
           tokens.refresh_token = newTokens.refresh_token;

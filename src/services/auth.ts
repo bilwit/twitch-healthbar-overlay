@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import { writeFile, readFile } from 'fs';
+import { Settings } from '../utils/twitch';
 
 export interface Tokens {
   access_token: string,
@@ -9,7 +10,7 @@ export interface Tokens {
 
 dotenv.config();
 
-export default async function auth(BroadcasterId: string): Promise<Tokens> {
+export default async function auth(BroadcasterId: string, settings: Settings): Promise<Tokens> {
 
   function checkRefresh(): Promise<string> {
     return new Promise((resolve, _reject) => {
@@ -49,7 +50,7 @@ export default async function auth(BroadcasterId: string): Promise<Tokens> {
         })
 
         if (!BroadcasterId) {
-          BroadcasterId =  await requestBroadcasterId(ret.access_token);
+          BroadcasterId =  await requestBroadcasterId(ret.access_token, settings);
         }
 
         return {
@@ -67,14 +68,14 @@ export default async function auth(BroadcasterId: string): Promise<Tokens> {
     }
   }
 
-  async function requestBroadcasterId(access_token: string): Promise<string> {
+  async function requestBroadcasterId(access_token: string, settings: Settings): Promise<string> {
     const response = await fetch(
-      'https://api.twitch.tv/helix/users?login=' + process.env.CHANNEL_NAME,
+      'https://api.twitch.tv/helix/users?login=' + settings.channelName,
       {
         method: 'GET',
         headers: {
           'Authorization': 'Bearer ' + access_token,
-          'Client-Id': process.env.BOT_CLIENT_ID || '',
+          'Client-Id': settings.listenerClientId || '',
         },
       }
     );
@@ -100,8 +101,8 @@ export default async function auth(BroadcasterId: string): Promise<Tokens> {
       return await requestTokens(
           BroadcasterId,
           new URLSearchParams({
-          client_id: process.env.BOT_CLIENT_ID || '',
-          client_secret: process.env.BOT_CLIENT_SECRET || '',
+          client_id: settings.listenerClientId || '',
+          client_secret: settings.listenerSecret || '',
           grant_type: 'refresh_token',
           refresh_token: encodeURIComponent(refresh),
         })
@@ -110,9 +111,9 @@ export default async function auth(BroadcasterId: string): Promise<Tokens> {
       return await requestTokens(
         BroadcasterId,
         new URLSearchParams({
-          client_id: process.env.BOT_CLIENT_ID || '',
-          client_secret: process.env.BOT_CLIENT_SECRET || '',
-          code: process.env.BOT_CLIENT_AUTH || '',
+          client_id: settings.listenerClientId || '',
+          client_secret: settings.listenerSecret || '',
+          code: settings.listenerAuthCode || '',
           grant_type: 'authorization_code',
           redirect_uri: 'http://localhost:' + process.env.PORT,
         })

@@ -2,7 +2,7 @@
 // https://dev.twitch.tv/docs/api/reference/#get-chatters
 import dotenv from 'dotenv';
 import { Tokens } from './auth';
-import consoleLogStyling from './consoleLogStyling';
+import consoleLogStyling from '../utils/consoleLogStyling';
 dotenv.config();
 
 const TWITCH_GET_CHATTERS_ADDRESS = 'https://api.twitch.tv/helix/chat/chatters';
@@ -10,7 +10,7 @@ const TWITCH_GET_CHATTERS_ADDRESS = 'https://api.twitch.tv/helix/chat/chatters';
 // change to database unique to monster entry
 const HEALTH_MULTIPLIER = 10;
 
-export default async function health(tokens: Tokens, user_id: string): Promise<any> {
+export default async function health(tokens: Tokens, user_id: string, listenerClientId: string): Promise<any> {
 
   // TO DO
   // get a list of Monster entries for database and initialize MaxHealth & CurrentHealth for each
@@ -24,11 +24,11 @@ export default async function health(tokens: Tokens, user_id: string): Promise<a
     };
 
     if (tokens?.access_token) {
-      MaxHealth = (await fetchChatters(tokens, user_id)) * HEALTH_MULTIPLIER;
+      MaxHealth = (await fetchChatters(tokens, user_id, listenerClientId)) * HEALTH_MULTIPLIER;
 
       setInterval(async () => {
         try {
-          const MaxHealthUpdated = (await fetchChatters(tokens, user_id)) * HEALTH_MULTIPLIER;
+          const MaxHealthUpdated = (await fetchChatters(tokens, user_id, listenerClientId)) * HEALTH_MULTIPLIER;
           if (MaxHealth !== MaxHealthUpdated) {
             MaxHealth = MaxHealthUpdated;
             console.log(consoleLogStyling('health', 'Updated Max Health: ' + MaxHealthUpdated));
@@ -53,7 +53,7 @@ export default async function health(tokens: Tokens, user_id: string): Promise<a
   }
 }
 
-async function fetchChatters(tokens: Tokens, user_id: string) {
+async function fetchChatters(tokens: Tokens, user_id: string, listenerClientId: string) {
   try {
     const response = await fetch(
       TWITCH_GET_CHATTERS_ADDRESS + '?broadcaster_id=' + tokens.BroadcasterId + '&moderator_id=' + user_id,
@@ -61,7 +61,7 @@ async function fetchChatters(tokens: Tokens, user_id: string) {
         method: 'GET',
         headers: {
           'Authorization': 'Bearer ' + tokens.access_token,
-          'Client-Id': process.env.BOT_CLIENT_ID || '',
+          'Client-Id': listenerClientId || '',
         },
       }
     );

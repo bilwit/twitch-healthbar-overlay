@@ -26,11 +26,12 @@ model Settings {
   listenerSecret      String    @db.VarChar(255)
   listenerUserName    String    @db.VarChar(255)
   channelName         String    @db.VarChar(255)
+  connectToTwitch     Boolean   @default(false)
 }
 
 model RefreshToken {
   id                  Int       @id @default(autoincrement())
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
-  name                String    @db.VarChar(255)
+  value               String    @db.VarChar(255)
 }
