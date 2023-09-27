@@ -3,33 +3,15 @@ import dotenv from 'dotenv';
 import EventEmitter from 'events';
 import auth, { validate } from './auth';
 import parser from './parser';
-import health from './health';
 import consoleLogStyling from '../utils/consoleLogStyling';
-import { Settings } from '../utils/twitch';
+import { Settings, fetchChatters } from '../utils/twitch';
+import getMonsters, { Monster_CB } from './monsters';
 
 const TWITCH_IRC_ADDRESS = 'ws://irc-ws.chat.twitch.tv:80';
 
 dotenv.config();
 
 export default async function chatListener (e: EventEmitter, settings: Settings) {
-
-  const triggers = 'CurseLit,lit'.trim().split(','); // (process.env.TRIGGERS || '').trim().split(',');
-
-  // counts the amount of times trigger words are found in the message
-  function checkTriggerWords (message: string, Health: any) {
-    let triggerCount = 0;
-    for (const trigger of triggers) {
-      const triggerFound = message.split(trigger).length-1;
-      if (triggerFound > 0) {
-        triggerCount += triggerFound;
-      }
-    }
-    if (triggerCount > 0) {
-      Health(-triggerCount);
-      // e.emit('increment', triggerCount);
-    }
-  }
-
   try {
     // authenticate
     const tokens = await auth('', settings);
@@ -62,25 +44,51 @@ export default async function chatListener (e: EventEmitter, settings: Settings)
           console.log(consoleLogStyling('warning', `!   Code: ${connection.closeReasonCode}`));
         });
 
-        const Health = await health(tokens, user_id, settings.listener_client_id);
-  
-        connection.on('message', (message) => {
-          const parsed = parser(message);
+        try {
+          // initial MaxHealth
+          let MaxHealth = (await fetchChatters(tokens, user_id, settings.listener_client_id));
 
-          if (parsed) {
-            switch (parsed.command.command) {
-              case 'PING': // keepalive
-                console.log(consoleLogStyling('black', '* KeepAlive'));
-                connection.sendUTF('PONG ' + parsed.parameters);
-                break;
-              case 'PRIVMSG': // chatter message
-                checkTriggerWords(parsed.parameters, Health);
-                break;
-              default:
-                break;
+          setInterval(async () => {
+            try {
+              const MaxHealthUpdated = (await fetchChatters(tokens, user_id, settings.listener_client_id));
+              if (MaxHealth !== MaxHealthUpdated) {
+                MaxHealth = MaxHealthUpdated;
+                console.log(consoleLogStyling('health', 'Updated Max Health: ' + MaxHealthUpdated));
+              }
+            } catch (e) {
+              console.log(consoleLogStyling('warning', '! Could not update Max Health'));
             }
-          }
-        });
+          }, 15000);
+
+          const monsters: Monster_CB[] = await getMonsters(MaxHealth);
+    
+          connection.on('message', (message) => {
+            const parsed = parser(message);
+
+            if (parsed) {
+              switch (parsed.command.command) {
+                case 'PING': // keepalive
+                  console.log(consoleLogStyling('black', '* KeepAlive'));
+                  connection.sendUTF('PONG ' + parsed.parameters);
+                  break;
+                case 'PRIVMSG': // chatter message
+                  if (monsters.length > 0) {
+                    for (const monster of monsters) {
+                      const numOfTriggers = checkTriggerWords(parsed.parameters, monster.trigger_words);
+                      if (numOfTriggers > 0) {
+                        monster.update(-numOfTriggers, MaxHealth);
+                      }
+                    }
+                  }
+                  break;
+                default:
+                  break;
+              }
+            }
+          });
+        } catch (e) {
+          console.log(consoleLogStyling('error', '! Error: ' + e));
+        }
       });
 
       // Connect to Twitch:
@@ -107,4 +115,21 @@ export default async function chatListener (e: EventEmitter, settings: Settings)
     console.error(err);
   }
 
+}
+
+// counts the amount of times trigger words are found in the message
+function checkTriggerWords (message: string, triggerWords: string): number {
+  const triggers = triggerWords.trim().split(',');
+  let triggerCount = 0;
+
+  for (const trigger of triggers) {
+    const triggerFound = message.split(trigger).length-1;
+    if (triggerFound > 0) {
+      triggerCount += triggerFound;
+    }
+  }
+  if (triggerCount > 0) {
+    return triggerCount;
+  }
+  return 0;
 }
