@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
-import { writeFile, readFile } from 'fs';
 import { Settings } from '../utils/twitch';
+import { PrismaClient } from '@prisma/client';
 
 export interface Tokens {
   access_token: string,
@@ -12,17 +12,24 @@ dotenv.config();
 
 export default async function auth(BroadcasterId: string, settings: Settings): Promise<Tokens> {
 
-  function checkRefresh(): Promise<string> {
-    return new Promise((resolve, _reject) => {
-      readFile('src/storage/refresh_token', 'utf8', (err, data) => {
-        if (err) {
-          console.error(err);
-          resolve('');
-        } else {
-          resolve(data);
-        }
+  async function checkRefresh(): Promise<string> {
+    try {
+      const prisma = new PrismaClient();
+      const refresh_token = await prisma.refresh_token.findFirst({
+        select: {
+          value: true,
+        },
       })
-    })
+    
+      if (refresh_token && refresh_token?.value) {
+        return refresh_token.value;
+      } else {
+        return '';
+      }
+    } catch (e) {
+      console.error(e);
+      return '';
+    }
   }
 
   async function requestTokens(BroadcasterId: string, body: URLSearchParams): Promise<Tokens> {
@@ -41,13 +48,8 @@ export default async function auth(BroadcasterId: string, settings: Settings): P
     if (response) {
       const ret = await response.json();
       if (ret?.access_token && ret?.refresh_token) {
-        writeFile('src/storage/refresh_token', ret?.refresh_token, {
-          flag: 'w',
-        }, (err) => {
-          if (err) {
-            console.error('Could not save refresh_token');
-          }
-        })
+
+        updateRefresh(ret.refresh_token);
 
         if (!BroadcasterId) {
           BroadcasterId =  await requestBroadcasterId(ret.access_token, settings);
@@ -153,5 +155,31 @@ export async function validate(access_token: string): Promise<string> {
   } catch (e) {
     console.log(e);
     return '';
+  }
+}
+
+async function updateRefresh(updated_token: string): Promise<boolean> {
+  try {
+    const prisma = new PrismaClient();
+    const refresh_token = await prisma.refresh_token.upsert({
+      where: {
+        id: 1 || '',
+      },
+      create: {
+        value: updated_token,
+      },
+      update: {
+        value: updated_token,
+      }
+    });
+  
+    if (refresh_token && refresh_token?.value) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (e) {
+    console.error(e);
+    return false;
   }
 }
