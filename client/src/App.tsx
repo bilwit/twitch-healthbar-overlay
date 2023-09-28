@@ -1,22 +1,31 @@
-import { useState } from 'react'
-import './App.css'
+import { useDisclosure } from '@mantine/hooks';
+import { MantineProvider, AppShell, Burger, DEFAULT_THEME } from '@mantine/core';
+import "@mantine/core/styles.css";
+import './App.css';
+
+// default theme values https://mantine.dev/theming/default-theme/
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [opened, { toggle }] = useDisclosure();
 
   return (
-    <>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-    </>
-  )
+    <MantineProvider theme={DEFAULT_THEME} defaultColorScheme="dark">
+      <AppShell
+        header={{ height: 60 }}
+        navbar={{ width: 300, breakpoint: 'sm', collapsed: { mobile: !opened } }}
+        padding="md"
+      >
+        <AppShell.Header>
+          <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
+          <div>Logo</div>
+        </AppShell.Header>
+
+        <AppShell.Navbar p="md">Navbar</AppShell.Navbar>
+
+        <AppShell.Main>Main</AppShell.Main>
+      </AppShell>
+    </MantineProvider>
+  );
 }
 
 export default App
