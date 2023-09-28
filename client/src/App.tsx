@@ -4,6 +4,7 @@ import {
   AppShell, 
   Burger, 
   Grid,
+  NavLink,
 } from '@mantine/core';
 import { theme } from './theme';
 import classes from './css/Nav.module.css';
@@ -30,25 +31,25 @@ function App() {
               />
             </Grid.Col>
             <Grid.Col span={11}>
-              <h2 className={classes['margin-0'] +' '+ classes['margin-left-3']}>Health-Bar-Overlay</h2>
+              <h2 className={classes['nav-header']}>Protons Electrons Always Cause Explosions</h2>
             </Grid.Col>
           </Grid>          
         </AppShell.Header>
 
         <AppShell.Navbar 
           p="md"
-          className={classes['nav-bar-dark']}
+          className={classes['nav-bar']}
         >
-          Navbar
+          <NavLink 
+            label="Health Bar Overlay" 
+            className={classes['nav-link']}
+            active={true}
+          />
         </AppShell.Navbar>
 
         <AppShell.Main
         >
-          <div
-            className={classes['max-width-100']}
-          >
           Main
-          </div>
         </AppShell.Main>
       </AppShell>
     </MantineProvider>

@@ -1,32 +1,41 @@
-.margin-0 {
-  margin: 0;
-}
-
-.nav-bar-dark {
-  /* background-color: #22252a !important; */
-  background-color: #22252a !important;
+.align-content-center {
+  display: grid;
+  align-content: center;
 }
 
 .default-bg {
   background-color: #292c33 !important;
 }
 
-.max-width-100 {
-  width: 100%;
-  max-width: 100% !important;
+.margin-0 {
+  margin: 0;
 }
 
 .margin-left-3 {
   margin-left: 1rem;
 }
 
-.align-content-center {
-  display: grid;
-  align-content: center;
+.nav-header {
+  margin: 0;
+  margin-left: 1rem;
+}
+
+.nav-bar {
+  background-color: #0e0e10 !important;
+  padding: 0 !important;
 }
 
 .nav-burger {
   display: block;
   margin-left: auto;
   margin-right: auto;
+}
+
+.nav-bar-dark {
+  /* background-color: #22252a !important; */
+  background-color: #0e0e10 !important;
+}
+
+.nav-link {
+  padding: 1rem !important;
 }
