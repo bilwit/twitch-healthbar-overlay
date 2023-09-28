@@ -1,0 +1,32 @@
+.margin-0 {
+  margin: 0;
+}
+
+.nav-bar-dark {
+  /* background-color: #22252a !important; */
+  background-color: #22252a !important;
+}
+
+.default-bg {
+  background-color: #292c33 !important;
+}
+
+.max-width-100 {
+  width: 100%;
+  max-width: 100% !important;
+}
+
+.margin-left-3 {
+  margin-left: 1rem;
+}
+
+.align-content-center {
+  display: grid;
+  align-content: center;
+}
+
+.nav-burger {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}

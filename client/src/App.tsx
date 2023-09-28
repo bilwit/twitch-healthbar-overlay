@@ -1,31 +1,58 @@
 import { useDisclosure } from '@mantine/hooks';
-import { MantineProvider, AppShell, Burger, DEFAULT_THEME } from '@mantine/core';
+import { 
+  MantineProvider, 
+  AppShell, 
+  Burger, 
+  Grid,
+} from '@mantine/core';
+import { theme } from './theme';
+import classes from './css/Nav.module.css';
 import "@mantine/core/styles.css";
-import './App.css';
-
-// default theme values https://mantine.dev/theming/default-theme/
 
 function App() {
   const [opened, { toggle }] = useDisclosure();
 
   return (
-    <MantineProvider theme={DEFAULT_THEME} defaultColorScheme="dark">
+    <MantineProvider theme={theme} defaultColorScheme="dark">
       <AppShell
         header={{ height: 60 }}
         navbar={{ width: 300, breakpoint: 'sm', collapsed: { mobile: !opened } }}
         padding="md"
       >
-        <AppShell.Header>
-          <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-          <div>Logo</div>
+        <AppShell.Header className={classes['align-content-center'] + ' ' + classes['nav-bar-dark']}>
+          <Grid >
+            <Grid.Col span={1} hiddenFrom="sm">
+              <Burger 
+                opened={opened} 
+                onClick={toggle} 
+                hiddenFrom="sm" size="sm" 
+                className={classes['nav-burger']}
+              />
+            </Grid.Col>
+            <Grid.Col span={11}>
+              <h2 className={classes['margin-0'] +' '+ classes['margin-left-3']}>Health-Bar-Overlay</h2>
+            </Grid.Col>
+          </Grid>          
         </AppShell.Header>
 
-        <AppShell.Navbar p="md">Navbar</AppShell.Navbar>
+        <AppShell.Navbar 
+          p="md"
+          className={classes['nav-bar-dark']}
+        >
+          Navbar
+        </AppShell.Navbar>
 
-        <AppShell.Main>Main</AppShell.Main>
+        <AppShell.Main
+        >
+          <div
+            className={classes['max-width-100']}
+          >
+          Main
+          </div>
+        </AppShell.Main>
       </AppShell>
     </MantineProvider>
   );
 }
 
-export default App
+export default App;
