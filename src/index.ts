@@ -18,8 +18,8 @@ app.use(cors()); // CORS
 // app.use(cookieParser());
 
 app.use(express.static(path.join(__dirname, '..', 'client/dist')));
-app.use('/api/monsters', require('./routes/monsters'));
-app.use('/api/settings', require('./routes/settings'));
+app.use('/api/monsters', require('./routes/monsters.api'));
+app.use('/api/settings', require('./routes/settings.api'));
 
 // serve React client directly from Express
 // app.get('/', (_req: Request, res: Response) => {
