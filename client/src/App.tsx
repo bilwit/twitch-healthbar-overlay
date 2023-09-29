@@ -12,11 +12,17 @@ import "@mantine/core/styles.css";
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import Monsters from './routes/monsters';
 import Settings from './routes/settings';
+import { GiMonsterGrasp } from 'react-icons/gi';
+import { VscSettingsGear } from 'react-icons/vsc';
 
-const paths = [
-  'monsters',
-  'settings',
-];
+interface Routes_Icon_Dictionary {
+  [key: string]: JSX.Element,
+}
+
+const routes_icon_dictionary: Routes_Icon_Dictionary = {
+  'monsters': (<GiMonsterGrasp size="1rem" stroke={1.5}/>),
+  'settings': (<VscSettingsGear size="1rem" stroke={1.5} />),
+}
 
 function App() {
   const location = useLocation();
@@ -51,10 +57,11 @@ function App() {
           p="md"
           className={classes['nav-bar']}
         >
-        {paths.map((item) => {
+        {Object.keys(routes_icon_dictionary).map((item) => {
           return (
             <NavLink 
               key={'nav' + item}
+              leftSection={routes_icon_dictionary[item]}
               label={item[0].toUpperCase() + item.slice(1, item.length)} 
               className={classes['nav-link']}
               active={location.pathname === '/' + item}
