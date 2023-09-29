@@ -19,12 +19,18 @@ function useGetMonsters(): {
 
   useEffect(() => {
     const wrapDispatch = async () => {
-      const res: any = await fetch('/api/monsters', {
-        method: 'GET',
-      });
-      if (res) {
-        setMonsters([]);
-      } else {
+      try {
+        const res: any = await fetch('/api/monsters', {
+          method: 'GET',
+        });
+        if (res) {
+          const responseJson = await res.json();
+          if (responseJson.success) {
+            return setMonsters(responseJson.data);
+          } 
+        }
+        throw true;
+      } catch (e) {
         setError('Could not load monsters');
       }
     }

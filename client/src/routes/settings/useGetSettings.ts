@@ -19,14 +19,19 @@ function useGetSettings(): {
 
   useEffect(() => {
     const wrapDispatch = async () => {
-      const res: any = await fetch('api/settings', {
-        method: 'GET',
-      });
-      if (res) {
-        console.log(res);
-        setSettings(undefined);
-      } else {
-        setError('');
+      try {
+        const res: any = await fetch('/api/settings', {
+          method: 'GET',
+        });
+        if (res) {
+          const responseJson = await res.json();
+          if (responseJson.success) {
+            return setSettings(responseJson.data);
+          } 
+        }
+        throw true;
+      } catch (e) {
+        setError('Could not load settigns');
       }
     }
 
