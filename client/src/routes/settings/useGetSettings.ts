@@ -31,7 +31,7 @@ function useGetSettings(): {
         }
         throw true;
       } catch (e) {
-        setError('Could not load settigns');
+        setError('Could not load settings');
       }
     }
 
