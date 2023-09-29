@@ -14,6 +14,7 @@ import Monsters from './routes/monsters';
 import Settings from './routes/settings';
 import { GiMonsterGrasp } from 'react-icons/gi';
 import { VscSettingsGear } from 'react-icons/vsc';
+import useGetSettings from './routes/settings/useGetSettings';
 
 interface Routes_Icon_Dictionary {
   [key: string]: JSX.Element,
@@ -29,9 +30,18 @@ function App() {
   const navigate = useNavigate();
   
   const [opened, { toggle }] = useDisclosure();
+  const [settingsIsOpened, { open, close }] = useDisclosure(false);
+  
+  const { settings } = useGetSettings();
 
   return (
     <MantineProvider theme={theme} defaultColorScheme="dark">
+      <Settings
+        settings={settings}
+        isOpened={settingsIsOpened}
+        close={close}
+      />
+
       <AppShell
         header={{ height: 60 }}
         navbar={{ width: 300, breakpoint: 'sm', collapsed: { mobile: !opened } }}
@@ -64,15 +74,19 @@ function App() {
               leftSection={routes_icon_dictionary[item]}
               label={item[0].toUpperCase() + item.slice(1, item.length)} 
               className={classes['nav-link']}
-              active={location.pathname === '/' + item}
-              onClick={() => navigate(item)}
+              active={(item === 'settings' && settingsIsOpened) || (!settingsIsOpened && location.pathname === '/' + item)}
+              onClick={() => {
+                if (item === 'settings') {
+                  return open();
+                }
+                return navigate(item);
+              }}
             />
           );
         })}
         </AppShell.Navbar>
 
-        <AppShell.Main
-        >
+        <AppShell.Main>
           <Routes>
             <Route
               path=""
@@ -81,10 +95,6 @@ function App() {
             <Route
               path="monsters/*"
               element={<Monsters />}
-            />
-            <Route
-              path="settings/*"
-              element={<Settings />}
             />
           </Routes>
         </AppShell.Main>

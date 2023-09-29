@@ -1,26 +1,26 @@
 
 import { 
-  SimpleGrid,
+  Modal,
 } from '@mantine/core';
-import useGetSettings from './useGetSettings';
+import { Settings as Interface_Settings } from './useGetSettings';
 
-function Settings() {
-  const { settings } = useGetSettings();
+interface Props {
+  settings?: Interface_Settings
+  isOpened: boolean,
+  close: () => void,
+}
 
-  console.log(settings)
+function Settings(props: Props) {
   
   return (
-    <SimpleGrid
-      cols={{ base: 1, sm: 2, lg: 5 }}
-      spacing={{ base: 10, sm: 'xl' }}
-      verticalSpacing={{ base: 'md', sm: 'xl' }}
+    <Modal 
+      opened={props.isOpened} 
+      onClose={props.close} 
+      title="Settings"
+      size="xl"
     >
-      <div>1</div>
-      <div>2</div>
-      <div>3</div>
-      <div>4</div>
-      <div>5</div>
-    </SimpleGrid>
+      {/* Modal content */}
+    </Modal>
   );
 }
 

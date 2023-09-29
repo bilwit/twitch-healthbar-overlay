@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-interface Settings {
+export interface Settings {
   id: number,
   listener_auth_code: string,
   listener_client_id: string,

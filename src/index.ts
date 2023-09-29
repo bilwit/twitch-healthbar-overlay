@@ -32,11 +32,3 @@ app.listen(process.env.PORT, () => {
   // initialize Twitch connection if settings.is_connected === true
   connectToTwitch();
 });
-
-
-// app.get('/api/monsters', (_req: Request, res: Response) => {
-//   console.log('here')
-//   return res.status(200).json({
-//     success: true,
-//   });
-// });
