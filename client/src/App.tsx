@@ -9,8 +9,9 @@ import {
 import { theme } from './theme';
 import classes from './css/Nav.module.css';
 import "@mantine/core/styles.css";
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import Monsters from './routes/monsters';
+import Settings from './routes/settings';
 
 const paths = [
   'monsters',
@@ -19,6 +20,7 @@ const paths = [
 
 function App() {
   const location = useLocation();
+  const navigate = useNavigate();
   
   const [opened, { toggle }] = useDisclosure();
 
@@ -29,7 +31,7 @@ function App() {
         navbar={{ width: 300, breakpoint: 'sm', collapsed: { mobile: !opened } }}
         padding="md"
       >
-        <AppShell.Header className={classes['align-content-center'] + ' ' + classes['nav-bar-dark']}>
+        <AppShell.Header className={classes['align-content-center']}>
           <Grid>
             <Grid.Col span={1} hiddenFrom="sm">
               <Burger 
@@ -56,6 +58,7 @@ function App() {
               label={item[0].toUpperCase() + item.slice(1, item.length)} 
               className={classes['nav-link']}
               active={location.pathname === '/' + item}
+              onClick={() => navigate(item)}
             />
           );
         })}
@@ -71,6 +74,10 @@ function App() {
             <Route
               path="monsters/*"
               element={<Monsters />}
+            />
+            <Route
+              path="settings/*"
+              element={<Settings />}
             />
           </Routes>
         </AppShell.Main>
