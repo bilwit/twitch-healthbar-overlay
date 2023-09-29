@@ -23,7 +23,6 @@ function useGetMonsters(): {
         method: 'GET',
       });
       if (res) {
-        console.log(res);
         setMonsters([]);
       } else {
         setError('Could not load monsters');

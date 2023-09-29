@@ -9,10 +9,17 @@ import {
 import { theme } from './theme';
 import classes from './css/Nav.module.css';
 import "@mantine/core/styles.css";
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import Monsters from './routes/monsters';
 
+const paths = [
+  'monsters',
+  'settings',
+];
+
 function App() {
+  const location = useLocation();
+  
   const [opened, { toggle }] = useDisclosure();
 
   return (
@@ -42,11 +49,16 @@ function App() {
           p="md"
           className={classes['nav-bar']}
         >
-          <NavLink 
-            label="Monsters" 
-            className={classes['nav-link']}
-            active={true}
-          />
+        {paths.map((item) => {
+          return (
+            <NavLink 
+              key={'nav' + item}
+              label={item[0].toUpperCase() + item.slice(1, item.length)} 
+              className={classes['nav-link']}
+              active={location.pathname === '/' + item}
+            />
+          );
+        })}
         </AppShell.Navbar>
 
         <AppShell.Main
