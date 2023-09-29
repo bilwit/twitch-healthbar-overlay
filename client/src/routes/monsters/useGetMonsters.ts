@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-interface Monster {
+export interface Monster {
   id: number,
   created_at: Date,
   updated_at: Date,

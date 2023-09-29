@@ -6,6 +6,7 @@ import {
 import useGetMonsters from './useGetMonsters';
 import { BiError, BiInfoCircle } from 'react-icons/bi';
 import classes from '../../css/Nav.module.css';
+import Item from './Item';
 
 function Monsters() {
   const { monsters, error } = useGetMonsters();
@@ -34,26 +35,26 @@ function Monsters() {
         spacing={{ base: 10, sm: 'xl' }}
         verticalSpacing={{ base: 'md', sm: 'xl' }}
       >
-      {monsters && monsters.length > 0 ? monsters.map((monster) => (
-        <div key={monster.id}>
-          {monster.name}
-        </div>
-      )) : (
-        <Alert 
-          className={classes['margin-bottom-1']}
-          variant="light" 
-          color="indigo" 
-          title="Note" 
-          icon={
-            <BiInfoCircle 
-              size="1rem" 
-              stroke={1.5} 
-            />
-          }
-        >
-          No monsters added yet
-        </Alert>
-      )}
+        {monsters && monsters.length > 0 ? monsters.map((monster) => (
+          <Item key={monster.id}
+            item={monster}
+          />
+        )) : (
+          <Alert 
+            className={classes['margin-bottom-1']}
+            variant="light" 
+            color="indigo" 
+            title="Note" 
+            icon={
+              <BiInfoCircle 
+                size="1rem" 
+                stroke={1.5} 
+              />
+            }
+          >
+            No monsters added yet
+          </Alert>
+        )}
       </SimpleGrid>
     </>
   );
