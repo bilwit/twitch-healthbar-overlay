@@ -9,6 +9,8 @@ import {
 import { theme } from './theme';
 import classes from './css/Nav.module.css';
 import "@mantine/core/styles.css";
+import { Navigate, Route, Routes } from 'react-router-dom';
+import Monsters from './routes/monsters';
 
 function App() {
   const [opened, { toggle }] = useDisclosure();
@@ -21,7 +23,7 @@ function App() {
         padding="md"
       >
         <AppShell.Header className={classes['align-content-center'] + ' ' + classes['nav-bar-dark']}>
-          <Grid >
+          <Grid>
             <Grid.Col span={1} hiddenFrom="sm">
               <Burger 
                 opened={opened} 
@@ -31,7 +33,7 @@ function App() {
               />
             </Grid.Col>
             <Grid.Col span={11}>
-              <h2 className={classes['nav-header']}>Protons Electrons Always Cause Explosions</h2>
+              <h2 className={classes['nav-header']}>Health Bar Overlay</h2>
             </Grid.Col>
           </Grid>          
         </AppShell.Header>
@@ -41,7 +43,7 @@ function App() {
           className={classes['nav-bar']}
         >
           <NavLink 
-            label="Health Bar Overlay" 
+            label="Monsters" 
             className={classes['nav-link']}
             active={true}
           />
@@ -49,7 +51,16 @@ function App() {
 
         <AppShell.Main
         >
-          Main
+          <Routes>
+            <Route
+              path=""
+              element={<Navigate to="/monsters" />}
+            />
+            <Route
+              path="monsters/*"
+              element={<Monsters />}
+            />
+          </Routes>
         </AppShell.Main>
       </AppShell>
     </MantineProvider>
