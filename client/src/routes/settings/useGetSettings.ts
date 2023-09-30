@@ -11,9 +11,11 @@ export interface Settings {
 }
 
 function useGetSettings(): { 
+  isDoneLoading: boolean,
   settings: Settings | undefined,
   error: string, 
 } {
+  const [isDoneLoading, setIsDoneLoading] = useState(false);
   const [settings, setSettings] = useState<Settings | undefined>();
   const [error, setError] = useState('');
 
@@ -26,11 +28,13 @@ function useGetSettings(): {
         if (res) {
           const responseJson = await res.json();
           if (responseJson.success) {
+            setIsDoneLoading(true);
             return setSettings(responseJson.data);
           } 
         }
         throw true;
       } catch (e) {
+        setIsDoneLoading(true);
         setError('Could not load settings');
       }
     }
@@ -39,6 +43,7 @@ function useGetSettings(): {
   }, []);
 
   return { 
+    isDoneLoading,
     settings,
     error,
   };
