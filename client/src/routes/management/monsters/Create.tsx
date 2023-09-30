@@ -1,6 +1,8 @@
 
 import { 
   Button,
+  CopyButton,
+  Grid,
   Group,
   Modal,
   NumberInput,
@@ -43,6 +45,7 @@ function Monsters() {
     },
   });
   const [error, setError] = useState('');
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   return (
     <>
@@ -86,6 +89,7 @@ function Monsters() {
             if (result) {
               const responseJson = await result.json();
               if (responseJson.success) {
+                setIsSubmitted(true);
                 return setError('');
               } else {
                 throw true;
@@ -113,18 +117,52 @@ function Monsters() {
             withAsterisk
             className={classes['margin-bottom-1']}
             label="Text Triggers" 
-            placeholder="Enter tag" 
+            placeholder="Press ENTER per-tag" 
             {...CreateForm.getInputProps('trigger_words')}
           />
-          <SegmentedControl
-            {...CreateForm.getInputProps('published')}
-            color={theme.colors.indigo[9]}
-            data={[
-              { label: 'Enabled', value: 'true' },
-              { label: 'Disabled', value: 'false' },
-            ]}
-          />
-          <Group justify="flex-end" mt="md">
+          <Group 
+            style={{ display: 'grid' }}
+            justify="flex-center" 
+            mt="xl"
+          >
+            <SegmentedControl
+              {...CreateForm.getInputProps('published')}
+              color={theme.colors.indigo[9]}
+              data={[
+                { label: 'Enabled', value: 'true' },
+                { label: 'Disabled', value: 'false' },
+              ]}
+            />
+          </Group>
+
+          <CopyButton 
+            value="https://mantine.dev"
+          >
+            {({ copied, copy }) => (
+              <Grid mt="xl" justify="center" style={{alignItems: 'center'}}>
+                <Grid.Col span={10}>
+                  <TextInput 
+                    disabled={!isSubmitted}
+                    mt="xs"
+                    placeholder="With error message"
+                  />
+                </Grid.Col>
+                <Grid.Col span={1} style={{ display: 'flex', alignItems: 'center' }}>
+                  <Button 
+                    disabled={!isSubmitted}
+                    mt={'xs'}
+                    variant="outline"
+                    color={copied ? 'teal' : theme.colors.indigo[5]} 
+                    onClick={copy}
+                  >
+                    {copied ? 'Copied' : 'Copy'}
+                  </Button>
+                </Grid.Col>
+              </Grid>
+            )}
+          </CopyButton>
+            
+          <Group justify="center" mt="xl">
             <Button 
               color={theme.colors.indigo[5]}
               type="submit"
