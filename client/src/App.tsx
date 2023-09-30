@@ -30,16 +30,16 @@ function App() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { isDoneLoading, settings } = useGetSettings();
+  const { isLoading, settings } = useGetSettings();
   
   const [opened, { toggle }] = useDisclosure();
   const [settingsIsOpened, { open, close }] = useDisclosure(false);
 
   useEffect(() => {
-    if (isDoneLoading && !settings) {
+    if (!isLoading && !settings) {
       open();
     }
-  }, [isDoneLoading])
+  }, [isLoading])
 
   return (
     <MantineProvider theme={theme} defaultColorScheme="dark">

@@ -11,14 +11,17 @@ export interface Monster {
 }
 
 function useGetMonsters(): { 
+  isLoading: boolean,
   monsters: Monster[],
   error: string, 
 } {
+  const [isLoading, setIsLoading] = useState(true);
   const [monsters, setMonsters] = useState<Monster[]>([]);
   const [error, setError] = useState('');
 
   useEffect(() => {
     const wrapDispatch = async () => {
+      setIsLoading(true);
       try {
         const res: any = await fetch('/api/monsters', {
           method: 'GET',
@@ -26,11 +29,13 @@ function useGetMonsters(): {
         if (res) {
           const responseJson = await res.json();
           if (responseJson.success) {
+            setIsLoading(false);
             return setMonsters(responseJson.data);
           } 
         }
         throw true;
       } catch (e) {
+        setIsLoading(false);
         setError('Could not load monsters');
       }
     }
@@ -38,7 +43,8 @@ function useGetMonsters(): {
     wrapDispatch();
   }, []);
 
-  return { 
+  return {
+    isLoading,
     monsters,
     error,
   };

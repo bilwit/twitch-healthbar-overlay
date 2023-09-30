@@ -1,6 +1,7 @@
 
 import { 
   Alert,
+  LoadingOverlay,
   SimpleGrid,
 } from '@mantine/core';
 import useGetMonsters from './useGetMonsters';
@@ -9,8 +10,8 @@ import classes from '../../css/Nav.module.css';
 import Item from './Item';
 
 function Monsters() {
-  const { monsters, error } = useGetMonsters();
-  
+  const { isLoading, monsters, error } = useGetMonsters();
+
   return (
     <>
       {error && (
@@ -35,7 +36,7 @@ function Monsters() {
         spacing={{ base: 10, sm: 'xl' }}
         verticalSpacing={{ base: 'md', sm: 'xl' }}
       >
-        {monsters && monsters.length > 0 ? monsters.map((monster) => (
+        {!isLoading ? monsters && monsters.length > 0 ? monsters.map((monster) => (
           <Item key={monster.id}
             item={monster}
           />
@@ -54,6 +55,8 @@ function Monsters() {
           >
             No monsters added yet
           </Alert>
+        ) : (
+          <LoadingOverlay visible={isLoading} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
         )}
       </SimpleGrid>
     </>
