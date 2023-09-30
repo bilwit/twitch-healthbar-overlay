@@ -3,11 +3,11 @@ import { useState, useEffect } from 'react';
 export interface Monster {
   id: number,
   created_at: Date,
-  updated_at: Date,
+  updated_at?: Date,
   name: string,
   published: boolean,
   hp_multiplier: number,
-  trigger_words: string,
+  trigger_words?: string,
 }
 
 function useGetMonsters(id?: string | null): { 
@@ -23,7 +23,7 @@ function useGetMonsters(id?: string | null): {
     const wrapDispatch = async () => {
       setIsLoading(true);
       try {
-        const res: any = await fetch('/api/monsters' + (id ? '?id=' + id : ''), {
+        const res: any = await fetch('/api/monsters' + (id ? '?/' + id : ''), {
           method: 'GET',
         });
         if (res) {

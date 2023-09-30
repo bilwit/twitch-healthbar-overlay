@@ -17,7 +17,6 @@ router.get('/', async (_req: Request, res: Response) => {
       throw new Error('No settings found');
     }
   } catch (e) {
-
     return res.status(500).json({
       success: false,
     });
@@ -57,7 +56,9 @@ router.put('/', async (req: Request, res: Response) => {
       throw true;
     }
   } catch (e) {
-    console.error(e);
+    if (e !== true) {
+      console.error(e);
+    }
     return res.status(500).json({
       success: false,
     });
@@ -76,7 +77,9 @@ router.delete('/', async (_req: Request, res: Response) => {
       throw true;
     }
   } catch (e) {
-    console.error(e);
+    if (e !== true) {
+      console.error(e);
+    }
     return res.status(500).json({
       success: false,
     });
