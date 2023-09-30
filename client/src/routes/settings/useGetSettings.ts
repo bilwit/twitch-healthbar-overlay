@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
 export interface Settings {
-  id: number,
+  id?: number,
   listener_auth_code: string,
   listener_client_id: string,
   listener_secret: string,
