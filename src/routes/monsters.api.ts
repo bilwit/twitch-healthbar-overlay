@@ -2,10 +2,10 @@ import express, { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 
 const router = express.Router();
+const prisma = new PrismaClient();
 
 router.get('/', async (_req: Request, res: Response) => {
   try {
-    const prisma = new PrismaClient();
     const monsters = await prisma.monster.findMany();
   
     if (monsters && monsters.length > 0) {
@@ -23,5 +23,7 @@ router.get('/', async (_req: Request, res: Response) => {
     });
   }
 });
+
+prisma.$disconnect();
 
 module.exports = router;

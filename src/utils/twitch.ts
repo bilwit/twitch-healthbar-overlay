@@ -5,9 +5,10 @@ import { Tokens } from '../services/auth';
 
 const TWITCH_GET_CHATTERS_ADDRESS = 'https://api.twitch.tv/helix/chat/chatters';
 
+const prisma = new PrismaClient();
+
 export async function connectToTwitch() {
   try {
-    const prisma = new PrismaClient();
     const settings = await prisma.settings.findFirst({
       select: {
         listener_auth_code: true,
@@ -69,3 +70,5 @@ export async function fetchChatters(tokens: Tokens, user_id: string, listenerCli
     throw(e);
   }
 }
+
+prisma.$disconnect();

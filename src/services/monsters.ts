@@ -13,9 +13,10 @@ export interface Monster_CB {
   update: (amount: number, updatedMaxHealth: number) => void,
 }
 
+const prisma = new PrismaClient();
+
 export default async function getMonsters(maxHealthInit: number): Promise<Monster_CB[]> {
   try {
-    const prisma = new PrismaClient();
     const monsters = await prisma.monster.findMany({
       select: {
         id: true,
@@ -70,3 +71,5 @@ function Monster(monster: Monster, maxHealth: number): any {
     console.log(e);
   }
 }
+
+prisma.$disconnect();

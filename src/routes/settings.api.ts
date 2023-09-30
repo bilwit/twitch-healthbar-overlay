@@ -2,12 +2,12 @@ import express, { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 
 const router = express.Router();
+const prisma = new PrismaClient();
 
 router.get('/', async (_req: Request, res: Response) => {
   try {
-    const prisma = new PrismaClient();
+    
     const settings = await prisma.settings.findFirst();
-  
     if (settings && settings?.id > 0) {
       return res.status(200).json({
         success: true,
@@ -26,7 +26,6 @@ router.get('/', async (_req: Request, res: Response) => {
 
 router.put('/', async (req: Request, res: Response) => {
   try {
-    const prisma = new PrismaClient();
     const settings = await prisma.settings.upsert({
       where: {
         id: 1,
@@ -67,7 +66,6 @@ router.put('/', async (req: Request, res: Response) => {
 
 router.delete('/', async (_req: Request, res: Response) => {
   try {
-    const prisma = new PrismaClient();
     const settings = await prisma.settings.deleteMany({});
   
     if (settings && settings.count > 0) {
@@ -84,5 +82,7 @@ router.delete('/', async (_req: Request, res: Response) => {
     });
   }
 });
+
+prisma.$disconnect();
 
 module.exports = router;

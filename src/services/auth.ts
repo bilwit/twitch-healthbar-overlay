@@ -9,6 +9,7 @@ export interface Tokens {
 }
 
 dotenv.config();
+const prisma = new PrismaClient();
 
 const TWITCH_GET_BROADCASTER_ID = 'https://api.twitch.tv/helix/users?login=';
 const TWITCH_GET_OAUTH2 = 'https://id.twitch.tv/oauth2/';
@@ -17,7 +18,6 @@ export default async function auth(BroadcasterId: string, settings: Settings): P
 
   async function checkRefresh(): Promise<string> {
     try {
-      const prisma = new PrismaClient();
       const refresh_token = await prisma.refresh_token.findFirst({
         select: {
           value: true,
@@ -163,7 +163,6 @@ export async function validate(access_token: string): Promise<string> {
 
 async function updateRefresh(updated_token: string): Promise<boolean> {
   try {
-    const prisma = new PrismaClient();
     const refresh_token = await prisma.refresh_token.upsert({
       where: {
         id: 1 || '',
@@ -186,3 +185,5 @@ async function updateRefresh(updated_token: string): Promise<boolean> {
     return false;
   }
 }
+
+prisma.$disconnect();
