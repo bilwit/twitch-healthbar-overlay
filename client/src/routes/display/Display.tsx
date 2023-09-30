@@ -16,9 +16,9 @@ function Display() {
 
   return (
     <div>
-      {monsters && monsters.length > 0 && monsters.map((item) => (
-        <h1>{item.name}</h1>
-      ))}
+      {monsters && monsters.length === 1 && (
+        <h2>{monsters[0].name}</h2>
+      )}
     </div>
   );
 }

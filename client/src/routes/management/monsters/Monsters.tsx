@@ -1,13 +1,17 @@
 
 import { 
+  Affix,
   Alert,
+  Button,
   LoadingOverlay,
   SimpleGrid,
 } from '@mantine/core';
 import useGetMonsters from './useGetMonsters';
-import { BiError, BiInfoCircle } from 'react-icons/bi';
 import classes from '../../../css/Nav.module.css';
 import Item from './Item';
+import { AiOutlineFileAdd } from 'react-icons/ai';
+import { BiError, BiInfoCircle } from 'react-icons/bi';
+import Create from './Create';
 
 function Monsters() {
   const { isLoading, monsters, error } = useGetMonsters();
@@ -59,6 +63,13 @@ function Monsters() {
           <LoadingOverlay visible={isLoading} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
         )}
       </SimpleGrid>
+
+      <Affix 
+        position={{ bottom: 20, right: 20 }} 
+        style={{ zIndex: 190 }}
+      >
+        <Create />
+      </Affix>
     </>
   );
 }
