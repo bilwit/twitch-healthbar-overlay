@@ -44,7 +44,6 @@ function App() {
   return (
     <MantineProvider theme={theme} defaultColorScheme="dark">
       <Settings
-        settings={settings}
         isOpened={settingsIsOpened}
         close={close}
       />

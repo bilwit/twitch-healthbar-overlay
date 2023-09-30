@@ -10,7 +10,7 @@ import {
   Space,
   TextInput,
 } from '@mantine/core';
-import { Settings as Interface_Settings } from './useGetSettings';
+import useGetSettings, { Settings as Interface_Settings } from './useGetSettings';
 import { useForm } from '@mantine/form';
 import classes from '../../css/Nav.module.css';
 import { BiError, BiInfoCircle } from 'react-icons/bi';
@@ -19,19 +19,19 @@ import { theme } from '../../theme';
 import { useNavigate } from 'react-router-dom';
 
 interface Props {
-  settings?: Interface_Settings
   isOpened: boolean,
   close: () => void,
 }
 
 function Settings(props: Props) {
   const navigate = useNavigate();
+  const { settings } = useGetSettings();
   const RegistrationForm = useForm({
     initialValues: {
-      listener_client_id: props?.settings?.listener_client_id || '',
-      listener_secret: props?.settings?.listener_secret || '',
-      listener_user_name: props?.settings?.listener_user_name || '',
-      channel_name: props?.settings?.channel_name || '',
+      listener_client_id: settings?.listener_client_id || '',
+      listener_secret: settings?.listener_secret || '',
+      listener_user_name: settings?.listener_user_name || '',
+      channel_name: settings?.channel_name || '',
     },
 
     validate: {
@@ -42,33 +42,33 @@ function Settings(props: Props) {
     },
   });
 
-  const [settings, setSettings] = useState<Interface_Settings>({
-    listener_auth_code: props?.settings?.listener_auth_code || '',
-    listener_client_id: props?.settings?.listener_client_id || '',
-    listener_secret: props?.settings?.listener_secret || '',
-    listener_user_name: props?.settings?.listener_user_name || '',
-    channel_name: props?.settings?.channel_name || '',
+  const [settingsStore, setSettingsStore] = useState<Interface_Settings>({
+    listener_auth_code: settings?.listener_auth_code || '',
+    listener_client_id: settings?.listener_client_id || '',
+    listener_secret: settings?.listener_secret || '',
+    listener_user_name: settings?.listener_user_name || '',
+    channel_name: settings?.channel_name || '',
   });
   const [isGeneratedAuthCodeSubmitted, setIsGeneratedAuthCodeSubmitted] = useState(false);
-  const [isSubmitted, SetIsSubmitted] = useState(props?.settings?.is_connected ? true : false);
+  const [isSubmitted, SetIsSubmitted] = useState(settings?.is_connected ? true : false);
   const [error, setError] = useState('');
   const [warning, setWarning] = useState('');
 
   useEffect(() => {
-    if (props.settings) {
-      setSettings({
-        listener_auth_code: props?.settings?.listener_auth_code,
-        listener_client_id: props?.settings?.listener_client_id,
-        listener_secret: props?.settings?.listener_secret,
-        listener_user_name: props?.settings?.listener_user_name,
-        channel_name: props?.settings?.channel_name,
+    if (settings) {
+      setSettingsStore({
+        listener_auth_code: settings?.listener_auth_code,
+        listener_client_id: settings?.listener_client_id,
+        listener_secret: settings?.listener_secret,
+        listener_user_name: settings?.listener_user_name,
+        channel_name: settings?.channel_name,
       });
 
-      if (props?.settings?.is_connected) {
+      if (settings?.is_connected) {
         SetIsSubmitted(true);
       }
     } else {
-      setSettings({
+      setSettingsStore({
         listener_auth_code: '',
         listener_client_id: '',
         listener_secret: '',
@@ -77,7 +77,7 @@ function Settings(props: Props) {
       });
       SetIsSubmitted(false);
     }
-  }, [props.settings]);
+  }, [settings]);
 
   return (
     <Modal 
@@ -87,7 +87,7 @@ function Settings(props: Props) {
       size="xl"
     >
 
-      {!props.settings && (
+      {!settings && (
         <Alert 
           className={classes['margin-bottom-1']}
           variant="light" 
@@ -148,7 +148,7 @@ function Settings(props: Props) {
         className={classes['margin-bottom-2']}
       >
         <form onSubmit={RegistrationForm.onSubmit((values) => {
-          setSettings({
+          setSettingsStore({
             listener_auth_code: '',
             is_connected: false,
             ...values,
@@ -161,8 +161,8 @@ function Settings(props: Props) {
             label="Channel Name"
             placeholder="Your Twitch Username"
             {...RegistrationForm.getInputProps('channel_name')}
-            value={settings?.channel_name || props?.settings?.channel_name}
-            defaultValue={settings?.channel_name || props?.settings?.channel_name}
+            value={settingsStore?.channel_name || settings?.channel_name}
+            defaultValue={settingsStore?.channel_name || settings?.channel_name}
           />
 
           <TextInput
@@ -171,8 +171,8 @@ function Settings(props: Props) {
             label="Bot Name"
             placeholder="Health Bar Listener"
             {...RegistrationForm.getInputProps('listener_user_name')}
-            value={settings?.listener_user_name || props?.settings?.listener_user_name}
-            defaultValue={settings?.listener_user_name || props?.settings?.listener_user_name}
+            value={settingsStore?.listener_user_name || settings?.listener_user_name}
+            defaultValue={settingsStore?.listener_user_name || settings?.listener_user_name}
           />
 
           <TextInput
@@ -181,8 +181,8 @@ function Settings(props: Props) {
             label="Client ID"
             placeholder="Client ID generated in the Twitch Developer Console"
             {...RegistrationForm.getInputProps('listener_client_id')}
-            value={settings?.listener_client_id || props?.settings?.listener_client_id}
-            defaultValue={settings?.listener_client_id || props?.settings?.listener_client_id}
+            value={settingsStore?.listener_client_id || settings?.listener_client_id}
+            defaultValue={settingsStore?.listener_client_id || settings?.listener_client_id}
           />
 
           <TextInput
@@ -191,11 +191,11 @@ function Settings(props: Props) {
             label="Secret"
             placeholder="Secret generated in the Twitch Developer Console"
             {...RegistrationForm.getInputProps('listener_secret')}
-            value={settings?.listener_secret || props?.settings?.listener_secret}
-            defaultValue={settings?.listener_secret || props?.settings?.listener_secret}
+            value={settingsStore?.listener_secret || settings?.listener_secret}
+            defaultValue={settingsStore?.listener_secret || settings?.listener_secret}
           />
 
-          {!props?.settings?.listener_auth_code && (
+          {!settings?.listener_auth_code && (
             <Group justify="flex-end" mt="md">
               <Button type="submit">Generate Auth Link</Button>
             </Group>
@@ -204,7 +204,7 @@ function Settings(props: Props) {
         </form>
       </Box>
 
-      {!props?.settings?.listener_auth_code && isGeneratedAuthCodeSubmitted && (
+      {!settings?.listener_auth_code && isGeneratedAuthCodeSubmitted && (
         <Alert 
           className={classes['margin-bottom-1']}
           variant="light" 
@@ -222,7 +222,7 @@ function Settings(props: Props) {
             <Space h="xs" />
             <a href={
                 'https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=' + 
-                settings.listener_client_id + 
+                settingsStore.listener_client_id + 
                 '&redirect_uri=' + 
                 'http://localhost' + 
                 '&scope=channel:read:redemptions+moderator:read:chatters+chat:read&state=123'
@@ -231,7 +231,7 @@ function Settings(props: Props) {
             >
               {
                 'https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=' + 
-                settings.listener_client_id + 
+                settingsStore.listener_client_id + 
                 '&redirect_uri=' + 
                 'http://localhost' + 
                 '&scope=channel:read:redemptions+moderator:read:chatters+chat:read&state=123'
@@ -251,7 +251,7 @@ function Settings(props: Props) {
         </Alert>
       )}
 
-      {(props?.settings?.listener_auth_code || settings.listener_auth_code || isGeneratedAuthCodeSubmitted) && (
+      {(settings?.listener_auth_code || settingsStore.listener_auth_code || isGeneratedAuthCodeSubmitted) && (
         <Box mx="auto">
           {error && (
             <Alert 
@@ -274,10 +274,10 @@ function Settings(props: Props) {
             required
             label="Auth Code"
             placeholder="Auth Code generated by the authorization redirect URL"
-            value={settings?.listener_auth_code || props?.settings?.listener_auth_code}
-            defaultValue={settings?.listener_auth_code || props?.settings?.listener_auth_code}
+            value={settingsStore?.listener_auth_code || settings?.listener_auth_code}
+            defaultValue={settingsStore?.listener_auth_code || settings?.listener_auth_code}
             onChange={(e) => {
-              setSettings((prev) => ({
+              setSettingsStore((prev) => ({
                 ...prev,
                 listener_auth_code: e.target.value,
                 is_connected: true,
@@ -290,7 +290,7 @@ function Settings(props: Props) {
               <Button
                 onClick={async (e) => {
                   e.preventDefault();
-                  if (!settings.listener_auth_code) {
+                  if (!settingsStore.listener_auth_code) {
                     return setError('Auth Code is required.');
                   }
                   try {
@@ -301,7 +301,7 @@ function Settings(props: Props) {
                         headers: {
                           "Content-type": "application/json",
                         },
-                        body: JSON.stringify(settings),
+                        body: JSON.stringify(settingsStore),
                       },
                     );
                     if (result) {
@@ -370,7 +370,7 @@ function Settings(props: Props) {
                     if (result) {
                       const responseJson = await result.json();
                       if (responseJson.success) {
-                        setSettings({
+                        setSettingsStore({
                           listener_auth_code: '',
                           listener_client_id: '',
                           listener_secret: '',
