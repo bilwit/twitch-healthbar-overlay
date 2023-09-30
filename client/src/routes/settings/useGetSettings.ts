@@ -7,7 +7,7 @@ export interface Settings {
   listener_secret: string,
   listener_user_name: string,
   channel_name: string,
-  is_connected: boolean,
+  is_connected?: boolean,
 }
 
 function useGetSettings(): { 

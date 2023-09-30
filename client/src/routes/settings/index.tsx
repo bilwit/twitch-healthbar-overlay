@@ -3,7 +3,6 @@ import {
   Alert,
   Box,
   Button,
-  Checkbox,
   Code,
   Group,
   List,
@@ -14,8 +13,9 @@ import {
 import { Settings as Interface_Settings } from './useGetSettings';
 import { useForm } from '@mantine/form';
 import classes from '../../css/Nav.module.css';
-import { BiInfoCircle } from 'react-icons/bi';
-import { useState } from 'react';
+import { BiError, BiInfoCircle } from 'react-icons/bi';
+import { useEffect, useState } from 'react';
+import { theme } from '../../theme';
 
 interface Props {
   settings?: Interface_Settings
@@ -43,12 +43,10 @@ function Settings(props: Props) {
   const SubmitForm = useForm({
     initialValues: {
       listener_auth_code: props?.settings?.listener_auth_code || '',
-      is_connected: props?.settings?.is_connected || false,
     },
 
     validate: {
       listener_auth_code: (value) => value ? null : 'Required',
-      is_connected: (value) => value ? null : 'Required',
     },
   });
 
@@ -58,10 +56,28 @@ function Settings(props: Props) {
     listener_secret: props?.settings?.listener_secret || '',
     listener_user_name: props?.settings?.listener_user_name || '',
     channel_name: props?.settings?.channel_name || '',
-    is_connected: props?.settings?.is_connected || false,
   })
   const [isGeneratedAuthCodeSubmitted, setIsGeneratedAuthCodeSubmitted] = useState(false);
-  
+  const [isSubmitted, SetIsSubmitted] = useState(props?.settings?.is_connected ? true : false);
+  const [error, setError] = useState('');
+  const [warning, setWarning] = useState('');
+
+  useEffect(() => {
+    if (props.settings) {
+      setSettings({
+        listener_auth_code: props?.settings?.listener_auth_code,
+        listener_client_id: props?.settings?.listener_client_id,
+        listener_secret: props?.settings?.listener_secret,
+        listener_user_name: props?.settings?.listener_user_name,
+        channel_name: props?.settings?.channel_name,
+      });
+
+      if (props?.settings?.is_connected) {
+        SetIsSubmitted(true);
+      }
+    }
+  }, [props.settings])
+
   return (
     <Modal 
       opened={props.isOpened} 
@@ -146,6 +162,7 @@ function Settings(props: Props) {
             placeholder="Your Twitch Username"
             {...RegistrationForm.getInputProps('channel_name')}
             value={settings?.channel_name || props?.settings?.channel_name}
+            defaultValue={settings?.channel_name || props?.settings?.channel_name}
           />
 
           <TextInput
@@ -155,6 +172,7 @@ function Settings(props: Props) {
             placeholder="Health Bar Listener"
             {...RegistrationForm.getInputProps('listener_user_name')}
             value={settings?.listener_user_name || props?.settings?.listener_user_name}
+            defaultValue={settings?.listener_user_name || props?.settings?.listener_user_name}
           />
 
           <TextInput
@@ -164,6 +182,7 @@ function Settings(props: Props) {
             placeholder="Client ID generated in the Twitch Developer Console"
             {...RegistrationForm.getInputProps('listener_client_id')}
             value={settings?.listener_client_id || props?.settings?.listener_client_id}
+            defaultValue={settings?.listener_client_id || props?.settings?.listener_client_id}
           />
 
           <TextInput
@@ -173,6 +192,7 @@ function Settings(props: Props) {
             placeholder="Secret generated in the Twitch Developer Console"
             {...RegistrationForm.getInputProps('listener_secret')}
             value={settings?.listener_secret || props?.settings?.listener_secret}
+            defaultValue={settings?.listener_secret || props?.settings?.listener_secret}
           />
 
           {!props?.settings?.listener_auth_code && (
@@ -233,28 +253,144 @@ function Settings(props: Props) {
 
       {(props?.settings?.listener_auth_code || settings.listener_auth_code || isGeneratedAuthCodeSubmitted) && (
         <Box mx="auto">
-          <form onSubmit={SubmitForm.onSubmit((values) => console.log(values))}>
+          <form 
+            onSubmit={(e) => {
+              e.preventDefault();
+              SubmitForm.onSubmit(async (values) => {
+                setSettings((prev) => ({
+                  ...prev,
+                  ...values,
+                }))
+                try {
+                  const result = await fetch(
+                    '/api/settings',
+                    { 
+                      method: 'PUT',
+                      body: JSON.stringify({
+                        ...settings,
+                        ...values,
+                      })
+                    },
+                  );
+                  if (result) {
+                    const responseJson = await result.json();
+                    if (responseJson.success) {
+                      setError('');
+                      return SetIsSubmitted(true);
+                    } 
+                    throw true;
+                  }
+                } catch (e) {
+                  setError('Could not submit settings');
+                }
+              })
+            }}
+          >
             <TextInput
               className={classes['margin-bottom-1']}
               required
               label="Auth Code"
-              placeholder=""
+              placeholder="Auth Code generated by the authorization redirect URL"
               {...SubmitForm.getInputProps('listener_auth_code')}
               value={settings?.listener_auth_code || props?.settings?.listener_auth_code}
+              defaultValue={settings?.listener_auth_code || props?.settings?.listener_auth_code}
             />
 
-            <Checkbox
-              mt="md"
-              label="Connect to Twitch"
-              {...SubmitForm.getInputProps('is_connected', { type: 'checkbox' })}
-              checked={settings?.is_connected || props?.settings?.is_connected}
-            />
+            {error && (
+              <Alert 
+                className={classes['margin-bottom-1']}
+                variant="light" 
+                color="red" 
+                title="Error" 
+                icon={
+                  <BiError 
+                    size="1rem" 
+                    stroke={1.5} 
+                  />
+                }
+              >
+                {error}
+              </Alert>
+            )}
 
-            <Group justify="flex-end" mt="md">
-              <Button type="submit">Submit</Button>
-            </Group>
+            {!isSubmitted && (
+              <Group justify="flex-end" mt="md">
+                <Button type="submit">Submit</Button>
+              </Group>
+            )}
           </form>
         </Box>
+      )}
+
+      {isSubmitted && (
+        <>
+          {warning && (
+            <Alert 
+              className={classes['margin-bottom-1']}
+              variant="light" 
+              color="yellow" 
+              title="Warning" 
+              icon={
+                <BiError 
+                  size="1rem" 
+                  stroke={1.5} 
+                />
+              }
+            >
+              {warning}
+            </Alert>
+          )}
+          <Group justify="flex-end" mt="md">
+            <Button 
+              disabled={warning ? true : false}
+              color={'red'}
+              onClick={(e) => {
+                e.preventDefault();
+                setWarning('This will disable any active connections between the bot and Twitch chat. In order to completely remove this information, you must unregister the application in the Twitch Developer Console.');
+              }}
+            >
+              {warning ? 'Are you sure?' : 'Disconnect'}
+            </Button>
+            {warning && (
+              <Button 
+                color={theme.colors.yellow[9]}
+                onClick={async (e) => {
+                  e.preventDefault();
+
+                  try {
+                    const result = await fetch(
+                      '/api/settings',
+                      { 
+                        method: 'DELETE',
+                      },
+                    );
+                    if (result) {
+                      const responseJson = await result.json();
+                      if (responseJson.success) {
+                        setSettings({
+                          listener_auth_code: '',
+                          listener_client_id: '',
+                          listener_secret: '',
+                          listener_user_name: '',
+                          channel_name: '',
+                        });
+                        setIsGeneratedAuthCodeSubmitted(false);
+                        SetIsSubmitted(false);
+                        setError('');
+                        setWarning('');
+                        props.close();
+                      } 
+                    }
+                  } catch (_e) {
+                    setError('Could not submit settings');
+                  }
+                }}
+              >
+                Disconnect
+              </Button>
+            )}
+          </Group>
+        </>
       )}
 
     </Modal>

@@ -27,17 +27,3 @@ export default defineConfig({
     emptyOutDir: true
   }
 })
-
-// channel_name: "billywhitmore"
-// ​
-// id: 1
-// ​
-// is_connected: true
-// ​
-// listener_auth_code: "5i1akgtdrhz1yxjg7r2bl4586c6rmf"
-// ​
-// listener_client_id: "5khyyw9vci7wvvs7wcj5g3ptw5hax3"
-// ​
-// listener_secret: "7sxyc4gaqslf9qnwy0dl8jruretf46"
-// ​
-// listener_user_name: "HealthBarListener"
