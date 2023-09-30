@@ -4,9 +4,16 @@ import { PrismaClient } from '@prisma/client';
 const router = express.Router();
 const prisma = new PrismaClient();
 
-router.get('/', async (_req: Request, res: Response) => {
+router.get('/', async (req: Request, res: Response) => {
+  if (req.query.id) {
+    console.log(req.query.id)
+  }
   try {
-    const monsters = await prisma.monster.findMany();
+    const monsters = await prisma.monster.findMany(req.query.id ? {
+      where: {
+        id: Number(req.query.id),
+      },
+    } : undefined);
   
     if (monsters && monsters.length > 0) {
       return res.status(200).json({

@@ -10,7 +10,7 @@ export interface Monster {
   trigger_words: string,
 }
 
-function useGetMonsters(): { 
+function useGetMonsters(id?: string | null): { 
   isLoading: boolean,
   monsters: Monster[],
   error: string, 
@@ -23,7 +23,7 @@ function useGetMonsters(): {
     const wrapDispatch = async () => {
       setIsLoading(true);
       try {
-        const res: any = await fetch('/api/monsters', {
+        const res: any = await fetch('/api/monsters' + (id ? '?id=' + id : ''), {
           method: 'GET',
         });
         if (res) {
