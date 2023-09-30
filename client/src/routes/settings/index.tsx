@@ -82,7 +82,7 @@ function Settings(props: Props) {
   return (
     <Modal 
       opened={props.isOpened} 
-      onClose={props.close} 
+      onClose={isSubmitted ? props.close : () => null} 
       title="Settings"
       size="xl"
     >
@@ -309,7 +309,8 @@ function Settings(props: Props) {
                       if (responseJson.success) {
                         setError('');
                         SetIsSubmitted(true);
-                        return props.close();
+                        props.close();
+                        return navigate(-1);
                       } 
                       throw true;
                     }
