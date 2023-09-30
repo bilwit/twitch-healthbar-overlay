@@ -42,7 +42,7 @@ function App() {
   }, [isLoading])
 
   return (
-    <MantineProvider theme={theme} defaultColorScheme="dark">
+    <MantineProvider theme={theme} defaultColorScheme="auto">
       <Settings
         settings={settings}
         isOpened={settingsIsOpened}
