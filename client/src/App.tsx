@@ -15,6 +15,7 @@ import Settings from './routes/settings';
 import { GiMonsterGrasp } from 'react-icons/gi';
 import { VscSettingsGear } from 'react-icons/vsc';
 import useGetSettings from './routes/settings/useGetSettings';
+import { useEffect } from 'react';
 
 interface Routes_Icon_Dictionary {
   [key: string]: JSX.Element,
@@ -28,11 +29,17 @@ const routes_icon_dictionary: Routes_Icon_Dictionary = {
 function App() {
   const location = useLocation();
   const navigate = useNavigate();
+
+  const { settings } = useGetSettings();
   
   const [opened, { toggle }] = useDisclosure();
   const [settingsIsOpened, { open, close }] = useDisclosure(false);
-  
-  const { settings } = useGetSettings();
+
+  useEffect(() => {
+    if (!settings) {
+      open();
+    }
+  }, [settings])
 
   return (
     <MantineProvider theme={theme} defaultColorScheme="dark">

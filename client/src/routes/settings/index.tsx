@@ -16,6 +16,7 @@ import classes from '../../css/Nav.module.css';
 import { BiError, BiInfoCircle } from 'react-icons/bi';
 import { useEffect, useState } from 'react';
 import { theme } from '../../theme';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
   settings?: Interface_Settings
@@ -24,6 +25,7 @@ interface Props {
 }
 
 function Settings(props: Props) {
+  const navigate = useNavigate();
   const RegistrationForm = useForm({
     initialValues: {
       listener_client_id: props?.settings?.listener_client_id || '',
@@ -56,7 +58,7 @@ function Settings(props: Props) {
     listener_secret: props?.settings?.listener_secret || '',
     listener_user_name: props?.settings?.listener_user_name || '',
     channel_name: props?.settings?.channel_name || '',
-  })
+  });
   const [isGeneratedAuthCodeSubmitted, setIsGeneratedAuthCodeSubmitted] = useState(false);
   const [isSubmitted, SetIsSubmitted] = useState(props?.settings?.is_connected ? true : false);
   const [error, setError] = useState('');
@@ -75,8 +77,17 @@ function Settings(props: Props) {
       if (props?.settings?.is_connected) {
         SetIsSubmitted(true);
       }
+    } else {
+      setSettings({
+        listener_auth_code: '',
+        listener_client_id: '',
+        listener_secret: '',
+        listener_user_name: '',
+        channel_name: '',
+      });
+      SetIsSubmitted(false);
     }
-  }, [props.settings])
+  }, [props.settings]);
 
   return (
     <Modal 
@@ -153,7 +164,6 @@ function Settings(props: Props) {
             ...values,
           });
           setIsGeneratedAuthCodeSubmitted(true);
-          console.log('submit')
         })}>
           <TextInput
             className={classes['margin-bottom-1']}
@@ -379,6 +389,7 @@ function Settings(props: Props) {
                         setError('');
                         setWarning('');
                         props.close();
+                        navigate(-1);
                       } 
                     }
                   } catch (_e) {
