@@ -196,7 +196,12 @@ function Settings(props: Props) {
 
           {!props?.settings?.listener_auth_code && (
             <Group justify="flex-end" mt="md">
-              <Button type="submit">Generate Auth Link</Button>
+              <Button 
+                color={theme.colors.indigo[5]} 
+                type="submit"
+              >
+                Generate Auth Link
+              </Button>
             </Group>
           )}
 
@@ -287,6 +292,7 @@ function Settings(props: Props) {
           {!isSubmitted && (
             <Group justify="flex-end" mt="md">
               <Button
+                color={theme.colors.indigo[5]}
                 onClick={async (e) => {
                   e.preventDefault();
                   if (!settingsStore.listener_auth_code) {
@@ -312,7 +318,7 @@ function Settings(props: Props) {
                       } 
                       throw true;
                     }
-                  } catch (e) {
+                  } catch (_err) {
                     setError('Could not submit settings');
                   }
                 }}

@@ -1,21 +1,55 @@
 
 import { 
-  Alert,
   Button,
+  Group,
   Modal,
+  NumberInput,
+  SegmentedControl,
+  TagsInput,
+  TextInput,
 } from '@mantine/core';
 import classes from '../../../css/Nav.module.css';
-import { AiOutlineFileAdd } from 'react-icons/ai';
+import { GiMonsterGrasp } from 'react-icons/gi';
 import { useDisclosure } from '@mantine/hooks';
+import { useForm } from '@mantine/form';
+import { useState } from 'react';
+import { theme } from '../../../theme';
 
 function Monsters() {
   const [isOpened, { open, close }] = useDisclosure(false);
+  const CreateForm = useForm({
+    initialValues: {
+      name: '',
+      published: 'false',
+      hp_multiplier: 5,
+      trigger_words: [],
+    },
+
+    validate: {
+      name: (value) => value ? null : 'Required',
+      published: (value) => {
+        if (value === 'true' || value === 'false') {
+          return null;
+        }
+        return 'Required';
+      },
+      hp_multiplier: (value) => value ? null : 'Required',
+      trigger_words: (value) => {
+        if (value.length > 0) {
+          return null;
+        }
+        return 'Required';
+      },
+    },
+  });
+  const [error, setError] = useState('');
 
   return (
     <>
       <Button
+        color={theme.colors.indigo[5]}
         leftSection={
-          <AiOutlineFileAdd 
+          <GiMonsterGrasp 
             size="1rem" 
             stroke={1.5} 
           />
@@ -34,7 +68,77 @@ function Monsters() {
         title="Create Monster"
         size="xl"
       >
-        hello
+        <form onSubmit={CreateForm.onSubmit(async (values) => {
+          try {
+            const result = await fetch(
+              '/api/monsters',
+              { 
+                method: 'POST',
+                headers: {
+                  "Content-type": "application/json",
+                },
+                body: JSON.stringify({
+                  ...values,
+                  published: values.published === 'true',
+                }),
+              },
+            );
+            if (result) {
+              const responseJson = await result.json();
+              if (responseJson.success) {
+                return setError('');
+              } else {
+                throw true;
+              }
+            }
+          } catch (_err) {
+            return setError('Could not submit settings');
+          }
+          })
+        }>
+          <TextInput
+            className={classes['margin-bottom-1']}
+            required
+            label="Name"
+            placeholder="Mr. Snake"
+            {...CreateForm.getInputProps('name')}
+          />
+          <NumberInput
+            className={classes['margin-bottom-1']}
+            required
+            label="HP Per-Chat User"
+            {...CreateForm.getInputProps('hp_multiplier')}
+          />
+          <TagsInput
+            withAsterisk
+            className={classes['margin-bottom-1']}
+            label="Text Triggers" 
+            placeholder="Enter tag" 
+            {...CreateForm.getInputProps('trigger_words')}
+          />
+          <SegmentedControl
+            {...CreateForm.getInputProps('published')}
+            color={theme.colors.indigo[9]}
+            data={[
+              { label: 'Enabled', value: 'true' },
+              { label: 'Disabled', value: 'false' },
+            ]}
+          />
+          <Group justify="flex-end" mt="md">
+            <Button 
+              color={theme.colors.indigo[5]}
+              type="submit"
+              leftSection={
+                <GiMonsterGrasp 
+                  size="1rem" 
+                  stroke={1.5} 
+                />
+              }
+            >
+              Create
+            </Button>
+          </Group>
+        </form>
       </Modal>
     </>
   );

@@ -60,19 +60,42 @@ router.get('/:id', async (req: Request, res: Response) => {
   }
 });
 
-router.put('/:id', async (req: Request, res: Response) => {
+router.post('/', async (req: Request, res: Response) => {
   try {
-    const monster = await prisma.monster.upsert({
-      where: {
-        id: Number(req.params.id),
-      },
-      update: {
+    const monster = await prisma.monster.create({
+      data: {
         name: req.body.name,
         published: req.body.published,
         hp_multiplier: req.body.hp_multiplier,
-        trigger_words: req.body.trigger_words,
+        trigger_words: req.body.trigger_words.join(','),
       },
-      create: {
+    });
+  
+    if (monster && monster?.id > 0) {
+      return res.status(200).json({
+        success: true,
+        data: [monster],
+      });
+    } else {
+      throw true;
+    }
+  } catch (e) {
+    if (e !== true) {
+      console.error(e);
+    }
+    return res.status(500).json({
+      success: false,
+    });
+  }
+});
+
+router.put('/:id', async (req: Request, res: Response) => {
+  try {
+    const monster = await prisma.monster.update({
+      where: {
+        id: Number(req.params.id),
+      },
+      data: {
         name: req.body.name,
         published: req.body.published,
         hp_multiplier: req.body.hp_multiplier,

@@ -78,6 +78,7 @@ function Management() {
           return (
             <NavLink 
               key={'nav' + item}
+              color={theme.colors.indigo[5]}
               leftSection={routes_icon_dictionary[item]}
               label={item[0].toUpperCase() + item.slice(1, item.length)} 
               className={classes['nav-link']}

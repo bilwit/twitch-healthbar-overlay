@@ -23,7 +23,7 @@ function useGetMonsters(id?: string | null): {
     const wrapDispatch = async () => {
       setIsLoading(true);
       try {
-        const res: any = await fetch('/api/monsters' + (id ? '?/' + id : ''), {
+        const res: any = await fetch('/api/monsters' + (id ? '/' + id : ''), {
           method: 'GET',
         });
         if (res) {
