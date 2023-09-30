@@ -46,6 +46,7 @@ function Monsters() {
   });
   const [error, setError] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [obsOverlayURL, setObsOverlayURL] = useState('');
 
   return (
     <>
@@ -89,6 +90,7 @@ function Monsters() {
             if (result) {
               const responseJson = await result.json();
               if (responseJson.success) {
+                setObsOverlayURL('/display/' + responseJson.data.id);
                 setIsSubmitted(true);
                 return setError('');
               } else {
@@ -136,18 +138,21 @@ function Monsters() {
           </Group>
 
           <CopyButton 
-            value="https://mantine.dev"
+            value={obsOverlayURL}
           >
             {({ copied, copy }) => (
               <Grid mt="xl" justify="center" style={{alignItems: 'center'}}>
                 <Grid.Col span={10}>
                   <TextInput 
+                    label="OBS Overlay URL"
                     disabled={!isSubmitted}
+                    readOnly
                     mt="xs"
-                    placeholder="With error message"
+                    placeholder="OBS Overlay URL"
+                    value={obsOverlayURL}
                   />
                 </Grid.Col>
-                <Grid.Col span={1} style={{ display: 'flex', alignItems: 'center' }}>
+                <Grid.Col span={1} style={{ display: 'flex', alignItems: 'end' }}>
                   <Button 
                     disabled={!isSubmitted}
                     mt={'xs'}
