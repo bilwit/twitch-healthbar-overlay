@@ -1,4 +1,3 @@
-
 import { 
   Alert,
   Box,
@@ -12,10 +11,10 @@ import {
 } from '@mantine/core';
 import { Settings as Interface_Settings } from './useGetSettings';
 import { useForm } from '@mantine/form';
-import classes from '../../css/Nav.module.css';
+import classes from '../../../css/Nav.module.css';
 import { BiError, BiInfoCircle } from 'react-icons/bi';
 import { useEffect, useState } from 'react';
-import { theme } from '../../theme';
+import { theme } from '../../../theme';
 import { useNavigate } from 'react-router-dom';
 
 interface Props {
