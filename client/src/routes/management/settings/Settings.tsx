@@ -81,7 +81,14 @@ function Settings(props: Props) {
   return (
     <Modal 
       opened={props.isOpened} 
-      onClose={isSubmitted ? props.close : () => null} 
+      onClose={() => {
+        if (isSubmitted) {
+          setWarning('');
+          props.close();
+        } else {
+          return null;
+        }
+      }}
       title="Settings"
       size="xl"
     >

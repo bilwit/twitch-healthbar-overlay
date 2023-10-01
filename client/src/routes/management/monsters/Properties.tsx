@@ -24,6 +24,7 @@ import { theme } from '../../../theme';
 import { BiInfoCircle } from 'react-icons/bi';
 import { Monster } from './useGetMonsters';
 import { BsFillPersonFill } from 'react-icons/bs';
+import { AiFillDelete } from 'react-icons/ai';
 import Alerts from '../Alerts';
 
 interface Props {
@@ -333,6 +334,22 @@ function Properties(props: Props) {
               }
             >
               Edit
+            </Button>
+            <Button 
+              color={theme.colors.indigo[5]}
+              variant="gradient"
+              gradient={{ from: theme.colors.indigo[9], to: 'red', deg: 90 }}
+              onClick={(e) => {
+                e.preventDefault();
+              }}
+              leftSection={
+                <AiFillDelete 
+                  size="1rem" 
+                  stroke={1.5} 
+                />
+              }
+            >
+              Delete
             </Button>
           </Group>
         )}
