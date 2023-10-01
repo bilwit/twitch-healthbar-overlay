@@ -17,8 +17,9 @@ import { GiMonsterGrasp } from 'react-icons/gi';
 import { useForm } from '@mantine/form';
 import { useState } from 'react';
 import { theme } from '../../../theme';
-import { BiError, BiInfoCircle } from 'react-icons/bi';
+import { BiInfoCircle } from 'react-icons/bi';
 import { Monster } from './useGetMonsters';
+import Alerts from '../Alerts';
 
 interface Props {
   isOpened: boolean,
@@ -75,59 +76,11 @@ function ItemModal(props: Props) {
         title="Create Monster"
         size="xl"
       >
-        {error && (
-          <Alert 
-            mt="xl"
-            className={classes['margin-bottom-1']}
-            variant="light" 
-            color="red" 
-            title="Error" 
-            icon={
-              <BiError 
-                size="1rem" 
-                stroke={1.5} 
-              />
-            }
-          >
-            {error}
-          </Alert>
-        )}
-
-        {warning && (
-          <Alert 
-            mt="xl"
-            className={classes['margin-bottom-1']}
-            variant="light" 
-            color="yellow" 
-            title="Error" 
-            icon={
-              <BiError 
-                size="1rem" 
-                stroke={1.5} 
-              />
-            }
-          >
-            {warning}
-          </Alert>
-        )}
-
-        {isEditSuccess && (
-          <Alert 
-            mt="xl"
-            className={classes['margin-bottom-1']}
-            variant="light" 
-            color="cyan" 
-            title="Success" 
-            icon={
-              <BiInfoCircle 
-                size="1rem" 
-                stroke={1.5} 
-              />
-            }
-          >
-            {isEditSuccess}
-          </Alert>
-        )}
+        <Alerts
+          error={error}
+          warning={warning}
+          success={isEditSuccess}
+        />
 
         <form onSubmit={CreateForm.onSubmit(async (values) => {
           // check if any changes have been made

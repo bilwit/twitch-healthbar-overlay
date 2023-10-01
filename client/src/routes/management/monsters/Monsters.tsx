@@ -8,7 +8,7 @@ import {
 } from '@mantine/core';
 import useGetMonsters from './useGetMonsters';
 import classes from '../../../css/Nav.module.css';
-import Item from './Item';
+import MonsterCard from './MonsterCard';
 import { BiError, BiInfoCircle } from 'react-icons/bi';
 import { GiMonsterGrasp } from 'react-icons/gi';
 import { theme } from '../../../theme';
@@ -44,7 +44,7 @@ function Monsters() {
         verticalSpacing={{ base: 'md', sm: 'xl' }}
       >
         {!isLoading ? monsters && monsters.length > 0 ? monsters.map((monster) => (
-          <Item key={monster.id}
+          <MonsterCard key={monster.id}
             item={monster}
             setMonsters={setMonsters}
           />
