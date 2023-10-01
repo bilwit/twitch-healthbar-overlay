@@ -25,7 +25,7 @@ function Monsters(props: Props) {
   return (
     <>
       <Card shadow="sm" padding="lg" radius="md" withBorder>
-        <Group mb="xs">
+        <Group justify="space-between" mb="xs">
           <Text fw={500}>{props.item.name}</Text>
           <Badge
             color={props.item.published ? 'green' : 'dark'} 
@@ -44,7 +44,7 @@ function Monsters(props: Props) {
             />
           ) : (
             <Group justify='center'>
-              <GiMonsterGrasp size={150} />
+              <GiMonsterGrasp size={210} />
             </Group>
           )}
         </Card.Section>
