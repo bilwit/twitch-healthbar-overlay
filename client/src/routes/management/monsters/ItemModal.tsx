@@ -29,14 +29,16 @@ function ItemModal(props: Props) {
         title={props?.data?.name || 'Create Monster'}
         size="xl"
       >
-        <Tabs defaultValue="properties">
+        <Tabs defaultValue="properties" keepMounted={false}>
           <Tabs.List>
             <Tabs.Tab value="properties" leftSection={<FaWrench style={iconStyle} />}>
               Properties
             </Tabs.Tab>
-            <Tabs.Tab value="status" leftSection={<HiOutlineStatusOnline style={iconStyle} />}>
-              Status
-            </Tabs.Tab>
+            {props?.data?.id && (
+              <Tabs.Tab value="status" leftSection={<HiOutlineStatusOnline style={iconStyle} />}>
+                Status
+              </Tabs.Tab>
+            )}
           </Tabs.List>
 
           <Tabs.Panel mt="md" value="properties">
