@@ -116,22 +116,23 @@ export default async function ChatConnection (db: PrismaClient) {
               }
             }
 
-
-              // validate every hour as per TOS
-              setInterval(async () => {
-                const isValidated = await validate(tokens.access_token);
-                if (!isValidated) {
-                  console.log(consoleLogStyling('warning', '! Access token expired'));
-                  // get new tokens if invalid
-                  const newTokens = await auth(tokens.BroadcasterId, settings);
-                  console.log(consoleLogStyling('success', '* New tokens issued'));
-                  tokens.access_token = newTokens.access_token;
-                  tokens.refresh_token = newTokens.refresh_token;
-        
-                  // reconnect client
-                  client.connect(TWITCH_IRC_ADDRESS);
-                }
-              }, 59*1000);
+            // validate every hour as per TOS
+            setInterval(async () => {
+              const isValidated = await validate(tokens.access_token);
+              if (!isValidated) {
+                console.log(consoleLogStyling('warning', '! Access token expired'));
+                // get new tokens if invalid
+                const newTokens = await auth(tokens.BroadcasterId, settings);
+                console.log(consoleLogStyling('success', '* New tokens issued'));
+                tokens.access_token = newTokens.access_token;
+                tokens.refresh_token = newTokens.refresh_token;
+      
+                // reconnect client
+                client.connect(TWITCH_IRC_ADDRESS);
+              } else {
+                console.log(consoleLogStyling('black', '! Taken validated'));
+              }
+            }, 59*1000);
 
           });
         }
