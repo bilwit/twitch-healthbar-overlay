@@ -8,6 +8,7 @@ export interface Monster {
   published: boolean,
   hp_multiplier: number,
   trigger_words?: string,
+  avatar_url?: string,
 }
 
 function useGetMonsters(id?: string | null): { 

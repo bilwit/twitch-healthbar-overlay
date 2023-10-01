@@ -2,7 +2,10 @@
 import { 
   Alert,
   Button,
+  Card,
+  Image,
   CopyButton,
+  FileInput,
   Grid,
   Group,
   NumberInput,
@@ -10,6 +13,9 @@ import {
   Space,
   TagsInput,
   TextInput,
+  Text,
+  Overlay,
+  AspectRatio,
 } from '@mantine/core';
 import classes from '../../../css/Nav.module.css';
 import { GiMonsterGrasp } from 'react-icons/gi';
@@ -18,6 +24,7 @@ import { useState } from 'react';
 import { theme } from '../../../theme';
 import { BiInfoCircle } from 'react-icons/bi';
 import { Monster } from './useGetMonsters';
+import { BsFillPersonFill } from 'react-icons/bs';
 import Alerts from '../Alerts';
 
 interface Props {
@@ -58,6 +65,7 @@ function Properties(props: Props) {
   const [isSubmitted, setIsSubmitted] = useState(props?.data?.id !== null);
   const [isEditSuccess, setIsEditSuccess] = useState('');
   const [obsOverlayURL, setObsOverlayURL] = useState(props?.data?.id ? window.location.origin + '/display/' + props.data.id : '');
+  const [avatar, setAvatar] = useState<string | ArrayBuffer | null>(null);
 
   return (
     <>
@@ -125,40 +133,84 @@ function Properties(props: Props) {
         }
         })
       }>
-        <TextInput
-          className={classes['margin-bottom-1']}
-          required
-          label="Name"
-          placeholder="Mr. Snake"
-          {...CreateForm.getInputProps('name')}
-        />
-        <NumberInput
-          className={classes['margin-bottom-1']}
-          required
-          label="HP Per-Chat User"
-          {...CreateForm.getInputProps('hp_multiplier')}
-        />
-        <TagsInput
-          withAsterisk
-          className={classes['margin-bottom-1']}
-          label="Text Triggers" 
-          placeholder="Press ENTER per-tag" 
-          {...CreateForm.getInputProps('trigger_words')}
-        />
-        <Group 
-          style={{ display: 'grid' }}
-          justify="flex-center" 
-          mt="xl"
-        >
-          <SegmentedControl
-            {...CreateForm.getInputProps('published')}
-            color={theme.colors.indigo[9]}
-            data={[
-              { label: 'Enabled', value: 'true' },
-              { label: 'Disabled', value: 'false' },
-            ]}
-          />
-        </Group>
+        <Grid>
+          <Grid.Col span={5}>
+            <Text size="sm">
+            Avatar Preview 
+            </Text>
+            <Card shadow="sm" padding="lg" radius="sm" withBorder>
+              <Card.Section>
+                {avatar ? (
+                  <Image
+                    src={avatar}
+                    height={200}
+                    alt="Image"
+                  />
+                ) : (
+                  <Group justify='center'>
+                    <BsFillPersonFill size={210} />
+                    <Overlay color="#000" backgroundOpacity={0.35} blur={15} />
+                  </Group>
+                )}
+              </Card.Section>
+            </Card>
+            <FileInput 
+              accept="image/png,image/jpeg,image/gif,image/svg" 
+              placeholder="Upload File" 
+              onChange={(data) => {
+                if (data) {
+                  const reader = new FileReader();
+                  reader.onload = (event) => {
+                    if (event?.target) {
+                      setAvatar(event?.target?.result);
+                    }
+                  };
+                  reader.readAsDataURL(data);
+                }
+              }}
+            />
+          </Grid.Col>
+
+          <Grid.Col span={7}>
+            <TextInput
+              className={classes['margin-bottom-1']}
+              required
+              label="Name"
+              placeholder="Mr. Snake"
+              {...CreateForm.getInputProps('name')}
+            />
+            <NumberInput
+              className={classes['margin-bottom-1']}
+              required
+              label="HP Per-Chat User"
+              {...CreateForm.getInputProps('hp_multiplier')}
+            />
+            <TagsInput
+              withAsterisk
+              className={classes['margin-bottom-1']}
+              label="Text Triggers" 
+              placeholder="Press ENTER per-tag" 
+              {...CreateForm.getInputProps('trigger_words')}
+            />
+            <Group 
+              style={{ display: 'grid' }}
+              justify="flex-center" 
+              mt="md"
+            >
+              <SegmentedControl
+                {...CreateForm.getInputProps('published')}
+                color={theme.colors.indigo[9]}
+                data={[
+                  { label: 'Enabled', value: 'true' },
+                  { label: 'Disabled', value: 'false' },
+                ]}
+              />
+            </Group>
+          </Grid.Col>
+
+        </Grid>
+
+
 
         {isSubmitted && (
           <Alert 
