@@ -26,7 +26,7 @@ function Monsters(props: Props) {
     <>
       <Card shadow="sm" padding="lg" radius="md" withBorder>
         <Group justify="space-between" mb="xs">
-          <Text fw={500}>{props.item.name}</Text>
+          <Text fw={600}>{props.item.name}</Text>
           <Badge
             color={props.item.published ? 'green' : 'dark'} 
             variant="light"
