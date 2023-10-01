@@ -73,7 +73,7 @@ function ItemModal(props: Props) {
           setObsOverlayURL('');
           props.close();
         }} 
-        title="Create Monster"
+        title={props?.data?.name || 'Create Monster'}
         size="xl"
       >
         <Alerts
