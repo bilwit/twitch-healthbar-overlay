@@ -6,6 +6,7 @@ import {
 } from '@mantine/core';
 import { Monster } from './useGetMonsters';
 import { FaWrench } from 'react-icons/fa';
+import { HiOutlineStatusOnline } from 'react-icons/hi';
 import Properties from './Properties';
 
 interface Props {
@@ -32,6 +33,9 @@ function ItemModal(props: Props) {
           <Tabs.List>
             <Tabs.Tab value="properties" leftSection={<FaWrench style={iconStyle} />}>
               Properties
+            </Tabs.Tab>
+            <Tabs.Tab value="status" leftSection={<HiOutlineStatusOnline style={iconStyle} />}>
+              Status
             </Tabs.Tab>
           </Tabs.List>
 
