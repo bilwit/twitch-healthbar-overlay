@@ -8,7 +8,7 @@ interface Props {
   data?: Monster,
 }
 
-function Properties(props: Props) {
+function Status(props: Props) {
   return (
     <>
       hello
@@ -16,4 +16,4 @@ function Properties(props: Props) {
   );
 }
 
-export default Properties;
+export default Status;

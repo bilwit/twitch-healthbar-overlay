@@ -51,7 +51,7 @@ function ItemModal(props: Props) {
             />
           </Tabs.Panel>
 
-          <Tabs.Panel mt="md" value="properties">
+          <Tabs.Panel mt="md" value="status">
             <Status data={props.data} />
           </Tabs.Panel>
         </Tabs>
