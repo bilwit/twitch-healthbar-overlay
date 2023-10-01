@@ -80,6 +80,7 @@ function Properties(props: Props) {
   const [avatar, setAvatar] = useState<string | ArrayBuffer | null>(null);
   const [isAvatarChanged, setIsAvatarChanged] = useState(false);
   const [avatarFile, setAvatarFile] = useState<Blob | null>(null);
+  const [isDeleteWarning, setIsDeleteWarning] = useState(false);
 
   return (
     <>
@@ -326,6 +327,7 @@ function Properties(props: Props) {
               variant="gradient"
               gradient={{ from: theme.colors.indigo[9], to: 'cyan', deg: 90 }}
               type="submit"
+              disabled={isDeleteWarning}
               leftSection={
                 <GiMonsterGrasp 
                   size="1rem" 
@@ -335,12 +337,15 @@ function Properties(props: Props) {
             >
               Edit
             </Button>
+
             <Button 
               color={theme.colors.indigo[5]}
               variant="gradient"
               gradient={{ from: theme.colors.indigo[9], to: 'red', deg: 90 }}
+              disabled={isDeleteWarning}
               onClick={(e) => {
                 e.preventDefault();
+                setIsDeleteWarning(true);
               }}
               leftSection={
                 <AiFillDelete 
@@ -349,8 +354,44 @@ function Properties(props: Props) {
                 />
               }
             >
-              Delete
+              {isDeleteWarning ? 'Are you sure?' : 'Delete'}
             </Button>
+
+            {isDeleteWarning && (
+              <Button 
+                variant="gradient"
+                gradient={{ from: theme.colors.yellow[9], to: 'red', deg: 90 }}
+                onClick={async (e) => {
+                  e.preventDefault();
+                  try {
+                    const result = await fetch(
+                      '/api/monsters/' + props?.data?.id,
+                      { 
+                        method: 'DELETE',
+                      },
+                    );
+                    if (result) {
+                      const responseJson = await result.json();
+                      if (responseJson.success && responseJson?.data?.[0]?.id) {
+                        props.setMonsters((prev) => prev.filter((item) => item.id !== responseJson.data[0].id));
+                        setWarning('');
+                        setIsDeleteWarning(false);
+                        return setError('');
+                      } else {
+                        if (responseJson?.msg) {
+                          throw responseJson.msg;
+                        }
+                        throw '';
+                      }
+                    }
+                  } catch (err) {
+                    return setError(err && typeof err === 'string' ? err : 'Could not submit settings');
+                  }
+                }}
+              >
+                Delete
+              </Button>
+            )}
           </Group>
         )}
       </form>
