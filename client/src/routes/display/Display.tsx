@@ -13,7 +13,7 @@ function Display() {
     <MantineProvider>
       {!isLoading && monsters && monsters.length === 1 && (
         <Image
-          src={window.location.origin + '/api/monsters/avatar/' + monsters[0]?.avatar_url}
+          src={window.location.origin + '/api/avatar/' + monsters[0]?.avatar_url}
           alt={monsters[0].name + ' Avatar'}
         />
       )}

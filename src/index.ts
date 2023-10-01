@@ -1,4 +1,4 @@
-import express, { Express, Request } from 'express';
+import express, { Express } from 'express';
 import dotenv from 'dotenv';
 import consoleLogStyling from './utils/consoleLogStyling';
 import path from 'path';
@@ -35,8 +35,7 @@ app.use((req: any, _res, next) => {
   return next()
 })
 
-app.use('/api/monsters', require('./routes/monsters.api'));
-app.use('/api/settings', require('./routes/settings.api'));
+app.use('/api', require('./routes/router')());
 
 // serve React client directly from Express
 // app.get('/', (_req: Request, res: Response) => {

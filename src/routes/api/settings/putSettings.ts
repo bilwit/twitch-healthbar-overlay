@@ -1,27 +1,6 @@
-import express, { Response } from 'express';
+import { Router } from 'express';
 
-const router = express.Router();
-
-router.get('/', async (req: any, res: Response) => {
-  try {
-    
-    const settings = await req.db.settings.findFirst();
-    if (settings && settings?.id > 0) {
-      return res.status(200).json({
-        success: true,
-        data: settings,
-      });
-    } else {
-      throw new Error('No settings found');
-    }
-  } catch (e) {
-    return res.status(500).json({
-      success: false,
-    });
-  }
-});
-
-router.put('/', async (req: any, res: Response) => {
+module.exports = Router({ mergeParams: true }).put('/settings', async (req: any, res: any) => {
   try {
     const settings = await req.db.settings.upsert({
       where: {
@@ -62,26 +41,3 @@ router.put('/', async (req: any, res: Response) => {
     });
   }
 });
-
-router.delete('/', async (req: any, res: Response) => {
-  try {
-    const settings = await req.db.settings.deleteMany({});
-  
-    if (settings && settings.count > 0) {
-      return res.status(200).json({
-        success: true,
-      });
-    } else {
-      throw true;
-    }
-  } catch (e) {
-    if (e !== true) {
-      console.error(e);
-    }
-    return res.status(500).json({
-      success: false,
-    });
-  }
-});
-
-module.exports = router;

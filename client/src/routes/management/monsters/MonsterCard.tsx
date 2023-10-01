@@ -37,7 +37,7 @@ function Monsters(props: Props) {
         <Card.Section>
           {props?.item?.avatar_url ? (
             <Image
-              src={window.location.origin + '/api/monsters/avatar/' + props.item.avatar_url}
+              src={window.location.origin + '/api/avatar/' + props.item.avatar_url}
               height={150}
               alt={props.item.name + ' Avatar'}
             />

@@ -168,7 +168,7 @@ function Properties(props: Props) {
                   />
                 ) : props?.data?.avatar_url ? (
                   <Image
-                    src={window.location.origin + '/api/monsters/avatar/' + props?.data?.avatar_url}
+                    src={window.location.origin + '/api/avatar/' + props?.data?.avatar_url}
                     height={200}
                     alt="Image"
                   />
