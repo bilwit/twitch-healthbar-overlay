@@ -2,14 +2,12 @@
 import { 
   Affix,
   Alert,
-  Button,
   LoadingOverlay,
   SimpleGrid,
 } from '@mantine/core';
 import useGetMonsters from './useGetMonsters';
 import classes from '../../../css/Nav.module.css';
 import Item from './Item';
-import { AiOutlineFileAdd } from 'react-icons/ai';
 import { BiError, BiInfoCircle } from 'react-icons/bi';
 import Create from './Create';
 
