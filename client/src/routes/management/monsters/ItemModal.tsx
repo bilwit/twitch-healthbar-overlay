@@ -8,6 +8,7 @@ import { Monster } from './useGetMonsters';
 import { FaWrench } from 'react-icons/fa';
 import { HiOutlineStatusOnline } from 'react-icons/hi';
 import Properties from './Properties';
+import Status from './Status';
 
 interface Props {
   isOpened: boolean,
@@ -34,7 +35,7 @@ function ItemModal(props: Props) {
             <Tabs.Tab value="properties" leftSection={<FaWrench style={iconStyle} />}>
               Properties
             </Tabs.Tab>
-            {props?.data?.id && (
+            {props?.data?.id && (props.data.published) && (
               <Tabs.Tab value="status" leftSection={<HiOutlineStatusOnline style={iconStyle} />}>
                 Status
               </Tabs.Tab>
@@ -48,6 +49,10 @@ function ItemModal(props: Props) {
               data={props?.data}
               setMonsters={props.setMonsters}
             />
+          </Tabs.Panel>
+
+          <Tabs.Panel mt="md" value="properties">
+            <Status data={props.data} />
           </Tabs.Panel>
         </Tabs>
       </Modal>

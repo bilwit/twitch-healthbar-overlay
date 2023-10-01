@@ -47,7 +47,7 @@ function Monsters(props: Props) {
         <Text size="xs" c="dimmed">
           Health Multiplier
         </Text>
-        <Text size="sm" c="dimmed">
+        <Text size="sm">
           {props.item.hp_multiplier}
         </Text>
 

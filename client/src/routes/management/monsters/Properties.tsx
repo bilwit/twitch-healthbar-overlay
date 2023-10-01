@@ -15,7 +15,6 @@ import {
   TextInput,
   Text,
   Overlay,
-  AspectRatio,
 } from '@mantine/core';
 import classes from '../../../css/Nav.module.css';
 import { GiMonsterGrasp } from 'react-icons/gi';
