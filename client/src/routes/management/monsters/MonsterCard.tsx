@@ -1,15 +1,18 @@
 
 import { 
+  Avatar,
   Badge,
   Button,
   Card,
   Group,
   Space,
   Text,
+  Image,
 } from '@mantine/core';
 import { Monster } from './useGetMonsters';
 import { useDisclosure } from '@mantine/hooks';
 import ItemModal from './ItemModal';
+import { GiMonsterGrasp } from 'react-icons/gi';
 
 interface Props {
   item: Monster,
@@ -22,20 +25,31 @@ function Monsters(props: Props) {
   return (
     <>
       <Card shadow="sm" padding="lg" radius="md" withBorder>
-        <Card.Section>
-          {/* <Image
-            src="https://images.unsplash.com/photo-1527004013197-933c4bb611b3?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=720&q=80"
-            height={160}
-            alt="Norway"
-          /> */}
-        </Card.Section>
-
-        <Group justify="space-between" mt="md" mb="xs">
+        <Group mb="xs">
           <Text fw={500}>{props.item.name}</Text>
-          <Badge color={props.item.published ? 'green' : 'dark'} variant="light">
+          <Badge
+            color={props.item.published ? 'green' : 'dark'} 
+            variant="light"
+          >
             {props.item.published ? 'Enabled' : 'Disabled'}
           </Badge>
         </Group>
+
+        <Card.Section>
+          {props?.item?.avatar_url ? (
+            <Image
+              src={window.location.origin + '/api/monsters/avatar/' + props.item.avatar_url}
+              height={150}
+              alt={props.item.name + ' Avatar'}
+            />
+          ) : (
+            <Group justify='center'>
+              <GiMonsterGrasp size={150} />
+            </Group>
+          )}
+        </Card.Section>
+
+        <Space h="sm" />
 
         <Text size="xs" c="dimmed">
           Created
