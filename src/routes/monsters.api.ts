@@ -7,6 +7,14 @@ import path from 'path';
 const router = express.Router();
 const prisma = new PrismaClient();
 
+interface UpdatedMonsterData {
+  name: string,
+  published: boolean,
+  hp_multiplier: number,
+  trigger_words: string,
+  avatar_url?: string | undefined,
+}
+
 router.get('/', async (_req: Request, res: Response) => {
   try {
     const monsters = await prisma.monster.findMany({});
@@ -77,15 +85,21 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', upload.single('avatarFile'), async (req: Request, res: Response) => {
   try {
+    const newData: UpdatedMonsterData = {
+      name: JSON.parse(req.body.name),
+      published: JSON.parse(req.body.published),
+      hp_multiplier: JSON.parse(req.body.hp_multiplier),
+      trigger_words: Array.isArray(JSON.parse(req.body.trigger_words)) && JSON.parse(req.body.trigger_words).length > 0 ? JSON.parse(req.body.trigger_words).join(',') : '',
+    }
+
+    if (JSON.parse(req.body.isAvatarChanged)) {
+      newData['avatar_url'] = req?.file?.filename || undefined;
+    }
+
     const monster = await prisma.monster.create({
-      data: {
-        name: req.body.name, // must be unique
-        published: req.body.published,
-        hp_multiplier: req.body.hp_multiplier,
-        trigger_words: req.body.trigger_words.join(','),
-      },
+      data: newData,
     });
   
     if (monster && monster?.id > 0) {
@@ -134,14 +148,6 @@ const deleteAvatar = (fileName: string): Promise<{msg: string}> => {
     );
   });
 };
-
-interface UpdatedMonsterData {
-  name: string,
-  published: boolean,
-  hp_multiplier: number,
-  trigger_words: string,
-  avatar_url?: string | undefined,
-}
 
 router.put('/:id', upload.single('avatarFile'), async (req: Request, res: Response) => {
   try {
