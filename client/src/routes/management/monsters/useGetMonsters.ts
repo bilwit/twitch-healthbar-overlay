@@ -3,12 +3,18 @@ import { useState, useEffect } from 'react';
 export interface Monster {
   id: number,
   created_at: Date,
-  updated_at?: Date,
+  updated_at: Date,
   name: string,
   published: boolean,
   hp_multiplier: number,
   trigger_words?: string,
   avatar_url?: string,
+}
+
+interface ResponseData {
+  success: boolean,
+  data: Monster[],
+  msg?: string,
 }
 
 function useGetMonsters(id?: string | null): { 
@@ -29,10 +35,10 @@ function useGetMonsters(id?: string | null): {
           method: 'GET',
         });
         if (res) {
-          const responseJson = await res.json();
+          const responseJson: ResponseData = await res.json();
           if (responseJson.success) {
             setIsLoading(false);
-            return setMonsters(responseJson.data);
+            return setMonsters(responseJson.data.sort((a, b) => a.created_at < b.created_at ? -1 : 1));
           } 
         }
         throw true;

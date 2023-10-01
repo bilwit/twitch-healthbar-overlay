@@ -133,7 +133,7 @@ function Properties(props: Props) {
                   setInfo('Monster created!')
                 } else {
                   // edited monster
-                  props.setMonsters((prev) => prev.map((item) => item.id === responseJson.data[0].id ? responseJson.data[0] : item));
+                  props.setMonsters((prev) => prev.map((item) => item.id === responseJson.data[0].id ? responseJson.data[0] : item).sort((a, b) => a.updated_at < b.updated_at ? -1 : 1));
                   setIsEditSuccess('Monster values updated')
                 }
                 
