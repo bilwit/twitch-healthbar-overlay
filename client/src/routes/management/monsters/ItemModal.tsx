@@ -9,6 +9,7 @@ import { FaWrench } from 'react-icons/fa';
 import { HiOutlineStatusOnline } from 'react-icons/hi';
 import Properties from './Properties';
 import Status from './Status';
+import { useState } from 'react';
 
 interface Props {
   isOpened: boolean,
@@ -20,6 +21,8 @@ interface Props {
 const iconStyle = { width: rem(12), height: rem(12) };
 
 function ItemModal(props: Props) {
+  const [modalName, setModalName] = useState(props?.data?.name || 'Create Monster');
+
   return (
     <>
       <Modal 
@@ -27,7 +30,7 @@ function ItemModal(props: Props) {
         onClose={() => {
           props.close();
         }} 
-        title={props?.data?.name || 'Create Monster'}
+        title={modalName}
         size="xl"
       >
         <Tabs defaultValue="properties" keepMounted={false}>
@@ -48,6 +51,7 @@ function ItemModal(props: Props) {
               close={props.close}
               data={props?.data}
               setMonsters={props.setMonsters}
+              setModalName={setModalName}
             />
           </Tabs.Panel>
 

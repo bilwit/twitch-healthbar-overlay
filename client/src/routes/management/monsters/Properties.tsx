@@ -31,6 +31,15 @@ interface Props {
   close: () => void,
   data?: Monster,
   setMonsters: React.Dispatch<React.SetStateAction<Monster[]>>,
+  setModalName: React.Dispatch<React.SetStateAction<string>>,
+}
+
+interface FormDataInterface {
+  name: string;
+  published: string;
+  hp_multiplier: number;
+  avatarFile: File | null;
+  trigger_words: string[];
 }
 
 function Properties(props: Props) {
@@ -39,6 +48,7 @@ function Properties(props: Props) {
       name: props?.data?.name || '',
       published: props?.data?.published === true ? 'true' : 'false',
       hp_multiplier: props?.data?.hp_multiplier || 5,
+      avatarFile: null,
       trigger_words: props?.data?.trigger_words ? props?.data?.trigger_words.split(',') : [],
     },
 
@@ -51,6 +61,7 @@ function Properties(props: Props) {
         return 'Required';
       },
       hp_multiplier: (value) => value ? null : 'Required',
+      avatarFile: () => null,
       trigger_words: (value) => {
         if (value.length > 0) {
           return null;
@@ -59,12 +70,15 @@ function Properties(props: Props) {
       },
     },
   });
+  const [info, setInfo] = useState('');
   const [warning, setWarning] = useState('');
   const [error, setError] = useState('');
-  const [isSubmitted, setIsSubmitted] = useState(props?.data?.id !== null);
+  const [isSubmitted, setIsSubmitted] = useState(props?.data?.id && (props?.data?.id !== null) ? true : false);
   const [isEditSuccess, setIsEditSuccess] = useState('');
   const [obsOverlayURL, setObsOverlayURL] = useState(props?.data?.id ? window.location.origin + '/display/' + props.data.id : '');
   const [avatar, setAvatar] = useState<string | ArrayBuffer | null>(null);
+  const [isAvatarChanged, setIsAvatarChanged] = useState(false);
+  const [avatarFile, setAvatarFile] = useState<Blob | null>(null);
 
   return (
     <>
@@ -72,11 +86,12 @@ function Properties(props: Props) {
         error={error}
         warning={warning}
         success={isEditSuccess}
+        info={info}
       />
 
-      <form onSubmit={CreateForm.onSubmit(async (values) => {
+      <form onSubmit={CreateForm.onSubmit(async (values: FormDataInterface) => {
         // check if any changes have been made
-        if (props?.data?.id && 
+        if (!isAvatarChanged && props?.data?.id && 
           (props.data.name === values.name) &&
           (props.data.published.toString() === values.published) &&
           (props.data.hp_multiplier === values.hp_multiplier) &&
@@ -84,18 +99,21 @@ function Properties(props: Props) {
         ) {
           setWarning('No changes made to the original content');
         } else {
+          const submitFormData = new FormData();
+          for (const property of (Object.keys(values))) {
+            submitFormData.set(property, JSON.stringify(values[property as keyof FormDataInterface]));
+          }
+          if (avatarFile) {
+            submitFormData.set('avatarFile', avatarFile);
+          }
+          submitFormData.set('published', values.published === 'true' ? 'true' : 'false');
+          submitFormData.set('isAvatarChanged', JSON.stringify(isAvatarChanged));
           try {
             const result = await fetch(
               props?.data?.id ? '/api/monsters/' + props.data.id : '/api/monsters',
               { 
                 method: props?.data?.id ? 'PUT' : 'POST',
-                headers: {
-                  "Content-type": "application/json",
-                },
-                body: JSON.stringify({
-                  ...values,
-                  published: values.published === 'true',
-                }),
+                body: submitFormData,
               },
             );
             if (result) {
@@ -110,7 +128,9 @@ function Properties(props: Props) {
                   props.setMonsters((prev) => ([
                     ...prev,
                     responseJson.data[0],
-                  ]))
+                  ]));
+                  props.setModalName(responseJson.data[0].name);
+                  setInfo('Monster created!')
                 } else {
                   // edited monster
                   props.setMonsters((prev) => prev.map((item) => item.id === responseJson.data[0].id ? responseJson.data[0] : item));
@@ -147,7 +167,7 @@ function Properties(props: Props) {
                   />
                 ) : props?.data?.avatar_url ? (
                   <Image
-                    src={window.location.origin + '/avatar/' + props?.data?.avatar_url}
+                    src={window.location.origin + '/api/monsters/avatar/' + props?.data?.avatar_url}
                     height={200}
                     alt="Image"
                   />
@@ -171,6 +191,8 @@ function Properties(props: Props) {
                     }
                   };
                   reader.readAsDataURL(data);
+                  setAvatarFile(data);
+                  setIsAvatarChanged(true);
                 }
               }}
             />
@@ -215,73 +237,74 @@ function Properties(props: Props) {
 
         </Grid>
 
-
-
         {isSubmitted && (
-          <Alert 
-            mt="xl"
-            variant="light" 
-            color="indigo" 
-            title="Display in OBS" 
-            icon={
-              <BiInfoCircle 
-                size="1rem" 
-                stroke={1.5} 
-              />
-            }
-          >
-            <div style={{ display: 'flex' }}>
-              Copy the URL below to add as a
-              <Space w="xs" />
-              <b>browser source</b>
-              <Space w="xs" />
-              in OBS.
-            </div>
-            <div style={{ display: 'flex' }}>
-              When enabled, the Twitch chat bot will actively count trigger strings to affect its health.
-            </div>
-          </Alert>
+          <>
+            <Alert 
+              mt="xl"
+              variant="light" 
+              color="indigo" 
+              title="Display in OBS" 
+              icon={
+                <BiInfoCircle 
+                  size="1rem" 
+                  stroke={1.5} 
+                />
+              }
+            >
+              <div style={{ display: 'flex' }}>
+                Copy the URL below to add as a
+                <Space w="xs" />
+                <b>browser source</b>
+                <Space w="xs" />
+                in OBS.
+              </div>
+              <div style={{ display: 'flex' }}>
+                When enabled, the Twitch chat bot will actively count trigger strings to affect its health.
+              </div>
+            </Alert>
+
+            <CopyButton 
+              value={obsOverlayURL}
+            >
+              {({ copied, copy }) => (
+                <Grid 
+                  className={classes['margin-bottom-1']}
+                  mt="xl" 
+                  justify="center" 
+                  style={{alignItems: 'center'}}
+                >
+                  <Grid.Col span={9}>
+                    <TextInput 
+                      label="OBS Overlay URL"
+                      readOnly
+                      mt="xs"
+                      placeholder="OBS Overlay URL"
+                      value={obsOverlayURL}
+                    />
+                  </Grid.Col>
+                  <Grid.Col span={1} style={{ display: 'flex', alignItems: 'end' }}>
+                    <Button 
+                      mt={'xs'}
+                      variant="outline"
+                      color={copied ? 'teal' : theme.colors.indigo[5]} 
+                      onClick={copy}
+                    >
+                      {copied ? 'Copied' : 'Copy'}
+                    </Button>
+                  </Grid.Col>
+                </Grid>
+              )}
+            </CopyButton>
+          </>
         )}
 
-        <CopyButton 
-          value={obsOverlayURL}
-        >
-          {({ copied, copy }) => (
-            <Grid 
-              className={classes['margin-bottom-1']}
-              mt="xl" 
-              justify="center" 
-              style={{alignItems: 'center'}}
-            >
-              <Grid.Col span={9}>
-                <TextInput 
-                  label="OBS Overlay URL"
-                  disabled={!isSubmitted}
-                  readOnly
-                  mt="xs"
-                  placeholder="OBS Overlay URL"
-                  value={obsOverlayURL}
-                />
-              </Grid.Col>
-              <Grid.Col span={1} style={{ display: 'flex', alignItems: 'end' }}>
-                <Button 
-                  disabled={!isSubmitted}
-                  mt={'xs'}
-                  variant="outline"
-                  color={copied ? 'teal' : theme.colors.indigo[5]} 
-                  onClick={copy}
-                >
-                  {copied ? 'Copied' : 'Copy'}
-                </Button>
-              </Grid.Col>
-            </Grid>
-          )}
-        </CopyButton>
         
         {!isSubmitted && (
           <Group justify="center" mt="xl">
             <Button 
               color={theme.colors.indigo[5]}
+              variant="gradient"
+              gradient={{ from: theme.colors.indigo[9], to: 'cyan', deg: 90 }}
               type="submit"
               leftSection={
                 <GiMonsterGrasp 
