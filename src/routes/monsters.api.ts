@@ -1,11 +1,10 @@
-import express, { Request, Response } from 'express';
-import { Prisma, PrismaClient } from '@prisma/client';
+import express, { Response } from 'express';
+import { Prisma } from '@prisma/client';
 import multer from 'multer';
 import fs from 'fs';
 import path from 'path';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 interface UpdatedMonsterData {
   name: string,
@@ -15,9 +14,9 @@ interface UpdatedMonsterData {
   avatar_url?: string | undefined,
 }
 
-router.get('/', async (_req: Request, res: Response) => {
+router.get('/', async (req: any, res: Response) => {
   try {
-    const monsters = await prisma.monster.findMany({});
+    const monsters = await req.db.monster.findMany({});
   
     if (monsters && monsters.length > 0) {
       return res.status(200).json({
@@ -37,9 +36,9 @@ router.get('/', async (_req: Request, res: Response) => {
   }
 });
 
-router.get('/:id', async (req: Request, res: Response) => {
+router.get('/:id', async (req: any, res: Response) => {
   try {
-    const monster = await prisma.monster.findFirst({
+    const monster = await req.db.monster.findFirst({
       where: {
         id: Number(req.params.id),
       },
@@ -85,7 +84,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-router.post('/', upload.single('avatarFile'), async (req: Request, res: Response) => {
+router.post('/', upload.single('avatarFile'), async (req: any, res: Response) => {
   try {
     const newData: UpdatedMonsterData = {
       name: JSON.parse(req.body.name),
@@ -98,7 +97,7 @@ router.post('/', upload.single('avatarFile'), async (req: Request, res: Response
       newData['avatar_url'] = req?.file?.filename || undefined;
     }
 
-    const monster = await prisma.monster.create({
+    const monster = await req.db.monster.create({
       data: newData,
     });
   
@@ -149,13 +148,13 @@ const deleteAvatar = (fileName: string): Promise<{msg: string}> => {
   });
 };
 
-router.put('/:id', upload.single('avatarFile'), async (req: Request, res: Response) => {
+router.put('/:id', upload.single('avatarFile'), async (req: any, res: Response) => {
   try {
 
     let deleteOldAvatarPath = '';
     // delete existing avatar if request indicated change
     if (JSON.parse(req.body.isAvatarChanged)) {
-      const CheckAvatar = await prisma.monster.findFirst({
+      const CheckAvatar = await req.db.monster.findFirst({
         where: {
           id: Number(req.params.id),
         },
@@ -179,7 +178,7 @@ router.put('/:id', upload.single('avatarFile'), async (req: Request, res: Respon
       updatedData['avatar_url'] = req?.file?.filename || undefined;
     }
 
-    const monster = await prisma.monster.update({
+    const monster = await req.db.monster.update({
       where: {
         id: Number(req.params.id),
       },
@@ -240,7 +239,5 @@ router.get('/avatar/:fileName', (req, res) => {
     res.status(500).json(err);
   });
 });
-
-prisma.$disconnect();
 
 module.exports = router;
