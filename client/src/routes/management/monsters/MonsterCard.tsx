@@ -44,7 +44,7 @@ function Monsters(props: Props) {
             />
           ) : (
             <Group justify='center'>
-              <GiMonsterGrasp size={210} />
+              <GiMonsterGrasp size={150} />
             </Group>
           )}
         </Card.Section>
