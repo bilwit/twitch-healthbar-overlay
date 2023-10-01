@@ -43,6 +43,8 @@ router.get('/:id', async (req: any, res: Response) => {
         id: Number(req.params.id),
       },
     });
+
+    req['TwitchEmitter'].emit('disconnect')
   
     if (monster) {
       return res.status(200).json({

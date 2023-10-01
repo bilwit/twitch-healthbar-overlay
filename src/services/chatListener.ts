@@ -1,31 +1,29 @@
 import { client as WebSocketClient } from 'websocket';
 import dotenv from 'dotenv';
-import EventEmitter from 'events';
-import auth, { validate } from './auth';
+import auth, { Tokens, validate } from './auth';
 import parser from './parser';
 import consoleLogStyling from '../utils/consoleLogStyling';
 import { Settings, fetchChatters } from '../utils/twitch';
 import getMonsters, { Monster_CB } from './monsters';
+import EventEmitter from 'events';
 
 const TWITCH_IRC_ADDRESS = 'ws://irc-ws.chat.twitch.tv:80';
 
 dotenv.config();
 
-export default async function chatListener (e: EventEmitter, settings: Settings) {
+export default async function chatListener (client: WebSocketClient, tokens: Tokens, user_id: string, settings: Settings, TwitchEmitter: EventEmitter) {
   try {
-    // authenticate
-    const tokens = await auth('', settings);
-
-    const user_id = await validate(tokens.access_token);
-
     if (tokens?.access_token && tokens?.refresh_token && user_id) {
-
-      const client = new WebSocketClient();
 
       // Register our event handlers (defined below)
       client.on('connect', async (connection) => {
         
         console.log(consoleLogStyling('success', '* Connected to ' + TWITCH_IRC_ADDRESS));
+
+        TwitchEmitter.on('disconnect', () => {
+          console.log('here')
+          connection.close(1001);
+        })
 
         // authenticate
         // connection.sendUTF('CAP REQ :twitch.tv/membership'); // track chatters on join/leave -- it doesn't give you the initial list of chatters & massive delay on join/leave
@@ -90,9 +88,6 @@ export default async function chatListener (e: EventEmitter, settings: Settings)
           console.log(consoleLogStyling('error', '! Error: ' + e));
         }
       });
-
-      // Connect to Twitch:
-      client.connect(TWITCH_IRC_ADDRESS);
 
       // validate every hour as per TOS
       setInterval(async () => {

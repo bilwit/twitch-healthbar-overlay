@@ -2,10 +2,11 @@ import express, { Express, Request } from 'express';
 import dotenv from 'dotenv';
 import consoleLogStyling from './utils/consoleLogStyling';
 import path from 'path';
-import { connectToTwitch } from './utils/twitch';
 import cors from 'cors';
 import compression from 'compression';
 import { PrismaClient } from '@prisma/client';
+import { EventEmitter } from 'stream';
+import ChatConnection from './services/chatConnection';
 
 dotenv.config();
 
@@ -25,9 +26,12 @@ app.use(
 app.use(cors());
 app.use(express.static(path.join(__dirname, '..', 'client/dist')));
 
-// some reason I can't extend Request type to use a custom property
+const TwitchEmitter = new EventEmitter();
+
+// some reason I can't extend Request type to use custom properties
 app.use((req: any, _res, next) => {
   req['db'] = prisma;
+  req['TwitchEmitter'] = TwitchEmitter;
   return next()
 })
 
@@ -41,7 +45,14 @@ app.use('/api/settings', require('./routes/settings.api'));
 
 app.listen(process.env.PORT, () => {
   console.log(consoleLogStyling('important', '⚡️[server]: Server is running at http://localhost:' + process.env.PORT));
-
-  // initialize Twitch connection if settings.is_connected === true
-  connectToTwitch();
+  
+  ChatConnection(prisma).then((connection) => {
+    if (connection) {
+      connection(TwitchEmitter);
+      TwitchEmitter.emit('connect');
+    }
+  }).catch((err) => {
+    console.error(err);
+  });
+  
 });
