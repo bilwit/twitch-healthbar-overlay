@@ -1,5 +1,6 @@
 
 import { 
+  Alert,
   Button,
   CopyButton,
   Grid,
@@ -16,6 +17,7 @@ import { useDisclosure } from '@mantine/hooks';
 import { useForm } from '@mantine/form';
 import { useState } from 'react';
 import { theme } from '../../../theme';
+import { BiError, BiInfoCircle } from 'react-icons/bi';
 
 function Monsters() {
   const [isOpened, { open, close }] = useDisclosure(false);
@@ -68,10 +70,34 @@ function Monsters() {
 
       <Modal 
         opened={isOpened} 
-        onClose={close} 
+        onClose={() => {
+          CreateForm.reset();
+          setError('');
+          setIsSubmitted(false);
+          setObsOverlayURL('');
+          close();
+        }} 
         title="Create Monster"
         size="xl"
       >
+        {error && (
+          <Alert 
+            mt="xl"
+            className={classes['margin-bottom-1']}
+            variant="light" 
+            color="red" 
+            title="Error" 
+            icon={
+              <BiError 
+                size="1rem" 
+                stroke={1.5} 
+              />
+            }
+          >
+            {error}
+          </Alert>
+        )}
+
         <form onSubmit={CreateForm.onSubmit(async (values) => {
           try {
             const result = await fetch(
@@ -90,9 +116,9 @@ function Monsters() {
             if (result) {
               const responseJson = await result.json();
               if (responseJson.success) {
-                setObsOverlayURL('/display/' + responseJson.data.id);
+                setObsOverlayURL('/display/' + responseJson.data[0].id);
                 setIsSubmitted(true);
-                return setError('');
+                return setError('Could not create monster');
               } else {
                 throw true;
               }
@@ -137,6 +163,23 @@ function Monsters() {
             />
           </Group>
 
+          {isSubmitted && (
+            <Alert 
+              className={classes['margin-bottom-1']}
+              variant="light" 
+              color="indigo" 
+              title="Monster created!" 
+              icon={
+                <BiInfoCircle 
+                  size="1rem" 
+                  stroke={1.5} 
+                />
+              }
+            >
+              Copy the URL below to add as an overlay in OBS. When enabled, Twitch chat will count trigger strings to affect its health.
+            </Alert>
+          )}
+
           <CopyButton 
             value={obsOverlayURL}
           >
@@ -166,21 +209,23 @@ function Monsters() {
               </Grid>
             )}
           </CopyButton>
-            
-          <Group justify="center" mt="xl">
-            <Button 
-              color={theme.colors.indigo[5]}
-              type="submit"
-              leftSection={
-                <GiMonsterGrasp 
-                  size="1rem" 
-                  stroke={1.5} 
-                />
-              }
-            >
-              Create
-            </Button>
-          </Group>
+          
+          {!isSubmitted && (
+            <Group justify="center" mt="xl">
+              <Button 
+                color={theme.colors.indigo[5]}
+                type="submit"
+                leftSection={
+                  <GiMonsterGrasp 
+                    size="1rem" 
+                    stroke={1.5} 
+                  />
+                }
+              >
+                Create
+              </Button>
+            </Group>
+          )}
         </form>
       </Modal>
     </>

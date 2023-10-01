@@ -13,6 +13,7 @@ export interface Monster {
 function useGetMonsters(id?: string | null): { 
   isLoading: boolean,
   monsters: Monster[],
+  setMonsters: React.Dispatch<React.SetStateAction<Monster[]>>,
   error: string, 
 } {
   const [isLoading, setIsLoading] = useState(true);
@@ -46,6 +47,7 @@ function useGetMonsters(id?: string | null): {
   return {
     isLoading,
     monsters,
+    setMonsters,
     error,
   };
 }
