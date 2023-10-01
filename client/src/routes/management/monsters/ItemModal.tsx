@@ -196,7 +196,7 @@ function ItemModal(props: Props) {
                 in OBS.
               </div>
               <div style={{ display: 'flex' }}>
-                When enabled, the Twitch chat bot will count trigger strings to affect its health.
+                When enabled, the Twitch chat bot will actively count trigger strings to affect its health.
               </div>
             </Alert>
           )}
