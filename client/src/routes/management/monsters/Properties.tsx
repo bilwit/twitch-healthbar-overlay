@@ -145,6 +145,12 @@ function Properties(props: Props) {
                     height={200}
                     alt="Image"
                   />
+                ) : props?.data?.avatar_url ? (
+                  <Image
+                    src={window.location.origin + '/avatar/' + props?.data?.avatar_url}
+                    height={200}
+                    alt="Image"
+                  />
                 ) : (
                   <Group justify='center'>
                     <BsFillPersonFill size={210} />

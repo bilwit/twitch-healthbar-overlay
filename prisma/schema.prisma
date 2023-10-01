@@ -18,6 +18,7 @@ model monster {
   published           Boolean   @default(false)
   hp_multiplier       Int       @default(10)
   trigger_words       String    @db.VarChar(255)
+  avatar_url          String?   @db.VarChar(255)
 }
 
 model settings {
