@@ -9,10 +9,12 @@
 // import classes from '../../../css/Nav.module.css';
 // import Item from './Item';
 
+import { useParams } from "react-router-dom";
 import useGetMonsters from "../management/monsters/useGetMonsters";
 
 function Display() {
-  const { monsters } = useGetMonsters('1');
+  const params = useParams();
+  const { monsters } = useGetMonsters(params?.['*']);
 
   return (
     <div>
