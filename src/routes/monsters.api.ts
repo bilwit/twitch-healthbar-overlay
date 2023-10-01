@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -64,7 +64,7 @@ router.post('/', async (req: Request, res: Response) => {
   try {
     const monster = await prisma.monster.create({
       data: {
-        name: req.body.name,
+        name: req.body.name, // must be unique
         published: req.body.published,
         hp_multiplier: req.body.hp_multiplier,
         trigger_words: req.body.trigger_words.join(','),
@@ -77,14 +77,20 @@ router.post('/', async (req: Request, res: Response) => {
         data: [monster],
       });
     } else {
-      throw true;
+      throw new Error('Could not create monster');
     }
   } catch (e) {
-    if (e !== true) {
-      console.error(e);
+    let msg = e;
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      // The .code property can be accessed in a type-safe manner
+      if (e.code === 'P2002') {
+        let target = e?.meta?.['target'];
+        msg = 'Monster with the same ' + (Array.isArray(target) ? target[0] : '') +  ' already exists';
+      }
     }
     return res.status(500).json({
       success: false,
+      msg: msg,
     });
   }
 });

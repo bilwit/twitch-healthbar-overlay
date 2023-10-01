@@ -120,11 +120,14 @@ function Monsters() {
                 setIsSubmitted(true);
                 return setError('Could not create monster');
               } else {
-                throw true;
+                if (responseJson?.msg) {
+                  throw responseJson.msg;
+                }
+                throw '';
               }
             }
-          } catch (_err) {
-            return setError('Could not submit settings');
+          } catch (err) {
+            return setError(err && typeof err === 'string' ? err : 'Could not submit settings');
           }
           })
         }>
