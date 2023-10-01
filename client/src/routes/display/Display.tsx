@@ -1,27 +1,23 @@
-
-// import { 
-//   Alert,
-//   LoadingOverlay,
-//   SimpleGrid,
-// } from '@mantine/core';
-// import useGetMonsters from './useGetMonsters';
-// import { BiError, BiInfoCircle } from 'react-icons/bi';
-// import classes from '../../../css/Nav.module.css';
-// import Item from './Item';
+import { 
+  Image, MantineProvider
+} from '@mantine/core';
 
 import { useParams } from "react-router-dom";
 import useGetMonsters from "../management/monsters/useGetMonsters";
 
 function Display() {
   const params = useParams();
-  const { monsters } = useGetMonsters(params?.['*']);
+  const { isLoading, monsters } = useGetMonsters(params?.['*']);
 
   return (
-    <div>
-      {monsters && monsters.length === 1 && (
-        <h2>{monsters[0].name}</h2>
+    <MantineProvider>
+      {!isLoading && monsters && monsters.length === 1 && (
+        <Image
+          src={window.location.origin + '/api/monsters/avatar/' + monsters[0]?.avatar_url}
+          alt={monsters[0].name + ' Avatar'}
+        />
       )}
-    </div>
+    </MantineProvider>
   );
 }
 

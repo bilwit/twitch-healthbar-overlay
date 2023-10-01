@@ -1,6 +1,5 @@
 
 import { 
-  Avatar,
   Badge,
   Button,
   Card,
