@@ -130,9 +130,9 @@ export default async function ChatConnection (db: PrismaClient) {
                 // reconnect client
                 client.connect(TWITCH_IRC_ADDRESS);
               } else {
-                console.log(consoleLogStyling('black', '! Taken validated'));
+                console.log(consoleLogStyling('black', '! Token validated'));
               }
-            }, 59*1000);
+            }, 60*60*1000-100);
 
           });
         }
