@@ -6,15 +6,7 @@ const prisma = new PrismaClient();
 
 router.get('/', async (_req: Request, res: Response) => {
   try {
-    const monsters = await prisma.monster.findMany({
-      select: {
-        id: true,
-        created_at: true,
-        name: true,
-        published: true,
-        hp_multiplier: true,
-      }
-    });
+    const monsters = await prisma.monster.findMany({});
   
     if (monsters && monsters.length > 0) {
       return res.status(200).json({
@@ -105,7 +97,7 @@ router.put('/:id', async (req: Request, res: Response) => {
         name: req.body.name,
         published: req.body.published,
         hp_multiplier: req.body.hp_multiplier,
-        trigger_words: req.body.trigger_words,
+        trigger_words: req.body.trigger_words.join(','),
       },
     });
   

@@ -2,6 +2,7 @@
 import { 
   Affix,
   Alert,
+  Button,
   LoadingOverlay,
   SimpleGrid,
 } from '@mantine/core';
@@ -9,10 +10,14 @@ import useGetMonsters from './useGetMonsters';
 import classes from '../../../css/Nav.module.css';
 import Item from './Item';
 import { BiError, BiInfoCircle } from 'react-icons/bi';
-import Create from './Create';
+import { GiMonsterGrasp } from 'react-icons/gi';
+import { theme } from '../../../theme';
+import ItemModal from './ItemModal';
+import { useDisclosure } from '@mantine/hooks';
 
 function Monsters() {
-  const { isLoading, monsters, error } = useGetMonsters();
+  const { isLoading, monsters, setMonsters, error } = useGetMonsters();
+  const [isOpened, { open, close }] = useDisclosure(false);
 
   return (
     <>
@@ -41,6 +46,7 @@ function Monsters() {
         {!isLoading ? monsters && monsters.length > 0 ? monsters.map((monster) => (
           <Item key={monster.id}
             item={monster}
+            setMonsters={setMonsters}
           />
         )) : (
           <Alert 
@@ -66,7 +72,27 @@ function Monsters() {
         position={{ bottom: 20, right: 20 }} 
         style={{ zIndex: 190 }}
       >
-        <Create />
+        <Button
+          color={theme.colors.indigo[5]}
+          leftSection={
+            <GiMonsterGrasp 
+              size="1rem" 
+              stroke={1.5} 
+            />
+          }
+          onClick={(e) => {
+            e.preventDefault();
+            open();
+          }}
+        >
+          Create
+        </Button>
+
+        <ItemModal 
+          isOpened={isOpened}
+          close={close}
+          setMonsters={setMonsters}
+        />
       </Affix>
     </>
   );
