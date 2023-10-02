@@ -4,10 +4,15 @@ import {
 
 import { useParams } from "react-router-dom";
 import useGetMonsters from "../management/monsters/useGetMonsters";
+import useWebSocket, { ReadyState } from 'react-use-websocket';
 
 function Display() {
   const params = useParams();
   const { isLoading, monsters } = useGetMonsters(params?.['*']);
+
+  const { lastJsonMessage } = useWebSocket('ws://' + window.location.hostname + ':888/ws');
+
+  console.log(lastJsonMessage)
 
   return (
     <MantineProvider>

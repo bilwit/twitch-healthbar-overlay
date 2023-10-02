@@ -7,6 +7,9 @@ import compression from 'compression';
 import { PrismaClient } from '@prisma/client';
 import { EventEmitter } from 'stream';
 import ChatConnection from './services/chatConnection';
+import http from 'http';
+import { WebSocketServer } from 'ws';
+import websocket from './services/websocket';
 
 dotenv.config();
 
@@ -42,7 +45,7 @@ app.use('/api', require('./routes/router')());
 //   res.sendFile(path.join(__dirname, "../client/dist", "index.html"));
 // });
 
-app.listen(process.env.PORT, () => {
+const server = app.listen(Number(process.env.PORT), () => {
   console.log(consoleLogStyling('important', '⚡️[server]: Server is running at http://localhost:' + process.env.PORT));
   
   ChatConnection(prisma).then((connection) => {
@@ -55,3 +58,6 @@ app.listen(process.env.PORT, () => {
   });
   
 });
+
+// instatiate websocket server
+websocket(server);
