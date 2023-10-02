@@ -1,8 +1,7 @@
 import WebSocket from "ws";
 import { Server } from "http";
-import consoleLogStyling from "../utils/consoleLogStyling";
 
-export default async (expressServer: Server) => {
+export default (expressServer: Server) => {
   try {
     const websocketServer = new WebSocket.Server({
       noServer: true,
@@ -14,12 +13,6 @@ export default async (expressServer: Server) => {
         websocketServer.emit("connection", websocket, request);
       });
     });
-  
-    websocketServer.on("connection", (websocketConnection, _connectionRequest) => {
-        console.log(consoleLogStyling('black', '+ Client Connected'));
-        websocketConnection.send(JSON.stringify({ message: 'There be gold in them thar hills.' }));
-      }
-    );
 
     return websocketServer;
   } catch(err) {

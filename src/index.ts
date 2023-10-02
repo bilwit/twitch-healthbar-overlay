@@ -7,8 +7,6 @@ import compression from 'compression';
 import { PrismaClient } from '@prisma/client';
 import { EventEmitter } from 'stream';
 import ChatConnection from './services/chatConnection';
-import http from 'http';
-import { WebSocketServer } from 'ws';
 import websocket from './services/websocket';
 
 dotenv.config();
@@ -47,7 +45,7 @@ app.use('/api', require('./routes/router')());
 
 const server = app.listen(Number(process.env.PORT), () => {
   console.log(consoleLogStyling('important', '⚡️[server]: Server is running at http://localhost:' + process.env.PORT));
-  
+
   ChatConnection(prisma).then((connection) => {
     if (connection) {
       connection(TwitchEmitter);
@@ -60,4 +58,16 @@ const server = app.listen(Number(process.env.PORT), () => {
 });
 
 // instatiate websocket server
-websocket(server);
+const WebSocketServer = websocket(server);
+
+if (WebSocketServer) {
+  WebSocketServer.on("connection", (websocketConnection, _connectionRequest) => {
+    console.log(consoleLogStyling('black', '+ Client Connected'));
+  
+    TwitchEmitter.on('update', (data) => {
+      // websocketConnection.emit('message', JSON.stringify(data.value));
+      websocketConnection.send(JSON.stringify({ update: data }));
+    })
+
+  })
+}

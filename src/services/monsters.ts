@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import consoleLogStyling from "../utils/consoleLogStyling";
+import { EventEmitter } from "stream";
 
 interface Monster {
   id: number,
@@ -15,7 +16,7 @@ export interface Monster_CB {
 
 const prisma = new PrismaClient();
 
-export default async function getMonsters(maxHealthInit: number): Promise<Monster_CB[]> {
+export default async function getMonsters(maxHealthInit: number, TwitchEmitter: EventEmitter): Promise<Monster_CB[]> {
   try {
     const monsters = await prisma.monster.findMany({
       select: {
@@ -30,7 +31,7 @@ export default async function getMonsters(maxHealthInit: number): Promise<Monste
   
     if (monsters && Array.isArray(monsters) && monsters.length > 0) {
       return monsters.map((monster) => {
-        return Monster(monster, maxHealthInit);
+        return Monster(monster, maxHealthInit, TwitchEmitter);
       });
     } else {
       return [];
@@ -41,7 +42,7 @@ export default async function getMonsters(maxHealthInit: number): Promise<Monste
   }
 }
 
-function Monster(monster: Monster, maxHealth: number): any {
+function Monster(monster: Monster, maxHealth: number, TwitchEmitter: EventEmitter): any {
   try {
     // initialize health
     let MaxHealth = maxHealth * monster.hp_multiplier;
@@ -50,6 +51,10 @@ function Monster(monster: Monster, maxHealth: number): any {
       value: MaxHealth,
     };
 
+    TwitchEmitter.emit('update', {
+      id: monster.id,
+      value: CurrentHealth,
+    })
     console.log(consoleLogStyling('health', '(' + monster.id + ') Initial Health: ' + MaxHealth));
 
     return {
@@ -57,13 +62,19 @@ function Monster(monster: Monster, maxHealth: number): any {
       trigger_words: monster.trigger_words,
       update: function(amount: number, updatedChatterAmount: number) {
         const updatedMaxHealth = updatedChatterAmount * monster.hp_multiplier;
-        if (CurrentHealth.maxHealth !== updatedMaxHealth) {
-          CurrentHealth.value = (CurrentHealth.value / CurrentHealth.maxHealth) * updatedMaxHealth + amount;
-          CurrentHealth.maxHealth = updatedMaxHealth;
-        } else {
-          CurrentHealth.value += amount;
+        if (CurrentHealth.value >= 0) {
+          if (CurrentHealth.maxHealth !== updatedMaxHealth) {
+            CurrentHealth.value = (CurrentHealth.value / CurrentHealth.maxHealth) * updatedMaxHealth + amount;
+            CurrentHealth.maxHealth = updatedMaxHealth;
+          } else {
+            CurrentHealth.value += amount;
+          }
+          TwitchEmitter.emit('update', {
+            id: monster.id,
+            value: CurrentHealth,
+          });
+          console.log(consoleLogStyling('health', '(' + monster.id + ') Current Health: ' + CurrentHealth.value));
         }
-        console.log(consoleLogStyling('health', '(' + monster.id + ') Current Health: ' + CurrentHealth.value));
       }
     }
 

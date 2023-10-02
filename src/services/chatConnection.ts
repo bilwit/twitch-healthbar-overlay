@@ -83,7 +83,7 @@ export default async function ChatConnection (db: PrismaClient) {
                   }
                 }, 15000);
       
-                const monsters: Monster_CB[] = await getMonsters(MaxHealth);
+                const monsters: Monster_CB[] = await getMonsters(MaxHealth, TwitchEmitter);
           
                 connection.on('message', (message) => {
                   const parsed = parser(message);
