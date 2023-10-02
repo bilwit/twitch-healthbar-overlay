@@ -51,10 +51,22 @@ function Monster(monster: Monster, maxHealth: number, TwitchEmitter: EventEmitte
       value: MaxHealth,
     };
 
-    TwitchEmitter.emit('update', {
-      id: monster.id,
-      value: CurrentHealth,
+    const updateHealth = () => {
+      TwitchEmitter.emit('update', {
+        id: monster.id,
+        value: CurrentHealth,
+      })
+    }
+
+    TwitchEmitter.on('reset', (data) => {
+      if (data.id === monster.id) {
+        CurrentHealth.value = CurrentHealth.maxHealth;
+        updateHealth();
+      }
     })
+
+    // send initial health data
+    updateHealth();
     console.log(consoleLogStyling('health', '(' + monster.id + ') Initial Health: ' + MaxHealth));
 
     return {
@@ -69,10 +81,7 @@ function Monster(monster: Monster, maxHealth: number, TwitchEmitter: EventEmitte
           } else {
             CurrentHealth.value += amount;
           }
-          TwitchEmitter.emit('update', {
-            id: monster.id,
-            value: CurrentHealth,
-          });
+          updateHealth();
           console.log(consoleLogStyling('health', '(' + monster.id + ') Current Health: ' + CurrentHealth.value));
         }
       }

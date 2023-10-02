@@ -69,5 +69,16 @@ if (WebSocketServer) {
       websocketConnection.send(JSON.stringify({ update: data }));
     })
 
-  })
+    websocketConnection.addEventListener('message', (event: any) => {
+      if (event) {
+        const eventData = JSON.parse(event.data);
+        if (eventData?.message === 'reset') {
+          TwitchEmitter.emit('reset', {
+            id: eventData?.id,
+          })
+        }
+      }
+    });
+
+  });
 }
