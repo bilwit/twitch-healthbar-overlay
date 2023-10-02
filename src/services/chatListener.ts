@@ -58,7 +58,7 @@ export default async function chatListener (client: WebSocketClient, tokens: Tok
             }
           }, 15000);
 
-          const monsters: Monster_CB[] = await getMonsters(MaxHealth);
+          const monsters: Monster_CB[] = await getMonsters(MaxHealth, TwitchEmitter);
     
           connection.on('message', (message) => {
             const parsed = parser(message);
