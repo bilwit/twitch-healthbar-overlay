@@ -62,6 +62,7 @@ function Monster(monster: Monster, maxHealth: number, TwitchEmitter: EventEmitte
       if (data.id === monster.id) {
         CurrentHealth.value = CurrentHealth.maxHealth;
         updateHealth();
+        console.log(consoleLogStyling('health', '(' + monster.id + ') Health Reset: ' + MaxHealth));
       }
     })
 
