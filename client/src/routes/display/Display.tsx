@@ -1,6 +1,4 @@
 import { 
-  Avatar,
-  Grid,
   MantineProvider
 } from '@mantine/core';
 
@@ -13,7 +11,7 @@ function Display() {
   const { isLoading, monsters } = useGetMonsters(params?.['*']);
 
   const { data } = useWebSocket(String(monsters?.[0]?.id));
-  
+
   return (
     <MantineProvider>
       {!isLoading && monsters && monsters.length === 1 && (
