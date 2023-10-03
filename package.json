@@ -6,7 +6,7 @@
   "scripts": {
     "build": "npx tsc",
     "start": "node dist/server.js",
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\" \"npm run client\"",
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/server.js\" \"npm run client\"",
     "client-install": "npm install --prefix client",
     "client": "npm start --prefix client"
   },
