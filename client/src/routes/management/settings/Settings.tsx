@@ -118,7 +118,7 @@ function Settings(props: Props) {
           <Space h="xs" />
           <List withPadding>
             <List.Item>Name: Health Bar Overlay</List.Item>
-            <List.Item>OAuth Redirect URLs: http://localhost</List.Item>
+            <List.Item>OAuth Redirect URLs: http://localhost:888</List.Item>
             <List.Item>Category: Chat Bot</List.Item>
           </List>
           <Space h="xs" />

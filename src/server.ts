@@ -36,7 +36,7 @@ app.use((req: any, _res, next) => {
   return next()
 })
 
-console.log(process.env)
+// console.log(process.env)
 
 app.use('/api', require('./routes/router')());
 
