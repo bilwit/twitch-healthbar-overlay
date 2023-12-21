@@ -8,10 +8,11 @@ import {
   } from '@mantine/core';
   import classes from '../../../css/Nav.module.css';
   import { BiError, BiInfoCircle } from 'react-icons/bi';
-  import { GiMonsterGrasp } from 'react-icons/gi';
   import { theme } from '../../../theme';
   import { useDisclosure } from '@mantine/hooks';
   import useGetData from '../useGetData';
+import { MdBattery1Bar } from 'react-icons/md';
+import ItemModal from './ItemModal';
   
   function HealthBars() {
     const { 
@@ -77,9 +78,9 @@ import {
           style={{ zIndex: 190 }}
         >
           <Button
-            color={theme.colors.indigo[5]}
+            color={theme.colors.grape[5]}
             leftSection={
-              <GiMonsterGrasp 
+              <MdBattery1Bar 
                 size="1rem" 
                 stroke={1.5} 
               />
@@ -92,11 +93,11 @@ import {
             Create
           </Button>
   
-          {/* <ItemModal 
+          <ItemModal 
             isOpened={isOpened}
             close={close}
-            setMonsters={setMonsters}
-          /> */}
+            setData={setHealthBars}
+          />
         </Affix>
       </>
     );
