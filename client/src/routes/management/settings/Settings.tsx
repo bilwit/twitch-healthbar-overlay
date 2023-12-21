@@ -235,7 +235,7 @@ function Settings(props: Props) {
                 'https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=' + 
                 settingsStore.listener_client_id + 
                 '&redirect_uri=' + 
-                'http://localhost' + 
+                'http://localhost:888' + 
                 '&scope=channel:read:redemptions+moderator:read:chatters+chat:read&state=123'
               } 
               target="_blank"
