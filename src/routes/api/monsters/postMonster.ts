@@ -10,7 +10,7 @@ module.exports = Router({ mergeParams: true }).post('/monsters', upload.single('
       published: JSON.parse(req.body.published),
       hp_multiplier: JSON.parse(req.body.hp_multiplier),
       trigger_words: Array.isArray(JSON.parse(req.body.trigger_words)) && JSON.parse(req.body.trigger_words).length > 0 ? JSON.parse(req.body.trigger_words).join(',') : '',
-      bar_theme: JSON.parse(req.body.bar_theme),
+      bar_theme: JSON.parse(req.body.bar_theme).toLowerCase(),
     }
 
     if (JSON.parse(req.body.isAvatarChanged)) {
