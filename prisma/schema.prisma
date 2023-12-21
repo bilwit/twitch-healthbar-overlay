@@ -21,6 +21,14 @@ model monster {
   avatar_url          String?   @db.VarChar(255)
 }
 
+model healthbar {
+  id                  Int       @id @default(autoincrement())
+  created_at          DateTime  @default(now())
+  updated_at          DateTime  @updatedAt @default(now())
+  name                String    @unique @db.VarChar(255)
+  avatar_url          String?   @db.VarChar(255)
+}
+
 model settings {
   id                  Int       @id @default(autoincrement())
   listener_auth_code  String    @db.VarChar(255)
