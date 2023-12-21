@@ -11,7 +11,6 @@ import classes from '../../css/Nav.module.css';
 import "@mantine/core/styles.css";
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import Monsters from './monsters';
-import HealthBars from './healthbars';
 import Settings from './settings';
 import { GiMonsterGrasp } from 'react-icons/gi';
 import { VscSettingsGear } from 'react-icons/vsc';
@@ -106,10 +105,6 @@ function Management() {
             <Route
               path="/monsters/*"
               element={<Monsters />}
-            />
-            <Route
-              path="/healthbars/*"
-              element={<HealthBars />}
             />
           </Routes>
         </AppShell.Main>
