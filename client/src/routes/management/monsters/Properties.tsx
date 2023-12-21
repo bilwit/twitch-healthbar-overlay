@@ -22,7 +22,7 @@ import { useForm } from '@mantine/form';
 import { useState } from 'react';
 import { theme } from '../../../theme';
 import { BiInfoCircle } from 'react-icons/bi';
-import { Monster } from './useGetMonsters';
+import { Monster } from '../useGetData';
 import { BsFillPersonFill } from 'react-icons/bs';
 import { AiFillDelete } from 'react-icons/ai';
 import Alerts from '../Alerts';
