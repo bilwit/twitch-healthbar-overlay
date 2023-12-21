@@ -15,6 +15,7 @@ import {
   TextInput,
   Text,
   Overlay,
+  NativeSelect,
 } from '@mantine/core';
 import classes from '../../../css/Nav.module.css';
 import { GiMonsterGrasp } from 'react-icons/gi';
@@ -39,6 +40,7 @@ interface FormDataInterface {
   name: string;
   published: string;
   hp_multiplier: number;
+  bar_theme: string;
   avatarFile: File | null;
   trigger_words: string[];
 }
@@ -51,6 +53,7 @@ function Properties(props: Props) {
       hp_multiplier: props?.data?.hp_multiplier || 5,
       avatarFile: null,
       trigger_words: props?.data?.trigger_words ? props?.data?.trigger_words.split(',') : [],
+      bar_theme: props?.data?.bar_theme || 'basic',
     },
 
     validate: {
@@ -62,6 +65,7 @@ function Properties(props: Props) {
         return 'Required';
       },
       hp_multiplier: (value) => value ? null : 'Required',
+      bar_theme: (value) => value ? null : 'Required',
       avatarFile: () => null,
       trigger_words: (value) => {
         if (value.length > 0) {
@@ -97,6 +101,7 @@ function Properties(props: Props) {
           (props.data.name === values.name) &&
           (props.data.published.toString() === values.published) &&
           (props.data.hp_multiplier === values.hp_multiplier) &&
+          (props.data.bar_theme === values.bar_theme) && 
           (props.data.trigger_words?.trim() === values.trigger_words.join(',').trim())
         ) {
           setWarning('No changes made to the original content');
@@ -221,6 +226,13 @@ function Properties(props: Props) {
               placeholder="Press ENTER per-tag" 
               {...CreateForm.getInputProps('trigger_words')}
             />
+
+            <NativeSelect 
+              label="Health Bar Theme" 
+              data={['Basic']}
+              {...CreateForm.getInputProps('bar_theme')}
+            />
+
             <Group 
               style={{ display: 'grid' }}
               justify="flex-center" 

@@ -25,6 +25,7 @@ module.exports = Router({ mergeParams: true }).put('/monsters/:id', upload.singl
       name: JSON.parse(req.body.name),
       published: JSON.parse(req.body.published),
       hp_multiplier: JSON.parse(req.body.hp_multiplier),
+      bar_theme: JSON.parse(req.body.bar_theme),
       trigger_words: Array.isArray(JSON.parse(req.body.trigger_words)) && JSON.parse(req.body.trigger_words).length > 0 ? JSON.parse(req.body.trigger_words).join(',') : '',
     }
 

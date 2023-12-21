@@ -18,6 +18,7 @@ export interface Monster {
   avatar_url?: string,
   hp_multiplier?: number,
   trigger_words?: string,
+  bar_theme?: string,
 }
 
 interface ResponseData {

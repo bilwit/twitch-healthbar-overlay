@@ -4,4 +4,5 @@ export interface UpdatedMonsterData {
   hp_multiplier: number,
   trigger_words: string,
   avatar_url?: string | undefined,
+  bar_theme: string,
 }

@@ -19,6 +19,7 @@ model monster {
   hp_multiplier       Int       @default(10)
   trigger_words       String    @db.VarChar(255)
   avatar_url          String?   @db.VarChar(255)
+  bar_theme           String    @db.VarChar(255) @default("basic")
 }
 
 model settings {
