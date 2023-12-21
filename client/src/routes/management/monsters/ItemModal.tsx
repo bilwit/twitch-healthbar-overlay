@@ -4,7 +4,7 @@ import {
   Tabs,
   rem,
 } from '@mantine/core';
-import { Monster } from './useGetMonsters';
+import { Monster } from '../useGetData';
 import { FaWrench } from 'react-icons/fa';
 import { HiOutlineStatusOnline } from 'react-icons/hi';
 import Properties from './Properties';

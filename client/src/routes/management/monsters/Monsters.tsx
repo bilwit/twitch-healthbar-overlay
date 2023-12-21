@@ -6,7 +6,6 @@ import {
   LoadingOverlay,
   SimpleGrid,
 } from '@mantine/core';
-import useGetMonsters from './useGetMonsters';
 import classes from '../../../css/Nav.module.css';
 import MonsterCard from './MonsterCard';
 import { BiError, BiInfoCircle } from 'react-icons/bi';
@@ -14,9 +13,15 @@ import { GiMonsterGrasp } from 'react-icons/gi';
 import { theme } from '../../../theme';
 import ItemModal from './ItemModal';
 import { useDisclosure } from '@mantine/hooks';
+import useGetData from '../useGetData';
 
 function Monsters() {
-  const { isLoading, monsters, setMonsters, error } = useGetMonsters();
+  const { 
+    isLoading, 
+    data: monsters, 
+    setData: setMonsters, 
+    error,
+  } = useGetData('monsters');
   const [isOpened, { open, close }] = useDisclosure(false);
 
   return (

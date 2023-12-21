@@ -8,7 +8,7 @@ import {
   Text,
   Image,
 } from '@mantine/core';
-import { Monster } from './useGetMonsters';
+import { Monster } from '../useGetData';
 import { useDisclosure } from '@mantine/hooks';
 import ItemModal from './ItemModal';
 import { GiMonsterGrasp } from 'react-icons/gi';

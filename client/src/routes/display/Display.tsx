@@ -3,12 +3,12 @@ import {
 } from '@mantine/core';
 
 import { useParams } from "react-router-dom";
-import useGetMonsters from "../management/monsters/useGetMonsters";
+import useGetData from "../management/useGetData";
 import useWebSocket from './useWebSocket';
 
 function Display() {
   const params = useParams();
-  const { isLoading, monsters } = useGetMonsters(params?.['*']);
+  const { isLoading, data: monsters } = useGetData('monsters', params?.['*']);
 
   const { data } = useWebSocket(String(monsters?.[0]?.id));
 

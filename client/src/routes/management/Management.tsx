@@ -11,9 +11,11 @@ import classes from '../../css/Nav.module.css';
 import "@mantine/core/styles.css";
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import Monsters from './monsters';
+import HealthBars from './healthbars';
 import Settings from './settings';
 import { GiMonsterGrasp } from 'react-icons/gi';
 import { VscSettingsGear } from 'react-icons/vsc';
+import { MdBattery1Bar } from 'react-icons/md';
 import useGetSettings from './settings/useGetSettings';
 import { useEffect } from 'react';
 
@@ -23,6 +25,7 @@ interface Routes_Icon_Dictionary {
 
 const routes_icon_dictionary: Routes_Icon_Dictionary = {
   'monsters': (<GiMonsterGrasp size="1rem" stroke={1.5}/>),
+  'healthbars':(<MdBattery1Bar  size="1rem" stroke={1.5}/>),
   'settings': (<VscSettingsGear size="1rem" stroke={1.5} />),
 }
 
@@ -103,6 +106,10 @@ function Management() {
             <Route
               path="/monsters/*"
               element={<Monsters />}
+            />
+            <Route
+              path="/healthbars/*"
+              element={<HealthBars />}
             />
           </Routes>
         </AppShell.Main>
