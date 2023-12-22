@@ -115,7 +115,7 @@ function Item(props: Props) {
                       props.setData((prev) => ([
                         ...prev,
                         responseJson.data[0],
-                      ].sort((a, b) => a.hp_value < b.hp_value ? 1 : -1)));
+                      ].sort((a, b) => a.hp_value > b.hp_value ? 1 : -1)));
 
                       CreateForm.reset();
                       setAvatarFile(null);

@@ -13,7 +13,7 @@ module.exports = Router({ mergeParams: true }).post('/monsters/stages', upload.s
     const isNotUnique = await req.db.stages.findFirst({
       where: {
         hp_value: JSON.parse(req.body.hp_value),
-        ref_id: Number(req.params.id),
+        ref_id: JSON.parse(req.body.ref_id),
       },
     });
 
@@ -44,17 +44,18 @@ module.exports = Router({ mergeParams: true }).post('/monsters/stages', upload.s
     }
 
   } catch (e: any) {
+    console.log(e);
     let msg = e;
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       // The .code property can be accessed in a type-safe manner
       if (e.code === 'P2002') {
         let target = e?.meta?.['target'];
-        msg = 'Stage with the same ' + (Array.isArray(target) ? target[0] : '') +  ' already exists';
+        msg = new Error('Stage with the same ' + (Array.isArray(target) ? target[0] : '') +  ' already exists');
       }
     }
     return res.status(500).json({
       success: false,
-      msg: msg,
+      msg: msg.message,
     });
   }
 });

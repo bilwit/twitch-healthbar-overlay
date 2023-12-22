@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 module.exports = Router({ mergeParams: true }).get('/monsters/stages/:id', async (req: any, res: any) => {
   try {
-    const stage = await req.db.stages.findFirst({
+    const stage = await req.db.stages.findMany({
       where: {
         ref_id: Number(req.params.id),
       },
@@ -11,7 +11,7 @@ module.exports = Router({ mergeParams: true }).get('/monsters/stages/:id', async
     if (stage) {
       return res.status(200).json({
         success: true,
-        data: [stage],
+        data: stage,
       });
     } else {
       throw true;
