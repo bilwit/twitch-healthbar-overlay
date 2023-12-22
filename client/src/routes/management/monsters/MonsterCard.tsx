@@ -1,12 +1,12 @@
-
 import { 
   Badge,
   Button,
   Card,
-  Group,
   Space,
   Text,
-  Image,
+  Avatar,
+  Stack,
+  Group,
 } from '@mantine/core';
 import { Monster } from '../useGetData';
 import { useDisclosure } from '@mantine/hooks';
@@ -24,59 +24,70 @@ function Monsters(props: Props) {
   return (
     <>
       <Card shadow="sm" padding="lg" radius="md" withBorder>
-        <Group justify="space-between" mb="xs">
-          <Text fw={600}>{props.item.name}</Text>
-          <Badge
-            color={props.item.published ? 'green' : 'dark'} 
-            variant="light"
-          >
-            {props.item.published ? 'Enabled' : 'Disabled'}
-          </Badge>
-        </Group>
-
-        <Card.Section>
-          {props?.item?.avatar_url ? (
-            <Image
-              src={window.location.origin + '/api/avatar/' + props.item.avatar_url}
-              height={150}
-              alt={props.item.name + ' Avatar'}
-            />
-          ) : (
-            <Group justify='center'>
-              <GiMonsterGrasp size={150} />
-            </Group>
-          )}
-        </Card.Section>
-
-        <Space h="sm" />
-
-        <Text size="xs" c="dimmed">
-          Created
-        </Text>
-        <Text size="sm">
-          {(new Date(props.item.created_at)).toDateString()}
-        </Text>
-        <Space h="xs" />
-        <Text size="xs" c="dimmed">
-          Health Multiplier
-        </Text>
-        <Text size="sm">
-          {props.item.hp_multiplier}
-        </Text>
-
-        <Button 
-          variant="light" 
-          color="indigo" 
-          fullWidth 
-          mt="md" 
-          radius="md"
-          onClick={(e) => {
-            e.preventDefault();
-            open();
-          }}
+        <Badge
+          color={props.item.published ? 'green' : 'dark'} 
+          variant="light"
+          pl={0}
         >
-          Edit
-        </Button>
+          {props.item.published ? 'Enabled' : 'Disabled'}
+        </Badge>
+
+        <Card.Section mt={0} mb="xs">
+          <div style={{ display: 'flex' }}>
+            {props?.item?.avatar_url ? (
+              <Avatar 
+                src={window.location.origin + '/api/avatar/' + props.item.avatar_url} 
+                radius="xl" 
+                size="lg" 
+                ml="lg"
+                mt="sm"
+              />
+            ) : (
+              <GiMonsterGrasp size={150} />
+            )}
+
+            <Space w="md" />
+
+            <Stack gap="0">
+              <Text fw={600} mb="sm">{props.item.name}</Text>
+              <Button 
+                justify='end'
+                variant="light" 
+                color="indigo" 
+                radius="md"
+                onClick={(e) => {
+                  e.preventDefault();
+                  open();
+                }}
+              >
+                Edit
+              </Button>
+            </Stack>
+
+            <Stack gap="0" ml="lg">
+              <Text size="xs" c="dimmed">
+                Created
+              </Text>
+              <Text size="sm">
+                {(new Date(props.item.created_at)).toDateString()}
+              </Text>
+
+              <Text size="xs" c="dimmed" mt="sm">
+                Health Multiplier
+              </Text>
+
+              <Text size="sm">
+                {props.item.hp_multiplier}
+              </Text>
+            </Stack>
+
+            <div style={{ display: 'flex', width: 'auto' }}>
+
+            </div>
+
+          </div>
+                    
+        </Card.Section>
       </Card>
 
       {isOpened && (
