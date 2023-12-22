@@ -97,9 +97,6 @@ function Item(props: Props) {
                 if (result) {
                   const responseJson = await result.json();
                   if (responseJson.success) {
-                    // setObsOverlayURLHealth(window.location.origin + '/display/bars/' + responseJson.data[0].id);
-                    // setObsOverlayURLAvatar(window.location.origin + '/display/avatars/' + responseJson.data[0].id);
-
                     // // update main page list in parent component
                     // if (!props?.data?.id) {
                     //   // new monster
