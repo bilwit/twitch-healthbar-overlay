@@ -39,6 +39,7 @@ interface FormDataInterface {
 }
   
 function Item(props: Props) {
+  const [avatarPlaceholder, setAvatarPlaceholder] = useState<File | null>(null);
   const [avatarFile, setAvatarFile] = useState<Blob | null>(null);
   const [avatar, setAvatar] = useState<string | ArrayBuffer | null>(null);
   const [isAvatarChanged, setIsAvatarChanged] = useState(false);
@@ -120,6 +121,7 @@ function Item(props: Props) {
                       CreateForm.reset();
                       setAvatarFile(null);
                       setAvatar(null);
+                      setAvatarPlaceholder(null);;
                       setIsAvatarChanged(false);
                     } else {
                       // edited item
@@ -172,8 +174,11 @@ function Item(props: Props) {
                 <FileInput 
                   accept="image/png,image/jpeg,image/gif,image/svg" 
                   placeholder="Upload File" 
+                  clearable 
+                  value={avatarPlaceholder}
                   onChange={(data) => {
                     if (data) {
+                      setAvatarPlaceholder(data);
                       const reader = new FileReader();
                       reader.onload = (event) => {
                         if (event?.target) {
@@ -183,6 +188,10 @@ function Item(props: Props) {
                       reader.readAsDataURL(data);
                       setAvatarFile(data);
                       setIsAvatarChanged(true);
+                    } else {
+                      setAvatarFile(null);
+                      setAvatar(null);
+                      setAvatarPlaceholder(null);
                     }
                   }}
                 />
