@@ -31,7 +31,6 @@ function useWebSocket(listenId: string): ReturnData {
 
             // initialize health
             if (socket) {
-              console.log('initialize')
               socket.send(JSON.stringify({ 
                 message: 'current',
                 id: listenId,
