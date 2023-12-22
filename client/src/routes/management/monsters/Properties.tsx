@@ -4,7 +4,6 @@ import {
   Button,
   Card,
   Image,
-  CopyButton,
   FileInput,
   Grid,
   Group,
@@ -27,6 +26,7 @@ import { Monster } from '../useGetData';
 import { BsFillPersonFill } from 'react-icons/bs';
 import { AiFillDelete } from 'react-icons/ai';
 import Alerts from '../Alerts';
+import CopyURL from './CopyURL';
 
 interface Props {
   isOpened: boolean,
@@ -80,7 +80,8 @@ function Properties(props: Props) {
   const [error, setError] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(props?.data?.id && (props?.data?.id !== null) ? true : false);
   const [isEditSuccess, setIsEditSuccess] = useState('');
-  const [obsOverlayURL, setObsOverlayURL] = useState(props?.data?.id ? window.location.origin + '/display/' + props.data.id : '');
+  const [obsOverlayURLHealth, setObsOverlayURLHealth] = useState(props?.data?.id ? window.location.origin + '/display/bars/' + props.data.id : '');
+  const [obsOverlayURLAvatar, setObsOverlayURLAvatar] = useState(props?.data?.id ? window.location.origin + '/display/avatars/' + props.data.id : '');
   const [avatar, setAvatar] = useState<string | ArrayBuffer | null>(null);
   const [isAvatarChanged, setIsAvatarChanged] = useState(false);
   const [avatarFile, setAvatarFile] = useState<Blob | null>(null);
@@ -126,7 +127,8 @@ function Properties(props: Props) {
             if (result) {
               const responseJson = await result.json();
               if (responseJson.success) {
-                setObsOverlayURL(window.location.origin + '/display/' + responseJson.data[0].id);
+                setObsOverlayURLHealth(window.location.origin + '/display/bars/' + responseJson.data[0].id);
+                setObsOverlayURLAvatar(window.location.origin + '/display/avatars/' + responseJson.data[0].id);
 
                 // update main page list in parent component
                 if (!props?.data?.id) {
@@ -277,38 +279,21 @@ function Properties(props: Props) {
               </div>
             </Alert>
 
-            <CopyButton 
-              value={obsOverlayURL}
-            >
-              {({ copied, copy }) => (
-                <Grid 
-                  className={classes['margin-bottom-1']}
-                  mt="xl" 
-                  justify="center" 
-                  style={{alignItems: 'center'}}
-                >
-                  <Grid.Col span={9}>
-                    <TextInput 
-                      label="OBS Overlay URL"
-                      readOnly
-                      mt="xs"
-                      placeholder="OBS Overlay URL"
-                      value={obsOverlayURL}
-                    />
-                  </Grid.Col>
-                  <Grid.Col span={1} style={{ display: 'flex', alignItems: 'end' }}>
-                    <Button 
-                      mt={'xs'}
-                      variant="outline"
-                      color={copied ? 'teal' : theme.colors.indigo[5]} 
-                      onClick={copy}
-                    >
-                      {copied ? 'Copied' : 'Copy'}
-                    </Button>
-                  </Grid.Col>
-                </Grid>
-              )}
-            </CopyButton>
+            <CopyURL
+              url={obsOverlayURLHealth}
+              details={{
+                label: "Health Bar",
+                description: "OBS Overlay URL",
+              }}
+            />
+
+            <CopyURL
+              url={obsOverlayURLAvatar}
+              details={{
+                label: "Avatar",
+                description: "OBS Overlay URL",
+              }}
+            />
           </>
         )}
 
