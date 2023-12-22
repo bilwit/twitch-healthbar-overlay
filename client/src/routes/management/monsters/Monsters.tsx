@@ -5,6 +5,7 @@ import {
   Button,
   LoadingOverlay,
   SimpleGrid,
+  Stack,
 } from '@mantine/core';
 import classes from '../../../css/Nav.module.css';
 import MonsterCard from './MonsterCard';
@@ -43,11 +44,7 @@ function Monsters() {
         </Alert>
       )}
 
-      <SimpleGrid
-        cols={{ base: 1, sm: 2, lg: 5 }}
-        spacing={{ base: 10, sm: 'xl' }}
-        verticalSpacing={{ base: 'md', sm: 'xl' }}
-      >
+      <Stack>
         {!isLoading ? monsters && monsters.length > 0 ? monsters.map((monster) => (
           <MonsterCard key={monster.id}
             item={monster}
@@ -71,7 +68,7 @@ function Monsters() {
         ) : (
           <LoadingOverlay visible={isLoading} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
         )}
-      </SimpleGrid>
+      </Stack>
 
       <Affix 
         position={{ bottom: 20, right: 20 }} 
