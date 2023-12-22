@@ -30,7 +30,7 @@ function Stages(props: Props) {
         </div>
       </Alert>
 
-      <Accordion defaultValue="new">
+      <Accordion>
         <Item refId={props.refId} />
       </Accordion>
     </>
