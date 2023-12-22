@@ -20,12 +20,12 @@ import classes from '../../../css/Nav.module.css';
 import { GiMonsterGrasp } from 'react-icons/gi';
 import { useForm } from '@mantine/form';
 import { useState } from 'react';
-import { theme } from '../../../theme';
+import { theme } from '../../../../theme';
 import { BiInfoCircle } from 'react-icons/bi';
-import { Monster } from '../useGetData';
+import { Monster } from '../../useGetData';
 import { BsFillPersonFill } from 'react-icons/bs';
 import { AiFillDelete } from 'react-icons/ai';
-import Alerts from '../Alerts';
+import Alerts from '../../Alerts';
 import CopyURL from './CopyURL';
 
 interface Props {

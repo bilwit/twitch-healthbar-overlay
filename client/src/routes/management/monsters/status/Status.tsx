@@ -2,9 +2,9 @@
 import { 
   Button,
 } from '@mantine/core';
-import { Monster } from './useGetMonsters';
-import useWebSocket from '../../display/useWebSocket';
-import { theme } from '../../../theme';
+import useWebSocket from '../../../display/useWebSocket';
+import { theme } from '../../../../theme';
+import { Monster } from '../../useGetData';
 
 interface Props {
   data?: Monster,

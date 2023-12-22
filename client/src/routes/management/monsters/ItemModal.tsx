@@ -7,11 +7,11 @@ import {
 import { Monster } from '../useGetData';
 import { FaWrench } from 'react-icons/fa';
 import { HiOutlineStatusOnline } from 'react-icons/hi';
-import Properties from './Properties';
-import Status from './Status';
+import Properties from './properties';
+import Status from './status';
 import { useState } from 'react';
 import { MdHealthAndSafety } from 'react-icons/md';
-import Stages from './Stages';
+import Stages from './stages';
 
 interface Props {
   isOpened: boolean,
