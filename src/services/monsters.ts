@@ -16,7 +16,8 @@ export interface Monster_CB {
 
 const prisma = new PrismaClient();
 
-export default async function getMonsters(maxHealthInit: number, TwitchEmitter: EventEmitter): Promise<Monster_CB[]> {
+export default async function getMonsters(maxHealthInit: number, TwitchEmitter: EventEmitter): Promise<Map<number, Monster_CB>
+> {
   try {
     const monsters = await prisma.monster.findMany({
       select: {
@@ -27,22 +28,50 @@ export default async function getMonsters(maxHealthInit: number, TwitchEmitter: 
       where: {
         published: true,
       }
-    })
+    });
   
     if (monsters && Array.isArray(monsters) && monsters.length > 0) {
-      return monsters.map((monster) => {
-        return Monster(monster, maxHealthInit, TwitchEmitter);
-      });
+      const monsterDict = new Map<number, Monster_CB>();
+
+      for (const monster of monsters) {
+        monsterDict.set(monster.id, Monster(monster, maxHealthInit, TwitchEmitter));
+      }
+
+      return monsterDict;
     } else {
-      return [];
+      return new Map<number, Monster_CB>();
     }
   } catch (e) {
     console.error(e);
-    return [];
+    return new Map<number, Monster_CB>();
   }
 }
 
-function Monster(monster: Monster, maxHealth: number, TwitchEmitter: EventEmitter): any {
+export async function getMonster(id: number, maxHealthInit: number, TwitchEmitter: EventEmitter): Promise<Monster_CB | null> {
+  try {
+    const monster = await prisma.monster.findFirst({
+      select: {
+        id: true,
+        hp_multiplier: true,
+        trigger_words: true,
+      },
+      where: {
+        id: id,
+      }
+    });
+
+    if (monster) {
+      return Monster(monster, maxHealthInit, TwitchEmitter);
+    } else {
+      throw 'Monster ID not found';
+    }
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+}
+
+export function Monster(monster: Monster, maxHealth: number, TwitchEmitter: EventEmitter): any {
   try {
     // initialize health
     let MaxHealth = maxHealth * monster.hp_multiplier;
@@ -66,9 +95,11 @@ function Monster(monster: Monster, maxHealth: number, TwitchEmitter: EventEmitte
       }
     })
 
-    TwitchEmitter.on('current', (data) => {
-      if (Number(data.id) === Number(monster.id)) {
+    TwitchEmitter.on('reset', (data) => {
+      if (data.id === monster.id) {
+        CurrentHealth.value = CurrentHealth.maxHealth;
         updateHealth();
+        console.log(consoleLogStyling('health', '(' + monster.id + ') Health Reset: ' + MaxHealth));
       }
     })
 

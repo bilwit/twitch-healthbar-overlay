@@ -6,7 +6,6 @@ import {
   Text,
   Avatar,
   Stack,
-  Group,
 } from '@mantine/core';
 import { Monster } from '../useGetData';
 import { useDisclosure } from '@mantine/hooks';

@@ -33,7 +33,7 @@ const TwitchEmitter = new EventEmitter();
 app.use((req: any, _res, next) => {
   req['db'] = prisma;
   req['TwitchEmitter'] = TwitchEmitter;
-  return next()
+  return next();
 })
 
 // console.log(process.env)

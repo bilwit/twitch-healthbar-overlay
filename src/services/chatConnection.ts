@@ -5,7 +5,7 @@ import auth, { validate } from './auth';
 import { PrismaClient } from '@prisma/client';
 import consoleLogStyling from '../utils/consoleLogStyling';
 import parser from './parser';
-import getMonsters, { Monster_CB } from './monsters';
+import getMonsters, { Monster, Monster_CB, getMonster } from './monsters';
 import { fetchChatters } from '../utils/twitch';
 
 const TWITCH_IRC_ADDRESS = 'ws://irc-ws.chat.twitch.tv:80';
@@ -83,7 +83,21 @@ export default async function ChatConnection (db: PrismaClient) {
                   }
                 }, 15000);
       
-                const monsters: Monster_CB[] = await getMonsters(MaxHealth, TwitchEmitter);
+                const monsters: Map<number, Monster_CB> = await getMonsters(MaxHealth, TwitchEmitter);
+
+                TwitchEmitter.on('publish', async (data) => {
+                  if (data.status === true) {
+                    const addedMonster: Monster_CB | null = await getMonster(data.id, MaxHealth, TwitchEmitter);
+                    if (addedMonster) {
+                      monsters.set(Number(data.id), addedMonster) ;
+                      console.log(consoleLogStyling('health', '(' + data.id + ')' + 'Monster Added'));
+                    }
+                  }
+                  if (data.status === false) {
+                    monsters.delete(Number(data.id));
+                    console.log(consoleLogStyling('health', '(' + data.id + ')' + 'Monster Disabled'));
+                  }
+                })
           
                 connection.on('message', (message) => {
                   const parsed = parser(message);
@@ -97,8 +111,8 @@ export default async function ChatConnection (db: PrismaClient) {
                         }
                         break;
                       case 'PRIVMSG': // chatter message
-                        if (monsters.length > 0) {
-                          for (const monster of monsters) {
+                        if (monsters.size > 0) {
+                          for (let [_key, monster] of monsters) {
                             const numOfTriggers = checkTriggerWords(parsed.parameters, monster.trigger_words);
                             if (numOfTriggers > 0) {
                               monster.update(-numOfTriggers, MaxHealth);
