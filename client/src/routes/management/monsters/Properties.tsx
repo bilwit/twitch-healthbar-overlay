@@ -215,24 +215,31 @@ function Properties(props: Props) {
               placeholder="Mr. Snake"
               {...CreateForm.getInputProps('name')}
             />
-            <NumberInput
-              className={classes['margin-bottom-1']}
-              required
-              label="HP Per-Chat User"
-              {...CreateForm.getInputProps('hp_multiplier')}
-            />
+
+            <Grid grow>
+              <Grid.Col span={5}>
+                <NumberInput
+                  className={classes['margin-bottom-1']}
+                  required
+                  label="HP Per-Chat User"
+                  {...CreateForm.getInputProps('hp_multiplier')}
+                />
+              </Grid.Col>
+              <Grid.Col span={5}>
+                <NativeSelect 
+                  label="Health Bar Theme" 
+                  data={['Basic']}
+                  {...CreateForm.getInputProps('bar_theme')}
+                />
+              </Grid.Col>
+            </Grid>
+
             <TagsInput
               withAsterisk
               className={classes['margin-bottom-1']}
               label="Text Triggers" 
               placeholder="Press ENTER per-tag" 
               {...CreateForm.getInputProps('trigger_words')}
-            />
-
-            <NativeSelect 
-              label="Health Bar Theme" 
-              data={['Basic']}
-              {...CreateForm.getInputProps('bar_theme')}
             />
 
             <Group 
