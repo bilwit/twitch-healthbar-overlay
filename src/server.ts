@@ -77,7 +77,7 @@ if (WebSocketServer) {
         if (eventData?.message === 'reset') {
           TwitchEmitter.emit('reset', {
             id: eventData?.id,
-          })
+          });
         }
       }
     });
