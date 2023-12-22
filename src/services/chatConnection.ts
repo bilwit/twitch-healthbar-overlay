@@ -53,7 +53,7 @@ export default async function ChatConnection (db: PrismaClient) {
               connection.sendUTF('PASS oauth:' + tokens.access_token);
               connection.sendUTF('NICK ' + settings.listener_user_name);   
       
-              connection.sendUTF('JOIN #billywhitmore');
+              connection.sendUTF('JOIN #' + settings.channel_name);
       
               connection.on('error', (error) => {
                 console.log(consoleLogStyling('error', '! Connection Error: ' + error.toString()));

@@ -5,6 +5,7 @@ import { UpdatedMonsterData } from './monsters.interface';
 module.exports = Router({ mergeParams: true }).put('/monsters/base/:id', upload.single('avatarFile'), async (req: any, res: any) => {
   try {
 
+    let isPublishedChanged = false;
     let deleteOldAvatarPath = '';
     // delete existing avatar if request indicated change
     if (JSON.parse(req.body.isAvatarChanged)) {
@@ -14,10 +15,15 @@ module.exports = Router({ mergeParams: true }).put('/monsters/base/:id', upload.
         },
         select: {
           avatar_url: true,
+          published: true,
         }
       });
       if (CheckAvatar?.avatar_url) {
         deleteOldAvatarPath = CheckAvatar?.avatar_url;
+      }
+
+      if (CheckAvatar?.published !== JSON.parse(req.body.published)) {
+        isPublishedChanged = true;
       }
     }
 
@@ -41,6 +47,14 @@ module.exports = Router({ mergeParams: true }).put('/monsters/base/:id', upload.
     });
   
     if (monster && monster?.id > 0) {
+
+      // update Twitch service if publish status change
+      // if (isPublishedChanged) {
+      //   req['TwitchEmitter'].emit('publish', {
+      //     id: monster.id,
+      //     status: JSON.parse(req.body.published),
+      //   });
+      // }
 
       if (deleteOldAvatarPath) {
         try {
