@@ -16,7 +16,7 @@ import {
   Overlay,
   NativeSelect,
 } from '@mantine/core';
-import classes from '../../../css/Nav.module.css';
+import classes from '../../../../css/Nav.module.css'
 import { GiMonsterGrasp } from 'react-icons/gi';
 import { useForm } from '@mantine/form';
 import { useState } from 'react';

@@ -5,7 +5,7 @@ import {
     Grid,
     TextInput,
   } from '@mantine/core';
-  import classes from '../../../css/Nav.module.css';
+  import classes from '../../../../css/Nav.module.css';
   import { theme } from '../../../../theme';
   
   interface Props {

@@ -15,6 +15,8 @@ import {
     Text,
     Overlay,
     NativeSelect,
+    Stack,
+    Accordion,
   } from '@mantine/core';
   import classes from '../../../css/Nav.module.css';
   import { GiMonsterGrasp } from 'react-icons/gi';
@@ -26,6 +28,7 @@ import {
   import { AiFillDelete } from 'react-icons/ai';
   import Alerts from '../../Alerts';
   import CopyURL from '../properties/CopyURL';
+import Item from './Item';
   
   interface Props {
     refId?: number,
@@ -43,6 +46,7 @@ import {
           variant="light" 
           color="indigo" 
           title="" 
+          mb={"md"}
           icon={
             <BiInfoCircle 
               size="1rem" 
@@ -51,9 +55,13 @@ import {
           }
         >
           <div style={{ display: 'flex' }}>
-            Change the display avatar image based on health percentage.
+            Change the displayed avatar image based on health percentage.
           </div>
         </Alert>
+
+        <Accordion defaultValue="new">
+          <Item refId={props.refId} />
+        </Accordion>
       </>
     );
   }
