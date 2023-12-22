@@ -9,6 +9,13 @@ export interface HealthBar {
   avatar_url?: string,
 }
 
+export interface Stage {
+  id: number,
+  hp_value: number,
+  avatar_url?: string,
+  ref_id: string,
+}
+
 export interface Monster {
   id: number,
   created_at: Date,
@@ -23,18 +30,18 @@ export interface Monster {
 
 interface ResponseData {
   success: boolean,
-  data: HealthBar[] | Monster[],
+  data: any[],
   msg?: string,
 }
 
 function useGetData(endpoint: string, id?: string | null): { 
   isLoading: boolean,
-  data: HealthBar[] | Monster[],
-  setData: React.Dispatch<React.SetStateAction<HealthBar[] | Monster[]>>,
+  data: any[],
+  setData: React.Dispatch<React.SetStateAction<any[]>>,
   error: string, 
 } {
   const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState<HealthBar[] | Monster[]>([]);
+  const [data, setData] = useState<any[]>([]);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -48,13 +55,13 @@ function useGetData(endpoint: string, id?: string | null): {
           const responseJson: ResponseData = await res.json();
           if (responseJson.success) {
             setIsLoading(false);
-            return setData(responseJson.data.sort((a, b) => a.created_at < b.created_at ? -1 : 1));
+            return setData(responseJson.data.sort((a, b) => ('created_at' in a && 'created_at' in b) ? a.created_at < b.created_at ? -1 : 1 : 1));
           } 
         }
         throw true;
       } catch (e) {
         setIsLoading(false);
-        setError('Could not load healthbars');
+        setError('Could not load data');
       }
     }
 

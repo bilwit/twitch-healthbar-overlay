@@ -26,12 +26,16 @@ interface Props {
     id: number,
     avatar_url: string,
     hp_value: number,
-  }
+  },
+  setData: React.Dispatch<React.SetStateAction<any[]>>,
+  accordian_key: string,
+  title: string,
 } 
 
 interface FormDataInterface {
   hp_value: number,
   avatarFile: File | null,
+  isAvatarChanged: boolean,
 }
   
 function Item(props: Props) {
@@ -47,6 +51,7 @@ function Item(props: Props) {
       ref_id: props.ref_id,
       hp_value: props?.data?.hp_value || 25,
       avatarFile: null,
+      isAvatarChanged: false,
     },
 
     validate: {
@@ -57,7 +62,7 @@ function Item(props: Props) {
 
   return (
     <>
-      <Accordion.Item value={'new'}>
+      <Accordion.Item value={props.accordian_key}>
         <Alerts
           error={error}
           warning={warning}
@@ -65,9 +70,13 @@ function Item(props: Props) {
         />
         <Accordion.Control>
           <Group wrap="nowrap">
-            <Avatar src={props?.data?.avatar_url} radius="xl" size="lg" />
+            <Avatar 
+              src={props?.data?.avatar_url ? window.location.origin + '/api/avatar/' + props?.data?.avatar_url : null} 
+              radius="xl" 
+              size="lg" 
+            />
             <div>
-              <Text>Add Stage</Text>
+              <Text>{props.title}</Text>
             </div>
           </Group>
         </Accordion.Control>
@@ -86,6 +95,9 @@ function Item(props: Props) {
               if (avatarFile) {
                 submitFormData.set('avatarFile', avatarFile);
               }
+              if (isAvatarChanged) {
+                submitFormData.set('isAvatarChanged', 'true');
+              }
               try {
                 const result = await fetch(
                   props?.data?.id ? '/api/monsters/stages/' + props.data.id : '/api/monsters/stages',
@@ -97,24 +109,26 @@ function Item(props: Props) {
                 if (result) {
                   const responseJson = await result.json();
                   if (responseJson.success) {
-                    // // update main page list in parent component
-                    // if (!props?.data?.id) {
-                    //   // new monster
-                    //   setIsSubmitted(true);
-                    //   props.setMonsters((prev) => ([
-                    //     ...prev,
-                    //     responseJson.data[0],
-                    //   ]));
-                    //   props.setModalName(responseJson.data[0].name);
-                    //   setInfo('Monster created!')
-                    // } else {
-                    //   // edited monster
-                    //   props.setMonsters((prev) => prev.map((item) => item.id === responseJson.data[0].id ? responseJson.data[0] : item).sort((a, b) => a.updated_at < b.updated_at ? -1 : 1));
-                    //   setIsEditSuccess('Monster values updated')
-                    // }
+                    // update main page list in parent component
+                    if (!props?.data?.id) {
+                      // new item
+                      props.setData((prev) => ([
+                        ...prev,
+                        responseJson.data[0],
+                      ].sort((a, b) => a.hp_value < b.hp_value ? 1 : -1)));
+
+                      CreateForm.reset();
+                      setAvatarFile(null);
+                      setAvatar(null);
+                      setIsAvatarChanged(false);
+                    } else {
+                      // edited item
+                      props.setData((prev) => prev.map((item) => item.id === responseJson.data[0].id ? responseJson.data[0] : item).sort((a, b) => a.updated_at < b.updated_at ? -1 : 1));
+                      setIsEditSuccess('Stage values updated')
+                    }
                     
-                    // setWarning('');
-                    // return setError('');
+                    setWarning('');
+                    return setError('');
                   } else {
                     if (responseJson?.msg) {
                       throw responseJson.msg;

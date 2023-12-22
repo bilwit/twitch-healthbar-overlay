@@ -4,7 +4,7 @@ module.exports = Router({ mergeParams: true }).get('/monsters/stages/:id', async
   try {
     const stage = await req.db.stages.findFirst({
       where: {
-        id: Number(req.params.id),
+        ref_id: Number(req.params.id),
       },
     });
 

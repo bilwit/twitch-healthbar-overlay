@@ -2,15 +2,23 @@
 import { 
   Alert,
   Accordion,
+  LoadingOverlay,
 } from '@mantine/core';
 import { BiInfoCircle } from 'react-icons/bi';
 import Item from './Item';
+import useGetData from '../../useGetData';
   
 interface Props {
-  refId?: number,
+  refId: number,
 }
 
 function Stages(props: Props) {
+  const { 
+    isLoading, 
+    data, 
+    setData, 
+  } = useGetData('monsters/stages', String(props.refId));
+
   return (
     <>
       <Alert 
@@ -30,11 +38,26 @@ function Stages(props: Props) {
         </div>
       </Alert>
 
-      {props?.refId && (
-        <Accordion>
-          <Item ref_id={props.refId} />
-        </Accordion>
-      )}
+      <Accordion>
+        <Item 
+          ref_id={props.refId} 
+          setData={setData}
+          accordian_key="new"
+          title="Add Stage"
+        />
+        {isLoading ? (
+          <LoadingOverlay visible={isLoading} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
+        ) : data.map((item) => (
+          <Item 
+            key={item.id}
+            ref_id={props.refId} 
+            setData={setData}
+            data={item}
+            accordian_key={String(item.id)}
+            title={item.hp_value + '%'}
+          />
+        ))}
+      </Accordion>
     </>
   );
 }

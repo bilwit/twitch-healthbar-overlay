@@ -10,27 +10,39 @@ interface NewStage {
 
 module.exports = Router({ mergeParams: true }).post('/monsters/stages', upload.single('avatarFile'), async (req: any, res: any) => {
   try {
-    const newData: NewStage = {
-      hp_value: JSON.parse(req.body.hp_value),
-      ref_id: JSON.parse(req.body.ref_id),
-    }
-
-    if (JSON.parse(req.body.isAvatarChanged)) {
-      newData['avatar_url'] = req?.file?.filename || undefined;
-    }
-
-    const stage = await req.db.stages.create({
-      data: newData,
+    const isNotUnique = await req.db.stages.findFirst({
+      where: {
+        hp_value: JSON.parse(req.body.hp_value),
+        ref_id: Number(req.params.id),
+      },
     });
-  
-    if (stage && stage?.id > 0) {
-      return res.status(200).json({
-        success: true,
-        data: [stage],
-      });
+
+    if (isNotUnique) {
+      throw new Error('Stage for this monster at the same HP value exists');
     } else {
-      throw new Error('Could not create stage');
+      const newData: NewStage = {
+        hp_value: JSON.parse(req.body.hp_value),
+        ref_id: JSON.parse(req.body.ref_id),
+      }
+  
+      if (JSON.parse(req.body.isAvatarChanged)) {
+        newData['avatar_url'] = req?.file?.filename || undefined;
+      }
+  
+      const stage = await req.db.stages.create({
+        data: newData,
+      });
+    
+      if (stage && stage?.id > 0) {
+        return res.status(200).json({
+          success: true,
+          data: [stage],
+        });
+      } else {
+        throw new Error('Could not create stage');
+      }
     }
+
   } catch (e: any) {
     let msg = e;
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
