@@ -10,6 +10,8 @@ import { HiOutlineStatusOnline } from 'react-icons/hi';
 import Properties from './Properties';
 import Status from './Status';
 import { useState } from 'react';
+import { MdHealthAndSafety } from 'react-icons/md';
+import Stages from './Stages';
 
 interface Props {
   isOpened: boolean,
@@ -38,6 +40,11 @@ function ItemModal(props: Props) {
             <Tabs.Tab value="properties" leftSection={<FaWrench style={iconStyle} />}>
               Properties
             </Tabs.Tab>
+            {props?.data?.id && (
+              <Tabs.Tab value="stages" leftSection={<MdHealthAndSafety  style={iconStyle} />}>
+                Health Stages
+              </Tabs.Tab>
+            )}
             {props?.data?.id && (props.data.published) && (
               <Tabs.Tab value="status" leftSection={<HiOutlineStatusOnline style={iconStyle} />}>
                 Status
@@ -53,6 +60,10 @@ function ItemModal(props: Props) {
               setMonsters={props.setMonsters}
               setModalName={setModalName}
             />
+          </Tabs.Panel>
+
+          <Tabs.Panel mt="md" value="stages">
+            <Stages refId={props.data?.id} />
           </Tabs.Panel>
 
           <Tabs.Panel mt="md" value="status">
