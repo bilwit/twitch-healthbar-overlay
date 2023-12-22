@@ -19,7 +19,6 @@ function useWebSocket(listenId: string): ReturnData {
   });
   const [connectedSocket, setConnectedSocket] = useState<WebSocket>();
 
-
   useEffect(() => {
     let socket: WebSocket | undefined = undefined;
     if (listenId) {
@@ -29,6 +28,15 @@ function useWebSocket(listenId: string): ReturnData {
         if (socket) {
           socket.onopen = () => {
             setIsConnected(true);
+
+            // initialize health
+            if (socket) {
+              console.log('initialize')
+              socket.send(JSON.stringify({ 
+                message: 'current',
+                id: listenId,
+              }));
+            }
           }
     
           socket.onmessage = (event: any) => {

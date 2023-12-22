@@ -12,7 +12,6 @@ interface Props {
 
 function Status(props: Props) {
   const { data, isConnected, connectedSocket } = useWebSocket(String(props?.data?.id));
-  
   return (
     <>
       {isConnected && (

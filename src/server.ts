@@ -79,6 +79,12 @@ if (WebSocketServer) {
             id: eventData?.id,
           });
         }
+        if (eventData?.message === 'current') {
+          // send current health status on request
+          TwitchEmitter.emit('current', {
+            id: eventData?.id,
+          });
+        }
       }
     });
 

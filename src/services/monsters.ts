@@ -66,6 +66,12 @@ function Monster(monster: Monster, maxHealth: number, TwitchEmitter: EventEmitte
       }
     })
 
+    TwitchEmitter.on('current', (data) => {
+      if (Number(data.id) === Number(monster.id)) {
+        updateHealth();
+      }
+    })
+
     // send initial health data
     updateHealth();
     console.log(consoleLogStyling('health', '(' + monster.id + ') Initial Health: ' + MaxHealth));
