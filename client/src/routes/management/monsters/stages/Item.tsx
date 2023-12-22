@@ -21,7 +21,7 @@ import { theme } from '../../../../theme';
 import Alerts from '../../Alerts';
   
 interface Props {
-  refId?: number,
+  refId: number,
   data?: {
     id: number,
     avatar_url: string,
@@ -44,6 +44,7 @@ function Item(props: Props) {
 
   const CreateForm = useForm({
     initialValues: {
+      refId: props.refId,
       hp_value: props?.data?.hp_value || 25,
       avatarFile: null,
     },

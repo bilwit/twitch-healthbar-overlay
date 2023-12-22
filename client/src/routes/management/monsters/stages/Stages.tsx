@@ -30,9 +30,11 @@ function Stages(props: Props) {
         </div>
       </Alert>
 
-      <Accordion>
-        <Item refId={props.refId} />
-      </Accordion>
+      {props?.refId && (
+        <Accordion>
+          <Item refId={props.refId} />
+        </Accordion>
+      )}
     </>
   );
 }
