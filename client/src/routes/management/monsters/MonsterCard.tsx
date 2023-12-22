@@ -26,7 +26,6 @@ function Monsters(props: Props) {
         <Badge
           color={props.item.published ? 'green' : 'dark'} 
           variant="light"
-          pl={0}
         >
           {props.item.published ? 'Enabled' : 'Disabled'}
         </Badge>
