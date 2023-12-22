@@ -9,7 +9,7 @@ import {
   
   function Bars() {
     const params = useParams();
-    const { isLoading, data: monsters } = useGetData('monsters', params?.['*']);
+    const { isLoading, data: monsters } = useGetData('monsters/base', params?.['*']);
   
     const { data } = useWebSocket(String(monsters?.[0]?.id));
   

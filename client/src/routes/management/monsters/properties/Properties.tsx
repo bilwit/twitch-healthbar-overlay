@@ -118,7 +118,7 @@ function Properties(props: Props) {
           submitFormData.set('isAvatarChanged', JSON.stringify(isAvatarChanged));
           try {
             const result = await fetch(
-              props?.data?.id ? '/api/monsters/' + props.data.id : '/api/monsters',
+              props?.data?.id ? '/api/monsters/base/' + props.data.id : '/api/monsters/base',
               { 
                 method: props?.data?.id ? 'PUT' : 'POST',
                 body: submitFormData,

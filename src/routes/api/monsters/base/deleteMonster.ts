@@ -1,8 +1,9 @@
+import { monster } from '@prisma/client';
 import { Router } from 'express';
 
-module.exports = Router({ mergeParams: true }).get('/monsters/:id', async (req: any, res: any) => {
+module.exports = Router({ mergeParams: true }).delete('/monsters/base/:id', async (req: any, res: any) => {
   try {
-    const monster = await req.db.monster.findFirst({
+    const monster: monster = await req.db.monster.delete({
       where: {
         id: Number(req.params.id),
       },
@@ -11,7 +12,7 @@ module.exports = Router({ mergeParams: true }).get('/monsters/:id', async (req: 
     if (monster) {
       return res.status(200).json({
         success: true,
-        data: [monster],
+        data: [{ id: monster.id }],
       });
     } else {
       throw true;

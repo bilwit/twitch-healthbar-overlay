@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import { Prisma } from '@prisma/client';
-import upload from '../../../utils/storage';
+import upload from '../../../../utils/storage';
 import { UpdatedMonsterData } from './monsters.interface';
 
-module.exports = Router({ mergeParams: true }).post('/monsters', upload.single('avatarFile'), async (req: any, res: any) => {
+module.exports = Router({ mergeParams: true }).post('/monsters/base', upload.single('avatarFile'), async (req: any, res: any) => {
   try {
     const newData: UpdatedMonsterData = {
       name: JSON.parse(req.body.name),

@@ -21,7 +21,7 @@ function Monsters() {
     data: monsters, 
     setData: setMonsters, 
     error,
-  } = useGetData('monsters');
+  } = useGetData('monsters/base/all');
   const [isOpened, { open, close }] = useDisclosure(false);
 
   return (

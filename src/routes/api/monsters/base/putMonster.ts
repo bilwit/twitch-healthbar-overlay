@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import upload, { deleteAvatar } from '../../../utils/storage';
+import upload, { deleteAvatar } from '../../../../utils/storage';
 import { UpdatedMonsterData } from './monsters.interface';
 
-module.exports = Router({ mergeParams: true }).put('/monsters/:id', upload.single('avatarFile'), async (req: any, res: any) => {
+module.exports = Router({ mergeParams: true }).put('/monsters/base/:id', upload.single('avatarFile'), async (req: any, res: any) => {
   try {
 
     let deleteOldAvatarPath = '';
