@@ -20,6 +20,13 @@ model monster {
   trigger_words       String    @db.VarChar(255)
   avatar_url          String?   @db.VarChar(255)
   bar_theme           String    @db.VarChar(255) @default("basic")
+  stages              stages[]
+}
+
+model stages {
+  id                  Int       @id @default(autoincrement())
+  ref                 monster   @relation(fields: [ref_id], references: [id])
+  ref_id              Int       // relation scalar field  (used in the `@relation` attribute above)
 }
 
 model settings {

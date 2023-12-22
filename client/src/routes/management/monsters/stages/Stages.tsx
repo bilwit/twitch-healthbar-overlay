@@ -32,7 +32,7 @@ function Stages(props: Props) {
 
       {props?.refId && (
         <Accordion>
-          <Item refId={props.refId} />
+          <Item ref_id={props.refId} />
         </Accordion>
       )}
     </>
