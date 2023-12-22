@@ -62,9 +62,11 @@ function ItemModal(props: Props) {
             />
           </Tabs.Panel>
 
-          <Tabs.Panel mt="md" value="stages">
-            <Stages refId={props.data?.id} />
-          </Tabs.Panel>
+          {props.data?.id && (
+            <Tabs.Panel mt="md" value="stages">
+              <Stages refId={props.data?.id} />
+            </Tabs.Panel>
+          )}
 
           <Tabs.Panel mt="md" value="status">
             <Status data={props.data} />
