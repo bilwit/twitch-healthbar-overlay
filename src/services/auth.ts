@@ -64,7 +64,10 @@ export default async function auth(BroadcasterId: string, settings: Settings): P
           BroadcasterId: BroadcasterId,
         }
       } else {
-        console.log(ret);
+        if (ret?.message === 'Invalid refresh token') {
+          prisma.refresh_token.deleteMany({});
+        }
+
         throw new Error('Could not negotiate access tokens');
       }
 
