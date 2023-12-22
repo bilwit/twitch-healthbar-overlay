@@ -10,6 +10,7 @@ import {
   NumberInput,
   Accordion, 
   Avatar,
+  Grid,
 } from '@mantine/core';
 import { useState } from 'react';
 import { BsFillPersonFill } from 'react-icons/bs';
@@ -55,51 +56,60 @@ function Item(props: Props) {
           </Group>
         </Accordion.Control>
         <Accordion.Panel>
-          <NumberInput
-            className={classes['margin-bottom-1']}
-            required
-            label="Health %"
-            {...CreateForm.getInputProps('hp_value')}
-          />
-          <Card shadow="sm" padding="lg" radius="sm" withBorder>
-            <Card.Section>
-              {avatar ? (
-                <Image
-                  src={avatar}
-                  height={75}
-                  alt="Image"
-                />
-              ) : props?.data?.avatar_url ? (
-                <Image
-                  src={window.location.origin + '/api/avatar/' + props?.data?.avatar_url}
-                  height={75}
-                  alt="Image"
-                />
-              ) : (
-                <Group justify='center'>
-                  <BsFillPersonFill size={75} />
-                  <Overlay color="#000" backgroundOpacity={0.35} blur={15} />
-                </Group>
-              )}
-            </Card.Section>
-          </Card>
-          <FileInput 
-            accept="image/png,image/jpeg,image/gif,image/svg" 
-            placeholder="Upload File" 
-            onChange={(data) => {
-              if (data) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                  if (event?.target) {
-                    setAvatar(event?.target?.result);
+          <Grid>
+            <Grid.Col span={7}>
+              <Text size="sm">
+                Avatar Preview 
+              </Text>
+              <Card shadow="sm" padding="lg" radius="sm" withBorder>
+                <Card.Section>
+                  {avatar ? (
+                    <Image
+                      src={avatar}
+                      height={75}
+                      alt="Image"
+                    />
+                  ) : props?.data?.avatar_url ? (
+                    <Image
+                      src={window.location.origin + '/api/avatar/' + props?.data?.avatar_url}
+                      height={75}
+                      alt="Image"
+                    />
+                  ) : (
+                    <Group justify='center'>
+                      <BsFillPersonFill size={75} />
+                      <Overlay color="#000" backgroundOpacity={0.35} blur={15} />
+                    </Group>
+                  )}
+                </Card.Section>
+              </Card>
+              <FileInput 
+                accept="image/png,image/jpeg,image/gif,image/svg" 
+                placeholder="Upload File" 
+                onChange={(data) => {
+                  if (data) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                      if (event?.target) {
+                        setAvatar(event?.target?.result);
+                      }
+                    };
+                    reader.readAsDataURL(data);
+                    setAvatarFile(data);
+                    setIsAvatarChanged(true);
                   }
-                };
-                reader.readAsDataURL(data);
-                setAvatarFile(data);
-                setIsAvatarChanged(true);
-              }
-            }}
-          />
+                }}
+              />
+            </Grid.Col>
+            <Grid.Col span={5}>
+              <NumberInput
+                className={classes['margin-bottom-1']}
+                required
+                label="Health %"
+                {...CreateForm.getInputProps('hp_value')}
+              />
+            </Grid.Col>
+          </Grid>
 
           <Group justify="center" mt="xl">
             <Button 
