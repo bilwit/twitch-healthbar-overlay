@@ -5,7 +5,7 @@ import auth, { validate } from './auth';
 import { PrismaClient } from '@prisma/client';
 import consoleLogStyling from '../utils/consoleLogStyling';
 import parser from './parser';
-import getMonsters, { Monster, Monster_CB, getMonster } from './monsters';
+import getMonsters, { Monster_CB, getMonster } from './monsters';
 import { fetchChatters } from '../utils/twitch';
 
 const TWITCH_IRC_ADDRESS = 'ws://irc-ws.chat.twitch.tv:80';
