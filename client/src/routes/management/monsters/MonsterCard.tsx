@@ -78,11 +78,6 @@ function Monsters(props: Props) {
                 {props.item.hp_multiplier}
               </Text>
             </Stack>
-
-            <div style={{ display: 'flex', width: 'auto' }}>
-
-            </div>
-
           </div>
                     
         </Card.Section>
