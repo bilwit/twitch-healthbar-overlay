@@ -22,7 +22,7 @@ function Monsters(props: Props) {
   
   return (
     <>
-      <Card shadow="sm" padding="lg" radius="md" withBorder>
+      <Card shadow="sm" padding="lg" radius="md" mr="1" withBorder>
         <Badge
           color={props.item.published ? 'green' : 'dark'} 
           variant="light"
