@@ -139,11 +139,15 @@ function Properties(props: Props) {
                     responseJson.data[0],
                   ]));
                   props.setModalName(responseJson.data[0].name);
-                  setInfo('Monster created!')
+                  setInfo('Monster created!');
+
+                  setTimeout(() => props.close(), 1500);
                 } else {
                   // edited monster
                   props.setMonsters((prev) => prev.map((item) => item.id === responseJson.data[0].id ? responseJson.data[0] : item).sort((a, b) => a.updated_at < b.updated_at ? -1 : 1));
-                  setIsEditSuccess('Monster values updated')
+                  setIsEditSuccess('Monster values updated');
+
+                  setTimeout(() => props.close(), 1500);
                 }
                 
                 setWarning('');
