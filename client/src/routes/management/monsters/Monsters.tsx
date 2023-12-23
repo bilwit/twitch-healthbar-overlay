@@ -4,7 +4,6 @@ import {
   Alert,
   Button,
   LoadingOverlay,
-  SimpleGrid,
   Stack,
 } from '@mantine/core';
 import classes from '../../../css/Nav.module.css';
