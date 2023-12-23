@@ -1,6 +1,7 @@
 
 import { 
-  Button, Stack, Title,
+  AspectRatio,
+  Button, Card, Center, Stack, Title,
 } from '@mantine/core';
 import useWebSocket from '../../../display/useWebSocket';
 import { theme } from '../../../../theme';
@@ -21,27 +22,33 @@ function Status(props: Props) {
     <>
       {!isLoading && isConnected && (
         <>
-          <Item 
-            key={props?.data?.id}
-            data={monsters[0]}
-          />
+          <AspectRatio ratio={1080 / 720} maw={300} mx="auto">
+            <Item 
+              key={props?.data?.id}
+              data={monsters[0]}
+            />
+          </AspectRatio>
         
-          <Basic
-            isLoading={isLoading}
-            value={data.value}
-            maxHealth={data.maxHealth}
-          />
+          <AspectRatio ratio={1080 / 720} maw={300} mx="auto">
+            <Basic
+              isLoading={isLoading}
+              value={data.value}
+              maxHealth={data.maxHealth}
+            />
+          </AspectRatio>
 
-          <div style={{ display: 'flex' }}>
-            <Stack 
-              mb="xl" 
-              justify='center'
-            >
-              <Title order={1}>
-                {'HP: ' + (data.value / data.maxHealth * 100) + '%'}
-              </Title>
-            </Stack>
-          </div>
+          <Card>
+            <Center>
+              <Stack 
+                mb="xl" 
+                justify='center'
+              >
+                <Title order={1}>
+                  {'HP: ' + (data.value / data.maxHealth * 100) + '%'}
+                </Title>
+              </Stack>
+            </Center>
+          </Card>
 
           <Stack>
             <Button 
