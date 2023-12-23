@@ -5,17 +5,19 @@ import { UpdatedMonsterData } from './monsters.interface';
 module.exports = Router({ mergeParams: true }).put('/monsters/base/:id', upload.single('avatarFile'), async (req: any, res: any) => {
   try {
     let deleteOldAvatarPath = '';
+
+    const CheckAvatar = await req.db.monster.findFirst({
+      where: {
+        id: Number(req.params.id),
+      },
+      select: {
+        avatar_url: true,
+        published: true,
+      }
+    });
+
     // delete existing avatar if request indicated change
     if (JSON.parse(req.body.isAvatarChanged)) {
-      const CheckAvatar = await req.db.monster.findFirst({
-        where: {
-          id: Number(req.params.id),
-        },
-        select: {
-          avatar_url: true,
-          published: true,
-        }
-      });
       if (CheckAvatar?.avatar_url) {
         deleteOldAvatarPath = CheckAvatar?.avatar_url;
       }
@@ -41,11 +43,24 @@ module.exports = Router({ mergeParams: true }).put('/monsters/base/:id', upload.
     });
   
     if (monster && monster?.id > 0) {
-      // update Twitch service watched monster list in case of publish status change
-      req['TwitchEmitter'].emit('publish', {
-        id: monster.id,
-        status: JSON.parse(req.body.published),
-      });
+
+      if (CheckAvatar.published !== JSON.parse(req.body.published)) {
+        // update Twitch service watched monster list in case of publish status change
+        req['TwitchEmitter'].emit('publish', {
+          id: monster.id,
+          status: JSON.parse(req.body.published),
+        });
+      } else if (JSON.parse(req.body.published)){
+        // re-initialize watched monster to update multiplier/theme/triggers
+        req['TwitchEmitter'].emit('publish', {
+          id: monster.id,
+          status: false,
+        });
+        req['TwitchEmitter'].emit('publish', {
+          id: monster.id,
+          status: true,
+        });
+      }
 
       if (deleteOldAvatarPath) {
         try {
