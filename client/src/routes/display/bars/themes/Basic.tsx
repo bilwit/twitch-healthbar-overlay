@@ -1,7 +1,3 @@
-import { 
-  MantineProvider
-} from '@mantine/core';
-
 interface Props {
   isLoading: boolean,
   value: number,
@@ -10,7 +6,7 @@ interface Props {
 
 function Basic(props: Props) {
   return (
-    <MantineProvider>
+    <>
       {!props.isLoading && (
         <>
           <svg className="healthbar" xmlns="http://www.w3.org/2000/svg" viewBox="0 -0.5 38 9" shape-rendering="crispEdges">
@@ -34,7 +30,7 @@ function Basic(props: Props) {
           </svg>
         </>
       )}
-    </MantineProvider>
+    </>
   );
 }
 

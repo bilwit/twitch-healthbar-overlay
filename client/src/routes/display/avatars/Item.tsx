@@ -1,5 +1,4 @@
 import { 
-  MantineProvider,
   Image,
 } from '@mantine/core';
 import useGetData, { Monster, Stage } from "../../management/useGetData";
@@ -48,13 +47,13 @@ function Item(props: Props) {
   }
 
   return (
-    <MantineProvider>
+    <>
       {!isLoading && props.data && (
         <>
         {displayHealth(data.value, data.maxHealth)}
         </>
       )}
-    </MantineProvider>
+    </>
   );
 }
 
