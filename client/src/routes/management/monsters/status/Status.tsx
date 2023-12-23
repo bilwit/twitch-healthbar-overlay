@@ -1,5 +1,6 @@
 
 import { 
+  Alert,
   AspectRatio,
   Button, Card, Center, Stack, Title,
 } from '@mantine/core';
@@ -8,6 +9,8 @@ import { theme } from '../../../../theme';
 import useGetData, { Monster } from '../../useGetData';
 import Item from '../../../display/avatars/Item';
 import Basic from '../../../display/bars/themes/Basic';
+import { BiInfoCircle } from 'react-icons/bi';
+import classes from '../../../../css/Nav.module.css';
 
 interface Props {
   data?: Monster,
@@ -22,6 +25,19 @@ function Status(props: Props) {
     <>
       {!isLoading && isConnected && (
         <>
+          <Alert 
+            className={classes['margin-bottom-1']}
+            variant="light" 
+            color="indigo" 
+            title="Preview" 
+            icon={
+              <BiInfoCircle 
+                size="1rem" 
+                stroke={1.5} 
+              />
+            }
+          />
+
           <AspectRatio ratio={1080 / 720} maw={300} mx="auto">
             <Item 
               key={props?.data?.id}
