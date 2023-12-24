@@ -21,7 +21,8 @@ model monster {
   avatar_url          String?   @db.VarChar(255)
   bar_theme           String    @db.VarChar(255) @default("basic")
   stages              stages[]
-  relations           relations[]
+  relations           relations @relation(fields: [relations_id], references: [id], onDelete: SetNull)
+  relations_id        Int       // relation scalar field  (used in the `@relation` attribute above)
 }
 
 model stages {
@@ -34,8 +35,7 @@ model stages {
 
 model relations {
   id                  Int       @id @default(autoincrement())
-  ref                 monster   @relation(fields: [ref_id], references: [id], onDelete: Cascade)
-  ref_id              Int       // relation scalar field  (used in the `@relation` attribute above)
+  monster             monster[]
 }
 
 model settings {

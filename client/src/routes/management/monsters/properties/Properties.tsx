@@ -319,7 +319,7 @@ function Properties(props: Props) {
                   e.preventDefault();
                   try {
                     const result = await fetch(
-                      '/api/monsters/' + props?.data?.id,
+                      '/api/monsters/base/' + props?.data?.id,
                       { 
                         method: 'DELETE',
                       },
