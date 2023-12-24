@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-module.exports = Router({ mergeParams: true }).put('/monsters/monster/:id', async (req: any, res: any) => {
+module.exports = Router({ mergeParams: true }).put('/monsters/relations/:id', async (req: any, res: any) => {
   if (!req.query.ref) {
     throw 'No reference id provided';
   }

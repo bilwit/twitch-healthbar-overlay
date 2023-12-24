@@ -7,7 +7,7 @@ import { MdGroupAdd } from 'react-icons/md';
 import useGetData, { Monster } from '../../useGetData';
 import { theme } from '../../../../theme';
 import classes from '../../../../css/Nav.module.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface Props {
   data?: Monster,
@@ -20,11 +20,46 @@ function Relations(props: Props) {
     error,
   } = useGetData('monsters/base/all');
 
-  const [relations, setRelations] = useState<String[]>([]);
-  const [selected, setSelected] = useState({
-    label: 'None',
-    value: '0',
-  });
+  const [relations, setRelations] = useState<Monster[]>([]);
+  const [selected, setSelected] = useState('None');
+  const [selectList, setSelectList] = useState(monsters.filter((item) => props.data?.id && item.id !== props.data.id).map((item) => item.name));
+
+  useEffect(() => {
+    if (!isLoading && monsters && Array.isArray(monsters) && monsters.length > 0) {
+      setSelectList(monsters.filter((item) => props.data?.id && item.id !== props.data.id).map((item) => item.name));
+    }
+  }, [isLoading, monsters]);
+
+  console.log(relations)
+
+  const submit = async () => {
+    let ref_id = 0;
+    for (const monster of monsters) {
+      if (monster.name === selected) {
+        ref_id = monster.id;
+      }
+    }
+
+    const result = await fetch(
+      '/api/monsters/relations/' + props.data?.id + '?ref=' + ref_id,
+      { 
+        method: 'PUT',
+      },
+    );
+
+    if (result) {
+      const responseJson = await result.json();
+      if (responseJson.success) {
+        setRelations((prev) => ([...prev, ...responseJson.data]));
+        setSelectList((prev) => prev.filter((item) => item.id !== ref_id));
+      } else {
+        if (responseJson?.msg) {
+          throw responseJson.msg;
+        }
+        throw '';
+      }
+    }
+  }
 
   return (
     <>
@@ -65,17 +100,14 @@ function Relations(props: Props) {
       <Group>
         <NativeSelect 
           label="Select Available Monster" 
-          data={props.data?.id ? ['None', ...monsters.filter((item) => props.data?.id && item.id !== props.data.id).map((item) => item.name)] : ['None']}
-          onChange={(e) => setSelected({
-            label: e.currentTarget.name,
-            value: e.currentTarget.value,
-          })}
+          data={props.data?.id ? ['None', ...selectList] : ['None']}
+          onChange={(e) => setSelected(e.currentTarget.value)}
         />
       </Group>
 
       <Center>
         <Button 
-          disabled={selected.value === 'None'}
+          disabled={selected === 'None'}
           color={theme.colors.indigo[5]}
           variant="gradient"
           gradient={{ from: theme.colors.indigo[9], to: 'red', deg: 90 }}
@@ -84,7 +116,7 @@ function Relations(props: Props) {
           ml="xl"
           onClick={(e) => {
             e.preventDefault();
-            open();
+            submit();
           }}
           leftSection={
             <MdGroupAdd  
@@ -102,7 +134,7 @@ function Relations(props: Props) {
         <LoadingOverlay visible={isLoading} zIndex={2} overlayProps={{ radius: "sm", blur: 2 }} />
       ) : (
         <>
-        list
+          {relations.map((item) => item)}
         </>
       )}
       </Stack>
