@@ -6,11 +6,13 @@ import {
   Text,
   Avatar,
   Stack,
+  Group,
 } from '@mantine/core';
 import { Monster } from '../useGetData';
 import { useDisclosure } from '@mantine/hooks';
 import ItemModal from './ItemModal';
 import { GiMonsterGrasp } from 'react-icons/gi';
+import { MdEdit } from 'react-icons/md';
 
 interface Props {
   item: Monster,
@@ -23,13 +25,6 @@ function Monsters(props: Props) {
   return (
     <>
       <Card shadow="sm" padding="lg" radius="md" mr="1" pb="xs" withBorder>
-        <Badge
-          color={props.item.published ? 'green' : 'dark'} 
-          variant="light"
-        >
-          {props.item.published ? 'Enabled' : 'Disabled'}
-        </Badge>
-
         <Card.Section mt={0} mb="xs">
           <div style={{ display: 'flex' }}>
             {props?.item?.avatar_url ? (
@@ -48,18 +43,12 @@ function Monsters(props: Props) {
 
             <Stack gap="0">
               <Text fw={600} mb="sm">{props.item.name}</Text>
-              <Button 
-                justify='end'
-                variant="light" 
-                color="indigo" 
-                radius="md"
-                onClick={(e) => {
-                  e.preventDefault();
-                  open();
-                }}
+              <Badge
+                color={props.item.published ? 'green' : 'dark'} 
+                variant="light"
               >
-                Edit
-              </Button>
+                {props.item.published ? 'Enabled' : 'Disabled'}
+              </Badge>
             </Stack>
 
             <Stack gap="0" ml="lg">
@@ -78,6 +67,30 @@ function Monsters(props: Props) {
                 {props.item.hp_multiplier}
               </Text>
             </Stack>
+
+            <Space w="md" />
+
+            <Group>
+              <Button 
+                justify='end'
+                variant="light" 
+                color="indigo" 
+                radius="md"
+                ml="xl"
+                onClick={(e) => {
+                  e.preventDefault();
+                  open();
+                }}
+                leftSection={
+                  <MdEdit 
+                    size="1rem" 
+                    stroke={1.5} 
+                  />
+                }
+              >
+                Edit
+              </Button>
+            </Group>
           </div>
                     
         </Card.Section>
