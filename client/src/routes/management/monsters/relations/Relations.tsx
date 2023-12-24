@@ -20,17 +20,36 @@ function Relations(props: Props) {
     error,
   } = useGetData('monsters/base/all');
 
-  const [relations, setRelations] = useState<Monster[]>([]);
+  const { 
+    isLoading: isLoadingRelations,
+    data: relations, 
+    setData: setRelations,
+  } = useGetData('monsters/relations/' + props?.data?.relations_id);
+
   const [selected, setSelected] = useState('None');
-  const [selectList, setSelectList] = useState(monsters.filter((item) => props.data?.id && item.id !== props.data.id).map((item) => item.name));
+  const [selectList, setSelectList] = useState<string[]>([]);
 
+  // set available monster relation list
   useEffect(() => {
-    if (!isLoading && monsters && Array.isArray(monsters) && monsters.length > 0) {
-      setSelectList(monsters.filter((item) => props.data?.id && item.id !== props.data.id).map((item) => item.name));
-    }
-  }, [isLoading, monsters]);
+    if (!isLoading && !isLoadingRelations && monsters && Array.isArray(monsters) && monsters.length > 0) {
+      const dict: { [key: string]: number } = {};
+      const list: string[] = [];
 
-  console.log(relations)
+      if (relations.length > 0) {
+        for (const relation of relations) {
+          dict[relation.name] = relation.id;
+        }
+      }
+      
+      for (const monster of monsters) {
+        if (monster.id !== props.data?.id && !(monster.name in dict)) {
+          list.push(monster.name);
+        }
+      }
+
+      setSelectList(list);
+    }
+  }, [isLoading, isLoadingRelations, monsters, relations]);
 
   const submit = async () => {
     let ref_id = 0;
@@ -51,7 +70,7 @@ function Relations(props: Props) {
       const responseJson = await result.json();
       if (responseJson.success) {
         setRelations((prev) => ([...prev, ...responseJson.data]));
-        setSelectList((prev) => prev.filter((item) => item.id !== ref_id));
+        setSelectList((prev) => prev.filter((item) => ![...prev, ...responseJson.data].map((item) => item.name).includes(item)));
       } else {
         if (responseJson?.msg) {
           throw responseJson.msg;
@@ -134,7 +153,7 @@ function Relations(props: Props) {
         <LoadingOverlay visible={isLoading} zIndex={2} overlayProps={{ radius: "sm", blur: 2 }} />
       ) : (
         <>
-          {relations.map((item) => item)}
+          {relations.filter((item) => item.id !== props?.data?.id).map((item) => item.name)}
         </>
       )}
       </Stack>

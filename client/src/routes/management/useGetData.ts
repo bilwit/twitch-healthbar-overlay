@@ -26,6 +26,7 @@ export interface Monster {
   hp_multiplier?: number,
   trigger_words?: string,
   bar_theme?: string,
+  relations_id?: number,
 }
 
 interface ResponseData {
