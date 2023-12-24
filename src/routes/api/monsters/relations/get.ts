@@ -2,7 +2,11 @@ import { Router } from 'express';
 
 module.exports = Router({ mergeParams: true }).get('/monsters/relations/:ref', async (req: any, res: any) => {
   try {
-    const monsters = await req.db.monsters.findMany({
+    if (!req.params?.ref) {
+      throw 'No reference included';
+    }
+
+    const monsters = await req.db.monster.findMany({
       where: {
         relations_id: Number(req.params.ref),
       },
