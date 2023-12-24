@@ -2,16 +2,21 @@ import { Router } from 'express';
 
 module.exports = Router({ mergeParams: true }).delete('/monsters/relations/:id', async (req: any, res: any) => {
   try {
-    const relations = await req.db.relations.delete({
+    const monster = await req.db.monster.update({
+      data: {
+        relations_id: {
+          disconnect: true,
+        },
+      },
       where: {
         id: Number(req.params.id),
       },
     });
 
-    if (relations) {
+    if (monster) {
       return res.status(200).json({
         success: true,
-        data: [{ id: relations.id }],
+        data: [monster],
       });
     } else {
       throw true;
