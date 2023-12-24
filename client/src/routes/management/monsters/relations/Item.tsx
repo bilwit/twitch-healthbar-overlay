@@ -16,9 +16,38 @@ import { MdDelete } from 'react-icons/md';
 interface Props {
   data?: Monster,
   setData: React.Dispatch<React.SetStateAction<any[]>>,
+  setError?: React.Dispatch<React.SetStateAction<string>>,
+  setSelectList: React.Dispatch<React.SetStateAction<string[]>>,
 } 
   
 function Item(props: Props) {
+  const remove = async () => {
+    try {
+      const result = await fetch(
+        '/api/monsters/relations/' + props.data?.id,
+        { 
+          method: 'DELETE',
+        },
+      );
+  
+      if (result) {
+        const responseJson = await result.json();
+        if (responseJson.success && responseJson?.data?.[0]?.id) {
+          props.setData((prev) => prev.filter((item) => item.id !== responseJson.data[0].id));
+          props.setSelectList((prev) => ([...prev, responseJson.data[0].name]));
+          return true;
+        } else {
+          if (responseJson?.msg) {
+            throw responseJson.msg;
+          }
+          throw '';
+        }
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   return (
     <>
       <Card shadow="sm" padding="lg" radius="md" mr="1" pb="xs" withBorder>
@@ -76,7 +105,8 @@ function Item(props: Props) {
                 ml="xl"
                 onClick={(e) => {
                   e.preventDefault();
-                  open();
+                  e.stopPropagation();
+                  remove();
                 }}
                 leftSection={
                   <MdDelete  

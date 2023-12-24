@@ -4,9 +4,7 @@ module.exports = Router({ mergeParams: true }).delete('/monsters/relations/:id',
   try {
     const monster = await req.db.monster.update({
       data: {
-        relations_id: {
-          disconnect: true,
-        },
+        relations_id: null,
       },
       where: {
         id: Number(req.params.id),

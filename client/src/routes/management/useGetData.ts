@@ -40,6 +40,7 @@ function useGetData(endpoint: string, id?: string | null): {
   data: any[],
   setData: React.Dispatch<React.SetStateAction<any[]>>,
   error: string, 
+  setError?: React.Dispatch<React.SetStateAction<string>>,
 } {
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState<any[]>([]);
@@ -74,6 +75,7 @@ function useGetData(endpoint: string, id?: string | null): {
     data,
     setData,
     error,
+    setError,
   };
 }
 

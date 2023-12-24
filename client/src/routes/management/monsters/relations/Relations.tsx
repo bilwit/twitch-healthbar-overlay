@@ -19,6 +19,7 @@ function Relations(props: Props) {
     isLoading, 
     data: monsters, 
     error,
+    setError,
   } = useGetData('monsters/base/all');
 
   const { 
@@ -160,6 +161,8 @@ function Relations(props: Props) {
               <Item
                 data={item}
                 setData={setRelations}
+                setError={setError}
+                setSelectList={setSelectList}
               />
             ))
           }
