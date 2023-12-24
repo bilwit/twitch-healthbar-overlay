@@ -8,6 +8,7 @@ import useGetData, { Monster } from '../../useGetData';
 import { theme } from '../../../../theme';
 import classes from '../../../../css/Nav.module.css';
 import { useEffect, useState } from 'react';
+import Item from './Item';
 
 interface Props {
   data?: Monster,
@@ -148,12 +149,20 @@ function Relations(props: Props) {
         </Button>
       </Center>
       
-      <Stack>
+      <Stack mt="xl">
       {isLoading ? (
         <LoadingOverlay visible={isLoading} zIndex={2} overlayProps={{ radius: "sm", blur: 2 }} />
       ) : (
         <>
-          {relations.filter((item) => item.id !== props?.data?.id).map((item) => item.name)}
+          {relations
+            .filter((item) => item.id !== props?.data?.id)
+            .map((item) => (
+              <Item
+                data={item}
+                setData={setRelations}
+              />
+            ))
+          }
         </>
       )}
       </Stack>
