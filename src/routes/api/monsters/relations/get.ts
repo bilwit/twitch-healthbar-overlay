@@ -1,10 +1,10 @@
 import { Router } from 'express';
 
-module.exports = Router({ mergeParams: true }).get('/monsters/relations/:id', async (req: any, res: any) => {
+module.exports = Router({ mergeParams: true }).get('/monsters/relations/:ref', async (req: any, res: any) => {
   try {
     const monsters = await req.db.monsters.findMany({
       where: {
-        relations_id: Number(req.params.id),
+        relations_id: Number(req.params.ref),
       },
     });
 

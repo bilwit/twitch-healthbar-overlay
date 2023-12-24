@@ -6,8 +6,8 @@ import { BiError, BiInfoCircle } from 'react-icons/bi';
 import { MdGroupAdd } from 'react-icons/md';
 import useGetData, { Monster } from '../../useGetData';
 import { theme } from '../../../../theme';
-import { useForm } from '@mantine/form';
 import classes from '../../../../css/Nav.module.css';
+import { useState } from 'react';
 
 interface Props {
   data?: Monster,
@@ -17,18 +17,13 @@ function Relations(props: Props) {
   const { 
     isLoading, 
     data: monsters, 
-    setData: setMonsters, 
     error,
   } = useGetData('monsters/base/all');
 
-  const CreateForm = useForm({
-    initialValues: {
-      relations: [],
-    },
-
-    validate: {
-      relations: (value) => value.length > 0 ? null : 'Required',
-    },
+  const [relations, setRelations] = useState<String[]>([]);
+  const [selected, setSelected] = useState({
+    label: 'None',
+    value: '0',
   });
 
   return (
@@ -70,13 +65,17 @@ function Relations(props: Props) {
       <Group>
         <NativeSelect 
           label="Select Available Monster" 
-          data={props.data?.id ? monsters.filter((item) => props.data?.id && item.id !== props.data.id) : ['None']}
-          {...CreateForm.getInputProps('relations')}
+          data={props.data?.id ? ['None', ...monsters.filter((item) => props.data?.id && item.id !== props.data.id).map((item) => item.name)] : ['None']}
+          onChange={(e) => setSelected({
+            label: e.currentTarget.name,
+            value: e.currentTarget.value,
+          })}
         />
       </Group>
 
       <Center>
         <Button 
+          disabled={selected.value === 'None'}
           color={theme.colors.indigo[5]}
           variant="gradient"
           gradient={{ from: theme.colors.indigo[9], to: 'red', deg: 90 }}
