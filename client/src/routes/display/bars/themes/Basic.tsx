@@ -9,7 +9,7 @@ function Basic(props: Props) {
     <>
       {!props.isLoading && (
         <>
-          <svg className="healthbar" xmlns="http://www.w3.org/2000/svg" viewBox="0 -0.5 38 9" shape-rendering="crispEdges">
+          <svg className="healthbar" xmlns="http://www.w3.org/2000/svg" viewBox="0 -0.5 38 9">
             <metadata>Made with Pixels to Svg https://codepen.io/shshaw/pen/XbxvNj</metadata>
             <path stroke="#222034" d="M2 2h1M3 2h32M3  3h1M2 3h1M35 3h1M3 4h1M2 4h1M35 4h1M3  5h1M2 5h1M35 5h1M3 6h32M3" />
             
