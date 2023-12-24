@@ -1,6 +1,6 @@
 
 import { 
-  Alert, Button, Center, Group, NativeSelect,
+  Alert, Button, Center, Group, LoadingOverlay, NativeSelect, Stack,
 } from '@mantine/core';
 import { BiError, BiInfoCircle } from 'react-icons/bi';
 import { MdGroupAdd } from 'react-icons/md';
@@ -23,12 +23,10 @@ function Relations(props: Props) {
 
   const CreateForm = useForm({
     initialValues: {
-      ref_id: props?.data?.id || '',
       relations: [],
     },
 
     validate: {
-      ref_id: (value) => value ? null : 'Required',
       relations: (value) => value.length > 0 ? null : 'Required',
     },
   });
@@ -99,6 +97,16 @@ function Relations(props: Props) {
           Add Relation
         </Button>
       </Center>
+      
+      <Stack>
+      {isLoading ? (
+        <LoadingOverlay visible={isLoading} zIndex={2} overlayProps={{ radius: "sm", blur: 2 }} />
+      ) : (
+        <>
+        list
+        </>
+      )}
+      </Stack>
     </>
   );
 }

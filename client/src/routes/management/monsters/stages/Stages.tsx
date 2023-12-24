@@ -46,7 +46,7 @@ function Stages(props: Props) {
           title="Add Stage"
         />
         {isLoading ? (
-          <LoadingOverlay visible={isLoading} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
+          <LoadingOverlay visible={isLoading} zIndex={2} overlayProps={{ radius: "sm", blur: 2 }} />
         ) : data.sort((a, b) => a.hp_value < b.hp_value ? 1 : -1).map((item) => (
           <Item 
             key={item.id}
