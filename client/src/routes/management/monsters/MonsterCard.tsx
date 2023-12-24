@@ -24,7 +24,14 @@ function Monsters(props: Props) {
   
   return (
     <>
-      <Card shadow="sm" padding="lg" radius="md" mr="1" pb="xs" withBorder>
+      <Card
+        shadow="sm" 
+        padding="lg" 
+        radius={0} 
+        mr="1" 
+        pb="xs" 
+        withBorder
+      >
         <Card.Section mt={0} mb="xs">
           <div style={{ display: 'flex' }}>
             {props?.item?.avatar_url ? (

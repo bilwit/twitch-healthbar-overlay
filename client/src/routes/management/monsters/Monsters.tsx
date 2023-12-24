@@ -7,6 +7,7 @@ import {
   Center,
   LoadingOverlay,
   Stack,
+  Text,
 } from '@mantine/core';
 import classes from '../../../css/Nav.module.css';
 import MonsterCard from './MonsterCard';
@@ -17,7 +18,6 @@ import ItemModal from './ItemModal';
 import { useDisclosure } from '@mantine/hooks';
 import useGetData, { Monster } from '../useGetData';
 import { useEffect, useState } from 'react';
-import { MdInsertLink } from 'react-icons/md';
 
 interface RelationDict {
   [key: number]: Monster[],
@@ -82,15 +82,18 @@ function Monsters() {
                   key={index} 
                   padding={0} 
                   mb="md"
+                  bg={'black'}
                 >
                 {group.map((item, index) => (
                   <div>
                     {index > 0 && (
                       <Center>
-                        <MdInsertLink 
-                          size="1rem" 
-                          stroke={1.5} 
-                        />
+                        <Text
+                          size="xs"
+                          fw={900}
+                        >
+                          LINK
+                        </Text>
                       </Center>
                     )}
                     <MonsterCard key={item.id}
