@@ -33,7 +33,11 @@ function Item(props: Props) {
       if (result) {
         const responseJson = await result.json();
         if (responseJson.success && responseJson?.data?.[0]?.id) {
-          props.setData((prev) => prev.filter((item) => item.id !== responseJson.data[0].id));
+          props.setData((prev) => {
+            const test = prev.filter((item) => item.id !== responseJson.data[0].id);
+            console.log(test)
+            return prev.filter((item) => item.id !== responseJson.data[0].id);
+          });
           props.setSelectList((prev) => ([...prev, responseJson.data[0].name]));
           return true;
         } else {

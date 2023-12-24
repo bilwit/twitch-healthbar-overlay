@@ -79,13 +79,12 @@ function Monsters() {
             <>
               {list.map((group, index) => (
                 <Card 
-                  key={index} 
+                  key={'card_' + index} 
                   padding={0} 
-                  mb="md"
                   bg={'black'}
                 >
                 {group.map((item, index) => (
-                  <div>
+                  <div key={'group_' + item.id}>
                     {index > 0 && (
                       <Center>
                         <Text
@@ -96,7 +95,7 @@ function Monsters() {
                         </Text>
                       </Center>
                     )}
-                    <MonsterCard key={item.id}
+                    <MonsterCard
                       item={item}
                       setMonsters={setMonsters}
                     />
@@ -108,7 +107,7 @@ function Monsters() {
           ) : (
             <>
               {monsters && monsters.length > 0 ? monsters.map((monster) => (
-                <MonsterCard key={monster.id}
+                <MonsterCard key={'monstercard_' + monster.id}
                   item={monster}
                   setMonsters={setMonsters}
                 />
