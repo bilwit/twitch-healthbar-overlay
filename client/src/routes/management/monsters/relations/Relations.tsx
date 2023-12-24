@@ -156,8 +156,7 @@ function Relations(props: Props) {
       ) : (
         <>
           {relations
-            .filter((item) => item.id !== props?.data?.id)
-            .map((item) => (
+            .map((item) => item.id === props?.data?.id ? null : (
               <Item
                 data={item}
                 setData={setRelations}
