@@ -1,6 +1,5 @@
 
 import { 
-  Alert,
   Button,
   Card,
   Image,
@@ -9,7 +8,6 @@ import {
   Group,
   NumberInput,
   SegmentedControl,
-  Space,
   TagsInput,
   TextInput,
   Text,
@@ -21,12 +19,10 @@ import { GiMonsterGrasp } from 'react-icons/gi';
 import { useForm } from '@mantine/form';
 import { useState } from 'react';
 import { theme } from '../../../../theme';
-import { BiInfoCircle } from 'react-icons/bi';
 import { Monster } from '../../useGetData';
 import { BsFillPersonFill } from 'react-icons/bs';
 import { AiFillDelete } from 'react-icons/ai';
 import Alerts from '../../Alerts';
-import CopyURL from './CopyURL';
 
 interface Props {
   isOpened: boolean,
@@ -80,8 +76,6 @@ function Properties(props: Props) {
   const [error, setError] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(props?.data?.id && (props?.data?.id !== null) ? true : false);
   const [isEditSuccess, setIsEditSuccess] = useState('');
-  const [obsOverlayURLHealth, setObsOverlayURLHealth] = useState(props?.data?.id ? window.location.origin + '/display/bars/' + props.data.id : '');
-  const [obsOverlayURLAvatar, setObsOverlayURLAvatar] = useState(props?.data?.id ? window.location.origin + '/display/avatars/' + props.data.id : '');
   const [avatar, setAvatar] = useState<string | ArrayBuffer | null>(null);
   const [isAvatarChanged, setIsAvatarChanged] = useState(false);
   const [avatarFile, setAvatarFile] = useState<Blob | null>(null);
@@ -127,9 +121,6 @@ function Properties(props: Props) {
             if (result) {
               const responseJson = await result.json();
               if (responseJson.success) {
-                setObsOverlayURLHealth(window.location.origin + '/display/bars/' + responseJson.data[0].id);
-                setObsOverlayURLAvatar(window.location.origin + '/display/avatars/' + responseJson.data[0].id);
-
                 // update main page list in parent component
                 if (!props?.data?.id) {
                   // new monster
@@ -263,51 +254,6 @@ function Properties(props: Props) {
           </Grid.Col>
 
         </Grid>
-
-        {isSubmitted && (
-          <>
-            <Alert 
-              mt="xl"
-              variant="light" 
-              color="indigo" 
-              title="Display in OBS" 
-              icon={
-                <BiInfoCircle 
-                  size="1rem" 
-                  stroke={1.5} 
-                />
-              }
-            >
-              <div style={{ display: 'flex' }}>
-                Copy the URL below to add as a
-                <Space w="xs" />
-                <b>browser source</b>
-                <Space w="xs" />
-                in OBS.
-              </div>
-              <div style={{ display: 'flex' }}>
-                When enabled, the Twitch chat bot will actively count trigger strings to affect its health.
-              </div>
-            </Alert>
-
-            <CopyURL
-              url={obsOverlayURLHealth}
-              details={{
-                label: "Health Bar",
-                description: "OBS Overlay URL",
-              }}
-            />
-
-            <CopyURL
-              url={obsOverlayURLAvatar}
-              details={{
-                label: "Avatar",
-                description: "OBS Overlay URL",
-              }}
-            />
-          </>
-        )}
-
         
         {!isSubmitted && (
           <Group justify="center" mt="xl">
