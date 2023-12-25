@@ -2,7 +2,7 @@
 import { 
   Alert,
   AspectRatio,
-  Button, Card, Center, Stack, Title,
+  Button, Card, Center, Group, Stack, Title,
 } from '@mantine/core';
 import useWebSocket from '../../../display/useWebSocket';
 import { theme } from '../../../../theme';
@@ -10,8 +10,10 @@ import useGetData, { Monster } from '../../useGetData';
 import Item from '../../../display/avatars/Item';
 import Basic from '../../../display/bars/themes/Basic';
 import { BiInfoCircle } from 'react-icons/bi';
+import { GrPowerReset } from 'react-icons/gr';
 import classes from '../../../../css/Nav.module.css';
 import { useEffect } from 'react';
+import { MdOutlinePause } from 'react-icons/md';
 
 interface Props {
   data?: Monster,
@@ -45,8 +47,10 @@ function Status(props: Props) {
                 stroke={1.5} 
               />
             }
-          />
-
+          >
+            Manage and visualize the avatar and bar overlays.
+          </Alert>
+ 
           <AspectRatio ratio={1080 / 720} maw={300} mx="auto">
             <Item 
               key={props?.data?.id}
@@ -75,10 +79,10 @@ function Status(props: Props) {
             </Center>
           </Card>
 
-          <Stack>
+          <Group mt="md">
             <Button 
               variant="gradient"
-              gradient={{ from: theme.colors.blue[9], to: 'green', deg: 90 }}
+              gradient={{ from: theme.colors.blue[9], to: 'indigo', deg: 90 }}
               onClick={async (e) => {
                 e.preventDefault();
                 if (connectedSocket && props?.data?.id) {
@@ -88,10 +92,45 @@ function Status(props: Props) {
                   }));
                 }
               }}
+              leftSection={
+                <GrPowerReset  
+                  size="1rem" 
+                  stroke={1.5}
+                />
+              }
             >
               Reset Health
             </Button>
-          </Stack>
+
+            <Button 
+              variant="gradient"
+              gradient={{ from: theme.colors.blue[9], to: 'grey', deg: 90 }}
+              onClick={async (e) => {
+                e.preventDefault();
+                if (connectedSocket && props?.data?.id) {
+                  if (props?.data?.relations_id) {
+                    connectedSocket.send(JSON.stringify({ 
+                      message: 'pause',
+                      relations_id: props?.data?.relations_id || props?.data?.id,
+                    }));
+                  } else {
+                    connectedSocket.send(JSON.stringify({ 
+                      message: 'pause',
+                      id: props?.data?.id,
+                    }));
+                  }
+                }
+              }}
+              leftSection={
+                <MdOutlinePause   
+                  size="1rem" 
+                  stroke={1.5}
+                />
+              }
+            >
+              Pause
+            </Button>
+          </Group>
         </>
       )}
     </>
