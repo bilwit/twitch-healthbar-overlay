@@ -14,7 +14,7 @@ function Item(props: Props) {
     isLoading, 
     data: stages, 
   } = useGetData('monsters/stages', String(props.data.id));
-  const { data } = useWebSocket(String(props.data.id));
+  const { data, connectedSocket } = useWebSocket(String(props.data.id));
 
   const [sorted, setSorted] = useState<Stage[]>([]);
 
@@ -23,6 +23,14 @@ function Item(props: Props) {
       setSorted(stages.sort((a, b) => a.hp_value < b.hp_value ? -1 : 1));
     }
   }, [stages])
+
+  useEffect(() => {
+    return () => {
+      if (connectedSocket) {
+        connectedSocket.close();
+      }
+    }
+  }, [connectedSocket]);
 
   const displayHealth =  (value: number, maxHealth: number) => {
     const percentage = value / maxHealth * 100;

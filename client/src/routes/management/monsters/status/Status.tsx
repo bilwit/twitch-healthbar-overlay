@@ -11,6 +11,7 @@ import Item from '../../../display/avatars/Item';
 import Basic from '../../../display/bars/themes/Basic';
 import { BiInfoCircle } from 'react-icons/bi';
 import classes from '../../../../css/Nav.module.css';
+import { useEffect } from 'react';
 
 interface Props {
   data?: Monster,
@@ -20,6 +21,14 @@ function Status(props: Props) {
   const { data, isConnected, connectedSocket } = useWebSocket(String(props?.data?.id));
   
   const { isLoading, data: monsters } = useGetData('monsters/base', String(props?.data?.id));
+  
+  useEffect(() => {
+    return () => {
+      if (connectedSocket) {
+        connectedSocket.close();
+      }
+    }
+  }, [connectedSocket]);
   
   return (
     <>

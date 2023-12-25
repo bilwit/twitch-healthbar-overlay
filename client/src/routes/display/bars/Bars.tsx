@@ -2,12 +2,21 @@
 import useGetData, { Monster } from "../../management/useGetData";
 import useWebSocket from '../useWebSocket';
 import Basic from './themes/Basic';
+import { useEffect } from "react";
 
 function Bars() {
   const params = useParams();
   const { isLoading, data: monsters } = useGetData('monsters/base', params?.['*']);
 
-  const { data } = useWebSocket(String(monsters?.[0]?.id));
+  const { data, connectedSocket } = useWebSocket(String(monsters?.[0]?.id));
+
+  useEffect(() => {
+    return () => {
+      if (connectedSocket) {
+        connectedSocket.close();
+      }
+    }
+  }, [connectedSocket]);
 
   const theme = (monster: Monster) => {
     switch (monster.bar_theme) {
