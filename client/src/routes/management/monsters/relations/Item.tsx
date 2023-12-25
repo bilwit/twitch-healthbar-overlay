@@ -18,7 +18,7 @@ interface Props {
   setData: React.Dispatch<React.SetStateAction<any[]>>,
   setError?: React.Dispatch<React.SetStateAction<string>>,
   setSelectList: React.Dispatch<React.SetStateAction<string[]>>,
-  removeLink: (ref_model: Monster) => void,
+  editRelations: (ref_model: Monster) => void,
 } 
   
 function Item(props: Props) {
@@ -38,7 +38,7 @@ function Item(props: Props) {
             return prev.filter((item) => item.id !== responseJson.data[0].id);
           });
           props.setSelectList((prev) => ([...prev, responseJson.data[0].name]));
-          props.removeLink(responseJson?.data?.[0]);
+          props.editRelations(responseJson?.data?.[0]);
           return true;
         } else {
           if (responseJson?.msg) {

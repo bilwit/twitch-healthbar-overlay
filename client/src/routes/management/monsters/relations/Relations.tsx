@@ -12,7 +12,7 @@ import Item from './Item';
 
 interface Props {
   data?: Monster,
-  removeLink: (ref_model: Monster) => void
+  editRelations: (ref_model: Monster) => void
 }
 
 function Relations(props: Props) {
@@ -163,7 +163,7 @@ function Relations(props: Props) {
                 setData={setRelations}
                 setError={setError}
                 setSelectList={setSelectList}
-                removeLink={props.removeLink}
+                editRelations={props.editRelations}
               />
             ))
           }

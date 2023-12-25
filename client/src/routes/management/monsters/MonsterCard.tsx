@@ -17,7 +17,7 @@ import { MdEdit } from 'react-icons/md';
 interface Props {
   item: Monster,
   setMonsters: React.Dispatch<React.SetStateAction<Monster[]>>,
-  removeLink: (ref_model: Monster) => void,
+  editRelations: (ref_model: Monster) => void,
 }
 
 function Monsters(props: Props) {
@@ -110,7 +110,7 @@ function Monsters(props: Props) {
           close={close}
           data={props.item}
           setMonsters={props.setMonsters}
-          removeLink={props.removeLink}
+          editRelations={props.editRelations}
         />
       )}
     </>

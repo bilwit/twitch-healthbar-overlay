@@ -63,7 +63,7 @@ function Monsters() {
     }
   }, [monsters]);
 
-  const removeLink = (ref_model: Monster) => {
+  const editRelations = (ref_model: Monster) => {
     const dict = groupsOfMonsters(monsters, ref_model);
     setList(Object.keys(dict).map((group_key) => dict[Number(group_key)]));
   }
@@ -112,7 +112,7 @@ function Monsters() {
                     <MonsterCard
                       item={item}
                       setMonsters={setMonsters}
-                      removeLink={removeLink}
+                      editRelations={editRelations}
                     />
                   </div>
                 ))}
@@ -125,7 +125,7 @@ function Monsters() {
                 <MonsterCard key={'monstercard_' + monster.id}
                   item={monster}
                   setMonsters={setMonsters}
-                  removeLink={removeLink}
+                  editRelations={editRelations}
                 />
               )) : (
                 <Alert 
@@ -173,7 +173,7 @@ function Monsters() {
           isOpened={isOpened}
           close={close}
           setMonsters={setMonsters}
-          removeLink={removeLink}
+          editRelations={editRelations}
         />
       </Affix>
     </>
