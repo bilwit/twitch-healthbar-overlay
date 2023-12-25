@@ -24,6 +24,7 @@ export default async function getMonsters(maxHealthInit: number, TwitchEmitter: 
         id: true,
         hp_multiplier: true,
         trigger_words: true,
+        relations_id: true,
       },
       where: {
         published: true,
@@ -54,6 +55,7 @@ export async function getMonster(id: number, maxHealthInit: number, TwitchEmitte
         id: true,
         hp_multiplier: true,
         trigger_words: true,
+        relations_id: true,
       },
       where: {
         id: id,
@@ -93,15 +95,7 @@ export function Monster(monster: Monster, maxHealth: number, TwitchEmitter: Even
         updateHealth();
         console.log(consoleLogStyling('health', '(' + monster.id + ') Health Reset: ' + MaxHealth));
       }
-    })
-
-    TwitchEmitter.on('reset', (data) => {
-      if (data.id === monster.id) {
-        CurrentHealth.value = CurrentHealth.maxHealth;
-        updateHealth();
-        console.log(consoleLogStyling('health', '(' + monster.id + ') Health Reset: ' + MaxHealth));
-      }
-    })
+    });
 
     // send initial health data
     updateHealth();
