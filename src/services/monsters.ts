@@ -6,6 +6,7 @@ interface Monster {
   id: number,
   hp_multiplier: number,
   trigger_words: string,
+  relations_id?: number | null,
 }
 
 export interface Monster_CB {
@@ -82,12 +83,28 @@ export function Monster(monster: Monster, maxHealth: number, TwitchEmitter: Even
       value: MaxHealth,
     };
 
+    let isPaused = false;
+
     const updateHealth = () => {
-      TwitchEmitter.emit('update', {
-        id: monster.id,
-        value: CurrentHealth,
-      })
+      if (!isPaused) {
+        TwitchEmitter.emit('update', {
+          id: monster.id,
+          value: CurrentHealth,
+        });
+      }
     }
+
+    TwitchEmitter.on('pause', (data) => {
+      if (monster.relations_id && data?.relations_id === monster.relations_id) {
+        isPaused = true;
+      }
+    });
+
+    TwitchEmitter.on('unpause', (data) => {
+      if (monster.relations_id && data?.relations_id === monster.relations_id) {
+        isPaused = false;
+      }
+    });
 
     TwitchEmitter.on('reset', (data) => {
       if (data.id === monster.id) {
@@ -115,6 +132,12 @@ export function Monster(monster: Monster, maxHealth: number, TwitchEmitter: Even
           }
           updateHealth();
           console.log(consoleLogStyling('health', '(' + monster.id + ') Current Health: ' + CurrentHealth.value));
+        } else {
+          if (monster.relations_id) {
+            TwitchEmitter.emit('pause', {
+              relations_id: monster.relations_id,
+            });
+          }
         }
       }
     }
