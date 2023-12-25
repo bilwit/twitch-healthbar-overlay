@@ -23,6 +23,28 @@ interface RelationDict {
   [key: number]: Monster[],
 }
 
+const groupsOfMonsters = (monsters: Monster[], edit_model: Monster | null = null) => {
+  const dict: RelationDict = {};
+
+  for (const monster of monsters) {
+    let mon = monster;
+    if (edit_model && monster.id === edit_model?.id) {
+      mon = edit_model;
+    }
+    if (mon?.relations_id) {
+      if (mon?.relations_id in dict) {
+        dict[mon?.relations_id].push(mon);
+      } else {
+        dict[mon?.relations_id] = [mon];
+      }
+    } else {
+      dict[mon.id] = [mon];
+    }
+  }
+
+  return dict;
+}
+
 function Monsters() {
   const { 
     isLoading, 
@@ -36,23 +58,15 @@ function Monsters() {
 
   useEffect(() => {
     if (monsters && Array.isArray(monsters) && monsters.length > 0) {
-      const dict: RelationDict = {};
-
-      for (const monster of monsters) {
-        if (monster?.relations_id) {
-          if (monster?.relations_id in dict) {
-            dict[monster?.relations_id].push(monster);
-          } else {
-            dict[monster?.relations_id] = [monster];
-          }
-        } else {
-          dict[monster.id] = [monster];
-        }
-      }
-
+      const dict = groupsOfMonsters(monsters);
       setList(Object.keys(dict).map((group_key) => dict[Number(group_key)]));
     }
   }, [monsters]);
+
+  const removeLink = (ref_model: Monster) => {
+    const dict = groupsOfMonsters(monsters, ref_model);
+    setList(Object.keys(dict).map((group_key) => dict[Number(group_key)]));
+  }
 
   return (
     <>
@@ -98,6 +112,7 @@ function Monsters() {
                     <MonsterCard
                       item={item}
                       setMonsters={setMonsters}
+                      removeLink={removeLink}
                     />
                   </div>
                 ))}
@@ -110,6 +125,7 @@ function Monsters() {
                 <MonsterCard key={'monstercard_' + monster.id}
                   item={monster}
                   setMonsters={setMonsters}
+                  removeLink={removeLink}
                 />
               )) : (
                 <Alert 
@@ -157,6 +173,7 @@ function Monsters() {
           isOpened={isOpened}
           close={close}
           setMonsters={setMonsters}
+          removeLink={removeLink}
         />
       </Affix>
     </>

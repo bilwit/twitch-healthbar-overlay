@@ -20,6 +20,7 @@ interface Props {
   close: () => void,
   data?: Monster,
   setMonsters: React.Dispatch<React.SetStateAction<Monster[]>>,
+  removeLink: (ref_model: Monster) => void,
 }
 
 const iconStyle = { width: rem(12), height: rem(12) };
@@ -89,7 +90,10 @@ function ItemModal(props: Props) {
           </Tabs.Panel>
 
           <Tabs.Panel mt="md" value="relations">
-            <Relations data={props.data} />
+            <Relations 
+              data={props.data}
+              removeLink={props.removeLink}
+            />
           </Tabs.Panel>
         </Tabs>
       </Modal>
