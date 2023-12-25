@@ -85,6 +85,28 @@ if (WebSocketServer) {
             id: eventData?.id,
           });
         }
+        if (eventData?.message === 'pause') {
+          if (eventData?.relations_id) {
+            TwitchEmitter.emit('pause', {
+              relations_id: eventData?.id,
+            });
+          } else if (eventData?.id) {
+            TwitchEmitter.emit('pause', {
+              id: eventData?.id,
+            });
+          }
+        }
+        if (eventData?.message === 'unpause') {
+          if (eventData?.relations_id) {
+            TwitchEmitter.emit('unpause', {
+              relations_id: eventData?.id,
+            });
+          } else if (eventData?.id) {
+            TwitchEmitter.emit('unpause', {
+              id: eventData?.id,
+            });
+          }
+        }
       }
     });
 
