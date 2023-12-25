@@ -72,6 +72,7 @@ function Relations(props: Props) {
     if (result) {
       const responseJson = await result.json();
       if (responseJson.success) {
+        props.editRelations(responseJson.data[0]);
         setRelations((prev) => ([...prev, ...responseJson.data]));
         setSelectList((prev) => prev.filter((item) => ![...prev, ...responseJson.data].map((item) => item.name).includes(item)));
       } else {
