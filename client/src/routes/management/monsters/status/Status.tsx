@@ -73,7 +73,7 @@ function Status(props: Props) {
                 justify='center'
               >
                 <Title order={1}>
-                  {'HP: ' + (data.value / data.maxHealth * 100) + '%'}
+                  {'HP: ' + (data.value / data.maxHealth * 100) + '%' + (data.isPaused ? ' (Paused)' : '')}
                 </Title>
               </Stack>
             </Center>

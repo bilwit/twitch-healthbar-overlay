@@ -137,22 +137,24 @@ export function Monster(monster: Monster, maxHealth: number, TwitchEmitter: Even
           if (!MonsterIsPaused) {
             const updatedMaxHealth = updatedChatterAmount * monster.hp_multiplier;
 
-            if (CurrentHealth.maxHealth !== updatedMaxHealth) {
-              CurrentHealth.value = (CurrentHealth.value / CurrentHealth.maxHealth) * updatedMaxHealth + amount;
-              CurrentHealth.maxHealth = updatedMaxHealth;
+            if (CurrentHealth.maxHealth !== updatedMaxHealth) {              
+                CurrentHealth.value = (CurrentHealth.value / CurrentHealth.maxHealth) * updatedMaxHealth + amount;
+                CurrentHealth.maxHealth = updatedMaxHealth;
             } else {
               CurrentHealth.value += amount;
+            }
+
+            if (CurrentHealth.value <= 0) {
+              TwitchEmitter.emit('pause', {
+                relations_id: monster.relations_id,
+              });
             }
           }
 
           updateHealth();
           console.log(consoleLogStyling('health', '(' + monster.id + ') Current Health: ' + CurrentHealth.value));
         } else {
-          if (monster.relations_id) {
-            TwitchEmitter.emit('pause', {
-              relations_id: monster.relations_id,
-            });
-          }
+
         }
       }
     }
