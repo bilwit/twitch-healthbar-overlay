@@ -15,7 +15,7 @@ export default function socketEventHandler(eventData: any, TwitchEmitter: EventE
     case 'pause': // pause monster and related monsters health
       if (eventData?.relations_id) {
         TwitchEmitter.emit('pause', {
-          relations_id: eventData?.id,
+          relations_id: eventData?.relations_id,
         });
       } else if (eventData?.id) {
         TwitchEmitter.emit('pause', {
@@ -26,7 +26,7 @@ export default function socketEventHandler(eventData: any, TwitchEmitter: EventE
     case 'unpause': // pause monster and related monsters health
       if (eventData?.relations_id) {
         TwitchEmitter.emit('unpause', {
-          relations_id: eventData?.id,
+          relations_id: eventData?.relations_id,
         });
       } else if (eventData?.id) {
         TwitchEmitter.emit('unpause', {
