@@ -13,7 +13,7 @@ import { BiInfoCircle } from 'react-icons/bi';
 import { GrPowerReset } from 'react-icons/gr';
 import classes from '../../../../css/Nav.module.css';
 import { useEffect } from 'react';
-import { MdOutlinePause } from 'react-icons/md';
+import { MdOutlinePause, MdPlayArrow } from 'react-icons/md';
 
 interface Props {
   data?: Monster,
@@ -23,7 +23,7 @@ function Status(props: Props) {
   const { data, isConnected, connectedSocket } = useWebSocket(String(props?.data?.id));
   
   const { isLoading, data: monsters } = useGetData('monsters/base', String(props?.data?.id));
-  
+
   useEffect(() => {
     return () => {
       if (connectedSocket) {
@@ -102,34 +102,66 @@ function Status(props: Props) {
               Reset Health
             </Button>
 
-            <Button 
-              variant="gradient"
-              gradient={{ from: theme.colors.blue[9], to: 'grey', deg: 90 }}
-              onClick={async (e) => {
-                e.preventDefault();
-                if (connectedSocket && props?.data?.id) {
-                  if (props?.data?.relations_id) {
-                    connectedSocket.send(JSON.stringify({ 
-                      message: 'pause',
-                      relations_id: props?.data?.relations_id || props?.data?.id,
-                    }));
-                  } else {
-                    connectedSocket.send(JSON.stringify({ 
-                      message: 'pause',
-                      id: props?.data?.id,
-                    }));
+            {data?.isPaused ? (
+              <Button 
+                variant="gradient"
+                gradient={{ from: 'grey', to: theme.colors.blue[9], deg: 90 }}
+                onClick={async (e) => {
+                  e.preventDefault();
+                  if (connectedSocket && props?.data?.id) {
+                    if (props?.data?.relations_id) {
+                      connectedSocket.send(JSON.stringify({ 
+                        message: 'unpause',
+                        relations_id: props?.data?.relations_id || props?.data?.id,
+                      }));
+                    } else {
+                      connectedSocket.send(JSON.stringify({ 
+                        message: 'unpause',
+                        id: props?.data?.id,
+                      }));
+                    }
                   }
+                }}
+                leftSection={
+                  <MdPlayArrow   
+                    size="1rem" 
+                    stroke={1.5}
+                  />
                 }
-              }}
-              leftSection={
-                <MdOutlinePause   
-                  size="1rem" 
-                  stroke={1.5}
-                />
-              }
-            >
-              Pause
-            </Button>
+              >
+                Play
+              </Button>
+            ) : (
+              <Button 
+                variant="gradient"
+                gradient={{ from: theme.colors.blue[9], to: 'grey', deg: 90 }}
+                onClick={async (e) => {
+                  e.preventDefault();
+                  if (connectedSocket && props?.data?.id) {
+                    if (props?.data?.relations_id) {
+                      connectedSocket.send(JSON.stringify({ 
+                        message: 'pause',
+                        relations_id: props?.data?.relations_id || props?.data?.id,
+                      }));
+                    } else {
+                      connectedSocket.send(JSON.stringify({ 
+                        message: 'pause',
+                        id: props?.data?.id,
+                      }));
+                    }
+                  }
+                }}
+                leftSection={
+                  <MdOutlinePause   
+                    size="1rem" 
+                    stroke={1.5}
+                  />
+                }
+              >
+                Pause
+              </Button>
+            )}
+
           </Group>
         </>
       )}

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 interface ResponseData {
   maxHealth: number,
   value: number,
+  isPaused: boolean,
 }
 
 interface ReturnData {
@@ -16,6 +17,7 @@ function useWebSocket(listenId: string): ReturnData {
   const [data, setData] = useState({
     maxHealth: 100,
     value: 100,
+    isPaused: true,
   });
   const [connectedSocket, setConnectedSocket] = useState<WebSocket>();
 
@@ -38,14 +40,14 @@ function useWebSocket(listenId: string): ReturnData {
             }
           }
     
-          socket.onmessage = (event: any) => {
-            const data = JSON.parse(event?.data);
+          socket.onmessage = (e: any) => {
+            const data = JSON.parse(e?.data);
   
             if (data?.update?.id === Number(listenId)) {
               setData(data?.update?.value);
             }
           }
-  
+          
           setConnectedSocket(socket);
 
         }

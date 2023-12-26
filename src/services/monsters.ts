@@ -76,6 +76,8 @@ export async function getMonster(id: number, maxHealthInit: number, TwitchEmitte
 
 export function Monster(monster: Monster, maxHealth: number, TwitchEmitter: EventEmitter): any {
   try {
+    let MonsterIsPaused = false;
+
     // initialize health
     let MaxHealth = maxHealth * monster.hp_multiplier;
     let CurrentHealth = {
@@ -83,28 +85,28 @@ export function Monster(monster: Monster, maxHealth: number, TwitchEmitter: Even
       value: MaxHealth,
     };
 
-    let isPaused = false;
-
     const updateHealth = () => {
-      if (!isPaused) {
-        TwitchEmitter.emit('update', {
-          id: monster.id,
-          value: CurrentHealth,
-          isPaused: isPaused,
-        });
-      }
+      TwitchEmitter.emit('update', {
+        id: monster.id,
+        value: {
+          ...CurrentHealth,
+          isPaused: MonsterIsPaused,
+        },
+      });
     }
 
     TwitchEmitter.on('pause', (data) => {
       if (monster.relations_id && data?.relations_id === monster.relations_id) {
-        isPaused = true;
+        MonsterIsPaused = true;
+        updateHealth();
         console.log(consoleLogStyling('health', '(' + monster.id + ') Paused'));
       }
     });
 
     TwitchEmitter.on('unpause', (data) => {
       if (monster.relations_id && data?.relations_id === monster.relations_id) {
-        isPaused = false;
+        MonsterIsPaused = false;
+        updateHealth();
         console.log(consoleLogStyling('health', '(' + monster.id + ') Unpaused'));
       }
     });
@@ -131,13 +133,16 @@ export function Monster(monster: Monster, maxHealth: number, TwitchEmitter: Even
       id: monster.id,
       trigger_words: monster.trigger_words,
       update: function(amount: number, updatedChatterAmount: number) {
-        const updatedMaxHealth = updatedChatterAmount * monster.hp_multiplier;
         if (CurrentHealth.value >= 0) {
-          if (CurrentHealth.maxHealth !== updatedMaxHealth) {
-            CurrentHealth.value = (CurrentHealth.value / CurrentHealth.maxHealth) * updatedMaxHealth + amount;
-            CurrentHealth.maxHealth = updatedMaxHealth;
-          } else {
-            CurrentHealth.value += amount;
+          if (!MonsterIsPaused) {
+            const updatedMaxHealth = updatedChatterAmount * monster.hp_multiplier;
+
+            if (CurrentHealth.maxHealth !== updatedMaxHealth) {
+              CurrentHealth.value = (CurrentHealth.value / CurrentHealth.maxHealth) * updatedMaxHealth + amount;
+              CurrentHealth.maxHealth = updatedMaxHealth;
+            } else {
+              CurrentHealth.value += amount;
+            }
           }
 
           updateHealth();
