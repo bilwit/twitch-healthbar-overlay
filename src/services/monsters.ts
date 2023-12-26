@@ -95,15 +95,16 @@ export function Monster(monster: Monster, maxHealth: number, TwitchEmitter: Even
     }
 
     TwitchEmitter.on('pause', (data) => {
-      console.log('foo')
       if (monster.relations_id && data?.relations_id === monster.relations_id) {
         isPaused = true;
+        console.log(consoleLogStyling('health', '(' + monster.id + ') Paused'));
       }
     });
 
     TwitchEmitter.on('unpause', (data) => {
       if (monster.relations_id && data?.relations_id === monster.relations_id) {
         isPaused = false;
+        console.log(consoleLogStyling('health', '(' + monster.id + ') Unpaused'));
       }
     });
 
