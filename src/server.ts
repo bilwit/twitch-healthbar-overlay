@@ -8,6 +8,7 @@ import { PrismaClient } from '@prisma/client';
 import { EventEmitter } from 'stream';
 import ChatConnection from './services/chatConnection';
 import websocket from './services/websocket';
+import socketEventHandler from './utils/socketEventHandler';
 
 dotenv.config();
 
@@ -59,7 +60,7 @@ const server = app.listen(Number(process.env.PORT), () => {
   
 });
 
-// instatiate websocket server
+// instantiate websocket server
 const WebSocketServer = websocket(server);
 
 if (WebSocketServer) {
@@ -74,39 +75,7 @@ if (WebSocketServer) {
     websocketConnection.addEventListener('message', (event: any) => {
       if (event) {
         const eventData = JSON.parse(event.data);
-        if (eventData?.message === 'reset') {
-          TwitchEmitter.emit('reset', {
-            id: eventData?.id,
-          });
-        }
-        if (eventData?.message === 'current') {
-          // send current health status on request
-          TwitchEmitter.emit('current', {
-            id: eventData?.id,
-          });
-        }
-        if (eventData?.message === 'pause') {
-          if (eventData?.relations_id) {
-            TwitchEmitter.emit('pause', {
-              relations_id: eventData?.id,
-            });
-          } else if (eventData?.id) {
-            TwitchEmitter.emit('pause', {
-              id: eventData?.id,
-            });
-          }
-        }
-        if (eventData?.message === 'unpause') {
-          if (eventData?.relations_id) {
-            TwitchEmitter.emit('unpause', {
-              relations_id: eventData?.id,
-            });
-          } else if (eventData?.id) {
-            TwitchEmitter.emit('unpause', {
-              id: eventData?.id,
-            });
-          }
-        }
+        socketEventHandler(eventData, TwitchEmitter);
       }
     });
 
