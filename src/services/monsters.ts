@@ -90,6 +90,7 @@ export function Monster(monster: Monster, maxHealth: number, TwitchEmitter: Even
         TwitchEmitter.emit('update', {
           id: monster.id,
           value: CurrentHealth,
+          isPaused: isPaused,
         });
       }
     }
@@ -113,6 +114,12 @@ export function Monster(monster: Monster, maxHealth: number, TwitchEmitter: Even
         CurrentHealth.value = CurrentHealth.maxHealth;
         updateHealth();
         console.log(consoleLogStyling('health', '(' + monster.id + ') Health Reset: ' + MaxHealth));
+      }
+    });
+
+    TwitchEmitter.on('current', (data) => {
+      if (Number(data.id) === Number(monster.id)) {
+        updateHealth();
       }
     });
 
