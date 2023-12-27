@@ -116,6 +116,7 @@ export function Monster(monster: Monster, maxHealth: number, TwitchEmitter: Even
     TwitchEmitter.on('reset', (data) => {
       if (data.id === monster.id) {
         CurrentHealth.value = CurrentHealth.maxHealth;
+        isDead = false;
         updateHealth();
         console.log(consoleLogStyling('health', '(' + monster.id + ') Health Reset: ' + MaxHealth));
       }
