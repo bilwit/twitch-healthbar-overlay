@@ -50,19 +50,19 @@ function Status(props: Props) {
           >
             Manage and visualize the avatar and bar overlays.
           </Alert>
- 
-          <AspectRatio ratio={1080 / 720} maw={300} mx="auto">
-            <Item 
-              key={props?.data?.id}
-              data={monsters[0]}
-            />
-          </AspectRatio>
-        
-          <AspectRatio ratio={1080 / 720} maw={300} mx="auto">
-            {props.data?.bar_theme && bars(props.data?.bar_theme, isLoading, data.value, data.maxHealth)}
-          </AspectRatio>
 
           <Card>
+            <Card.Section mt="lg">
+              <AspectRatio maw={300} mx="auto">
+                <Item 
+                  key={props?.data?.id}
+                  data={monsters[0]}
+                />
+              </AspectRatio>
+              <AspectRatio maw={300} mx="auto">
+                {props.data?.bar_theme && bars(props.data?.bar_theme, isLoading, data.value, data.maxHealth)}
+              </AspectRatio>
+            </Card.Section>
             <Center>
               <Stack 
                 mb="xl" 
