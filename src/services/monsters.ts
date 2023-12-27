@@ -136,7 +136,7 @@ export function Monster(monster: Monster, maxHealth: number, TwitchEmitter: Even
     });
 
     TwitchEmitter.on('reset', (data) => {
-      if (data.id === monster.id) {
+      if ((data?.id && data.id === monster.id) || (data?.relations_id && data.relations_id === monster.relations_id)) {
         switch (monster.hp_style) {
           case 'Growing':
             CurrentHealth.value = 0;

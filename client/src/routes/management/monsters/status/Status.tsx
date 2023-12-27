@@ -13,6 +13,7 @@ import { GrPowerReset } from 'react-icons/gr';
 import classes from '../../../../css/Nav.module.css';
 import { useEffect } from 'react';
 import { MdOutlinePause, MdPlayArrow } from 'react-icons/md';
+import { RiRestartFill } from "react-icons/ri";
 import { theme as bars } from '../../../display/theme';
 
 interface Props {
@@ -97,6 +98,30 @@ function Status(props: Props) {
             >
               Reset Health
             </Button>
+
+            {props?.data?.relations_id && (
+              <Button 
+                variant="gradient"
+                gradient={{ from: theme.colors.blue[9], to: 'purple', deg: 90 }}
+                onClick={async (e) => {
+                  e.preventDefault();
+                  if (connectedSocket && props?.data?.id) {
+                    connectedSocket.send(JSON.stringify({ 
+                      message: 'reset',
+                      relations_id: props?.data?.relations_id,
+                    }));
+                  }
+                }}
+                leftSection={
+                  <RiRestartFill   
+                    size="1rem" 
+                    stroke={1.5}
+                  />
+                }
+              >
+                Reset All
+              </Button>
+            )}
 
             {data?.isPaused ? (
               <Button 
