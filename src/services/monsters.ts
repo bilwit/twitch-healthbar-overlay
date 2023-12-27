@@ -76,7 +76,8 @@ export async function getMonster(id: number, maxHealthInit: number, TwitchEmitte
 
 export function Monster(monster: Monster, maxHealth: number, TwitchEmitter: EventEmitter): any {
   try {
-    let MonsterIsPaused = false;
+    let isPaused = false;
+    let isDead = false;
 
     // initialize health
     let MaxHealth = maxHealth * monster.hp_multiplier;
@@ -90,14 +91,15 @@ export function Monster(monster: Monster, maxHealth: number, TwitchEmitter: Even
         id: monster.id,
         value: {
           ...CurrentHealth,
-          isPaused: MonsterIsPaused,
+          isPaused: isPaused,
+          isDead: isDead,
         },
       });
     }
 
     TwitchEmitter.on('pause', (data) => {
       if (monster.relations_id && data?.relations_id === monster.relations_id) {
-        MonsterIsPaused = true;
+        isPaused = true;
         updateHealth();
         console.log(consoleLogStyling('health', '(' + monster.id + ') Paused'));
       }
@@ -105,7 +107,7 @@ export function Monster(monster: Monster, maxHealth: number, TwitchEmitter: Even
 
     TwitchEmitter.on('unpause', (data) => {
       if (monster.relations_id && data?.relations_id === monster.relations_id) {
-        MonsterIsPaused = false;
+        isPaused = false;
         updateHealth();
         console.log(consoleLogStyling('health', '(' + monster.id + ') Unpaused'));
       }
@@ -134,17 +136,18 @@ export function Monster(monster: Monster, maxHealth: number, TwitchEmitter: Even
       trigger_words: monster.trigger_words,
       update: function(amount: number, updatedChatterAmount: number) {
         if (CurrentHealth.value >= 0) {
-          if (!MonsterIsPaused) {
+          if (!isPaused) {
             const updatedMaxHealth = updatedChatterAmount * monster.hp_multiplier;
 
             if (CurrentHealth.maxHealth !== updatedMaxHealth) {              
-                CurrentHealth.value = (CurrentHealth.value / CurrentHealth.maxHealth) * updatedMaxHealth + amount;
-                CurrentHealth.maxHealth = updatedMaxHealth;
+              CurrentHealth.value = Math.max(0, (CurrentHealth.value / CurrentHealth.maxHealth) * updatedMaxHealth + amount);
+              CurrentHealth.maxHealth = updatedMaxHealth;
             } else {
               CurrentHealth.value += amount;
             }
 
-            if (CurrentHealth.value <= 0) {
+            if (!isDead && CurrentHealth.value <= 0) {
+              isDead = true;
               TwitchEmitter.emit('pause', {
                 relations_id: monster.relations_id,
               });
