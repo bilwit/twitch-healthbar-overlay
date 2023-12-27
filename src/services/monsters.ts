@@ -136,7 +136,7 @@ export function Monster(monster: Monster, maxHealth: number, TwitchEmitter: Even
       trigger_words: monster.trigger_words,
       update: function(amount: number, updatedChatterAmount: number) {
         if (CurrentHealth.value >= 0) {
-          if (!isPaused) {
+          if (!isDead && !isPaused) {
             const updatedMaxHealth = updatedChatterAmount * monster.hp_multiplier;
 
             if (CurrentHealth.maxHealth !== updatedMaxHealth) {              
@@ -146,7 +146,7 @@ export function Monster(monster: Monster, maxHealth: number, TwitchEmitter: Even
               CurrentHealth.value += amount;
             }
 
-            if (!isDead && CurrentHealth.value <= 0) {
+            if (CurrentHealth.value <= 0) {
               isDead = true;
               TwitchEmitter.emit('pause', {
                 relations_id: monster.relations_id,
