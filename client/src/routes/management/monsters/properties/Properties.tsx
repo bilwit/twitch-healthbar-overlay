@@ -90,7 +90,7 @@ function Properties(props: Props) {
 
   return (
     <>
-      {info ? (
+      {error || warning || isEditSuccess || info ? (
         <Alerts
           error={error}
           warning={warning}
@@ -102,7 +102,6 @@ function Properties(props: Props) {
             {InfoDefault}
           </>
       )}
-      
 
       <form onSubmit={CreateForm.onSubmit(async (values: FormDataInterface) => {
         // check if any changes have been made
