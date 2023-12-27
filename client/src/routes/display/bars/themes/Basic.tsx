@@ -6,8 +6,6 @@ interface Props {
 
 function Basic(props: Props) {
   const width = String(props.value / props.maxHealth * 100);
-  console.log(props.value)
-  console.log(props.maxHealth)
   
   return (
     <>

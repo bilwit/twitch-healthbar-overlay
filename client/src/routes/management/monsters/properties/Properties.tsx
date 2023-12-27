@@ -257,7 +257,7 @@ function Properties(props: Props) {
 
             <NativeSelect 
               label="Health Bar Theme" 
-              data={['Basic']}
+              data={['basic', 'counter_raw', 'counter_percentage']}
               {...CreateForm.getInputProps('bar_theme')}
             />
 
