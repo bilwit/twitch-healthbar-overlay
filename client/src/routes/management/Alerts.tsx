@@ -6,10 +6,11 @@ import classes from '../../css/Nav.module.css';
 import { BiError, BiInfoCircle } from 'react-icons/bi';
 
 interface Props {
-  error?: string,
-  warning?: string,
-  success?: string
-  info?: string,
+  error?: string | JSX.Element,
+  warning?: string | JSX.Element,
+  success?: string | JSX.Element,
+  info?: string | JSX.Element,
+  title?: string,
 }
 
 function Alerts(props: Props) {
@@ -21,7 +22,7 @@ function Alerts(props: Props) {
             className={classes['margin-bottom-1']}
             variant="light" 
             color="red" 
-            title="Error" 
+            title={props?.title || 'Error'} 
             icon={
               <BiError 
                 size="1rem" 
@@ -39,7 +40,7 @@ function Alerts(props: Props) {
             className={classes['margin-bottom-1']}
             variant="light" 
             color="yellow" 
-            title="Warning" 
+            title={props?.title || 'Warning'} 
             icon={
               <BiError 
                 size="1rem" 
@@ -57,7 +58,7 @@ function Alerts(props: Props) {
             className={classes['margin-bottom-1']}
             variant="light" 
             color="cyan" 
-            title="Success" 
+            title={props?.title || 'Success'} 
             icon={
               <BiInfoCircle 
                 size="1rem" 
@@ -75,7 +76,7 @@ function Alerts(props: Props) {
             className={classes['margin-bottom-1']}
             variant="light" 
             color="indigo" 
-            title="Info" 
+            title={props?.title || 'Info'} 
             icon={
               <BiInfoCircle 
                 size="1rem" 

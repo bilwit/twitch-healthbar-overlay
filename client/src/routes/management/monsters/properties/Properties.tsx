@@ -13,6 +13,8 @@ import {
   Text,
   Overlay,
   NativeSelect,
+  Accordion,
+  Alert,
 } from '@mantine/core';
 import classes from '../../../../css/Nav.module.css'
 import { GiMonsterGrasp } from 'react-icons/gi';
@@ -23,6 +25,7 @@ import { Monster } from '../../useGetData';
 import { BsFillPersonFill } from 'react-icons/bs';
 import { AiFillDelete } from 'react-icons/ai';
 import Alerts from '../../Alerts';
+import { BiInfoCircle } from 'react-icons/bi';
 
 interface Props {
   isOpened: boolean,
@@ -74,7 +77,9 @@ function Properties(props: Props) {
       },
     },
   });
-  const [info, setInfo] = useState('');
+  
+  const [infoHealthStyle, setInfoHealthStyle] = useState(false);
+  const [info, setInfo] = useState<string | JSX.Element>();
   const [warning, setWarning] = useState('');
   const [error, setError] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(props?.data?.id && (props?.data?.id !== null) ? true : false);
@@ -86,12 +91,19 @@ function Properties(props: Props) {
 
   return (
     <>
-      <Alerts
-        error={error}
-        warning={warning}
-        success={isEditSuccess}
-        info={info}
-      />
+      {info ? (
+        <Alerts
+          error={error}
+          warning={warning}
+          success={isEditSuccess}
+          info={info}
+        />
+      ) : (
+          <>
+            {InfoDefault}
+          </>
+      )}
+      
 
       <form onSubmit={CreateForm.onSubmit(async (values: FormDataInterface) => {
         // check if any changes have been made
@@ -219,6 +231,12 @@ function Properties(props: Props) {
               <Grid.Col span={5}>
                 <NativeSelect 
                   label="Health Style" 
+                  rightSection={(
+                    <BiInfoCircle 
+                      size="1rem" 
+                      stroke={1.5} 
+                    />
+                  )}
                   required
                   data={['Fixed', 'Growing', 'Scaled']}
                   {...CreateForm.getInputProps('hp_style')}
@@ -230,7 +248,7 @@ function Properties(props: Props) {
                   required
                   label={
                     CreateForm.values?.hp_style === 'Scaled' ? 'HP Per-Chat User' : 
-                    CreateForm.values?.hp_style === 'Growing' ? 'Limit (0 Unlimited)' :
+                    CreateForm.values?.hp_style === 'Growing' ? 'Limit' :
                     'Limit'
                   }
                   {...CreateForm.getInputProps('hp_multiplier')}
@@ -368,5 +386,36 @@ function Properties(props: Props) {
     </>
   );
 }
+
+const InfoDefault = (
+  <Accordion mb="md" defaultValue="" variant="contained">
+    <Accordion.Item value="healthStyles">
+      <Alert 
+        mb={0}
+        p={0}
+        className={classes['margin-bottom-1']}
+        variant="light" 
+        color="indigo"
+      >
+        <Accordion.Control>
+          <Group>
+            <BiInfoCircle 
+              size="1rem" 
+              stroke={1.5} 
+            />
+            <Text>
+              Health Styles
+            </Text>
+          </Group>
+        </Accordion.Control>
+        <Accordion.Panel>
+          <p style={{ marginTop: 0 }}><b>Fixed:</b> Maximum health is a defined number and starts at 100%.</p>
+          <p style={{ marginTop: 0 }}><b>Growing:</b> Maximum health is a defined number and starts at 0%.</p>
+          <p style={{ marginTop: 0 }}><b>Scaled:</b> Health scales dynamically with the number of users in chat. The <b>HP Per-Chat User</b> amount determines how many triggers per user is the maximum health.</p>
+        </Accordion.Panel>
+      </Alert>
+    </Accordion.Item>
+  </Accordion>
+)
 
 export default Properties;
