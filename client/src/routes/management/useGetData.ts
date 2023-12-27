@@ -24,6 +24,7 @@ export interface Monster {
   published: boolean,
   avatar_url?: string,
   hp_multiplier?: number,
+  hp_style?: string,
   trigger_words?: string,
   bar_theme?: string,
   relations_id?: number,

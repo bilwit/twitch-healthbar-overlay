@@ -35,6 +35,7 @@ interface Props {
 interface FormDataInterface {
   name: string;
   published: string;
+  hp_style: string,
   hp_multiplier: number;
   bar_theme: string;
   avatarFile: File | null;
@@ -46,6 +47,7 @@ function Properties(props: Props) {
     initialValues: {
       name: props?.data?.name || '',
       published: props?.data?.published === true ? 'true' : 'false',
+      hp_style: props?.data?.hp_style || 'Scaled',
       hp_multiplier: props?.data?.hp_multiplier || 5,
       avatarFile: null,
       trigger_words: props?.data?.trigger_words ? props?.data?.trigger_words.split(',') : [],
@@ -94,6 +96,7 @@ function Properties(props: Props) {
         // check if any changes have been made
         if (!isAvatarChanged && props?.data?.id && 
           (props.data.name === values.name) &&
+          (props.data.hp_style === values.hp_style) && 
           (props.data.published.toString() === values.published) &&
           (props.data.hp_multiplier === values.hp_multiplier) &&
           (props.data.bar_theme === values.bar_theme) && 
@@ -213,23 +216,35 @@ function Properties(props: Props) {
 
             <Grid grow>
               <Grid.Col span={5}>
-                <NumberInput
-                  className={classes['margin-bottom-1']}
+                <NativeSelect 
+                  label="Health Style" 
                   required
-                  label="HP Per-Chat User"
-                  {...CreateForm.getInputProps('hp_multiplier')}
+                  data={['Fixed', 'Growing', 'Scaled']}
+                  {...CreateForm.getInputProps('hp_style')}
                 />
               </Grid.Col>
               <Grid.Col span={5}>
-                <NativeSelect 
-                  label="Health Bar Theme" 
-                  data={['Basic']}
-                  {...CreateForm.getInputProps('bar_theme')}
+                <NumberInput
+                  className={classes['margin-bottom-1']}
+                  required
+                  label={
+                    CreateForm.values?.hp_style === 'Scaled' ? 'HP Per-Chat User' : 
+                    CreateForm.values?.hp_style === 'Growing' ? 'Limit (0 Unlimited)' :
+                    'Limit'
+                  }
+                  {...CreateForm.getInputProps('hp_multiplier')}
                 />
               </Grid.Col>
             </Grid>
 
+            <NativeSelect 
+              label="Health Bar Theme" 
+              data={['Basic']}
+              {...CreateForm.getInputProps('bar_theme')}
+            />
+
             <TagsInput
+              mt="md"
               withAsterisk
               className={classes['margin-bottom-1']}
               label="Text Triggers" 
