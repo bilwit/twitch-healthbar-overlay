@@ -2,7 +2,7 @@
 import { 
   Alert,
   AspectRatio,
-  Button, Card, Center, Group, Stack, Title,
+  Button, Card, Center, Grid, Group, Stack, Title,
 } from '@mantine/core';
 import useWebSocket from '../../../display/useWebSocket';
 import { theme } from '../../../../theme';
@@ -52,31 +52,40 @@ function Status(props: Props) {
             Manage and visualize the avatar and bar overlays.
           </Alert>
 
-          <Card>
-            <Card.Section mt="lg">
-              <AspectRatio maw={300} mx="auto">
-                <Item 
-                  key={props?.data?.id}
-                  data={monsters[0]}
-                />
-              </AspectRatio>
-              <AspectRatio maw={300} mx="auto">
-                {props.data?.bar_theme && bars(props.data?.bar_theme, isLoading, data.value, data.maxHealth)}
-              </AspectRatio>
-            </Card.Section>
-            <Center>
-              <Stack 
-                mb="xl" 
-                justify='center'
-              >
-                <Title order={1}>
-                  {'HP: ' + (data.maxHealth === 0 ? 0 : (data.value / data.maxHealth * 100)).toFixed(0) + '%' + (data.isPaused ? ' (Paused)' : '')}
-                </Title>
-              </Stack>
-            </Center>
+          <Card style={{ display: 'grid', maxHeight: '300px'}}>
+            <Grid>
+              <Grid.Col style={{ maxWidth: '150px' }}>
+                <Card.Section m={0}>
+                  <AspectRatio maw={150} m={0}>
+                    <Item 
+                      key={props?.data?.id}
+                      data={monsters[0]}
+                    />
+                  </AspectRatio>
+                  <AspectRatio maw={50} m={0}>
+                    {props.data?.bar_theme && bars(props.data?.bar_theme, isLoading, data.value, data.maxHealth)}
+                  </AspectRatio>
+                </Card.Section>
+              </Grid.Col>
+              <Grid.Col style={{ maxWidth: '50%' }}>
+                <Center>
+                  <Stack 
+                    mb="xl" 
+                    justify='center'
+                  >
+                    <Title order={2}>
+                      {props?.data?.name}
+                    </Title>
+                    <Title order={3}>
+                      {'HP: ' + (data.maxHealth === 0 ? 0 : (data.value / data.maxHealth * 100)).toFixed(0) + '%' + (data.isPaused ? ' (Paused)' : '')}
+                    </Title>
+                  </Stack>
+                </Center>
+              </Grid.Col>
+            </Grid>
           </Card>
 
-          <Group mt="md">
+          <Group mt="md" justify='center'>
             <Button 
               variant="gradient"
               gradient={{ from: theme.colors.blue[9], to: 'indigo', deg: 90 }}
