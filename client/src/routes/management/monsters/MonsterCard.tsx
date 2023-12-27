@@ -68,11 +68,11 @@ function Monsters(props: Props) {
               </Text>
 
               <Text size="xs" c="dimmed" mt="sm">
-                Health Multiplier
+                Health Style
               </Text>
 
               <Text size="sm">
-                {props.item.hp_multiplier}
+                {props.item.hp_style}
               </Text>
             </Stack>
 
