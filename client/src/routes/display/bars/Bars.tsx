@@ -1,8 +1,8 @@
-  import { useParams } from "react-router-dom";
-import useGetData, { Monster } from "../../management/useGetData";
+import { useParams } from "react-router-dom";
+import useGetData from "../../management/useGetData";
 import useWebSocket from '../useWebSocket';
-import Basic from './themes/Basic';
 import { useEffect } from "react";
+import { theme } from "../theme";
 
 function Bars() {
   const params = useParams();
@@ -18,24 +18,10 @@ function Bars() {
     }
   }, [connectedSocket]);
 
-  const theme = (monster: Monster) => {
-    switch (monster.bar_theme) {
-      default:
-      case 'basic':
-        return (
-          <Basic
-            isLoading={isLoading}
-            value={data.value}
-            maxHealth={data.maxHealth}
-          />
-        )
-    }
-  }
-
   return (
     <>
       {!isLoading && monsters && monsters.length === 1 && (
-        <>{theme(monsters[0])}</>
+        <>{theme(monsters[0].bar_theme, isLoading, data.value, data.maxHealth)}</>
       )}
     </>
   );

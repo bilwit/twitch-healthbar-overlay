@@ -8,12 +8,12 @@ import useWebSocket from '../../../display/useWebSocket';
 import { theme } from '../../../../theme';
 import useGetData, { Monster } from '../../useGetData';
 import Item from '../../../display/avatars/Item';
-import Basic from '../../../display/bars/themes/Basic';
 import { BiInfoCircle } from 'react-icons/bi';
 import { GrPowerReset } from 'react-icons/gr';
 import classes from '../../../../css/Nav.module.css';
 import { useEffect } from 'react';
 import { MdOutlinePause, MdPlayArrow } from 'react-icons/md';
+import { theme as bars } from '../../../display/theme';
 
 interface Props {
   data?: Monster,
@@ -59,11 +59,7 @@ function Status(props: Props) {
           </AspectRatio>
         
           <AspectRatio ratio={1080 / 720} maw={300} mx="auto">
-            <Basic
-              isLoading={isLoading}
-              value={data.value}
-              maxHealth={data.maxHealth}
-            />
+            {props.data?.bar_theme && bars(props.data?.bar_theme, isLoading, data.value, data.maxHealth)}
           </AspectRatio>
 
           <Card>
