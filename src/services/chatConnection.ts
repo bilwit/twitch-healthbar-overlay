@@ -90,12 +90,12 @@ export default async function ChatConnection (db: PrismaClient) {
                     const addedMonster: Monster_CB | null = await getMonster(data.id, MaxHealth, TwitchEmitter);
                     if (addedMonster) {
                       monsters.set(Number(data.id), addedMonster) ;
-                      console.log(consoleLogStyling('health', '(' + data.id + ')' + 'Monster Added'));
+                      console.log(consoleLogStyling('health', '(' + data.id + ')' + ' Monster Added'));
                     }
                   }
                   if (data.status === false) {
                     monsters.delete(Number(data.id));
-                    console.log(consoleLogStyling('health', '(' + data.id + ')' + 'Monster Disabled'));
+                    console.log(consoleLogStyling('health', '(' + data.id + ')' + ' Monster Disabled'));
                   }
                 })
           

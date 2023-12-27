@@ -62,7 +62,8 @@ function Properties(props: Props) {
         }
         return 'Required';
       },
-      hp_multiplier: (value) => value ? null : 'Required',
+      hp_style: (value) => value ? null  : 'Required',
+      hp_multiplier: (value) => Number(value) >= 0 ? null : 'Required',
       bar_theme: (value) => value ? null : 'Required',
       avatarFile: () => null,
       trigger_words: (value) => {

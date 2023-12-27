@@ -5,6 +5,10 @@ interface Props {
 }
 
 function Basic(props: Props) {
+  const width = String(props.value / props.maxHealth * 100);
+  console.log(props.value)
+  console.log(props.maxHealth)
+  
   return (
     <>
       {!props.isLoading && (
@@ -23,7 +27,7 @@ function Basic(props: Props) {
                 style={{
                   fill: '#6aff03',
                   transition: 'width 0.1s ease-in, fill 0.2s linear',
-                  width: String(props.value / props.maxHealth * 100) + '%',
+                  width: width === 'NaN' ? 0 : String(props.value / props.maxHealth * 100) + '%',
                 }}
               />
             </svg>

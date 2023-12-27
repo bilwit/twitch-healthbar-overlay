@@ -5,6 +5,7 @@ import { EventEmitter } from "stream";
 interface Monster {
   id: number,
   hp_multiplier: number,
+  hp_style: string,
   trigger_words: string,
   relations_id?: number | null,
 }
@@ -24,6 +25,7 @@ export default async function getMonsters(maxHealthInit: number, TwitchEmitter: 
       select: {
         id: true,
         hp_multiplier: true,
+        hp_style: true,
         trigger_words: true,
         relations_id: true,
       },
@@ -55,6 +57,7 @@ export async function getMonster(id: number, maxHealthInit: number, TwitchEmitte
       select: {
         id: true,
         hp_multiplier: true,
+        hp_style: true,
         trigger_words: true,
         relations_id: true,
       },
@@ -80,10 +83,29 @@ export function Monster(monster: Monster, maxHealth: number, TwitchEmitter: Even
     let isDead = false;
 
     // initialize health
-    let MaxHealth = maxHealth * monster.hp_multiplier;
+    const maxHealth = () => {
+      switch (monster.hp_style) {
+        default:
+        case 'Fixed':
+        case 'Growing':
+        case 'Scaled':
+          return monster.hp_multiplier;
+      }
+    }
+    const currentHealth = () => {
+      switch (monster.hp_style) {
+        case 'Growing':
+          return 0;
+        default:
+        case 'Fixed':
+        case 'Scaled':
+          return monster.hp_multiplier;
+      }
+    }
+
     let CurrentHealth = {
-      maxHealth: MaxHealth,
-      value: MaxHealth,
+      maxHealth: maxHealth(),
+      value: currentHealth(),
     };
 
     const updateHealth = () => {
@@ -115,10 +137,19 @@ export function Monster(monster: Monster, maxHealth: number, TwitchEmitter: Even
 
     TwitchEmitter.on('reset', (data) => {
       if (data.id === monster.id) {
-        CurrentHealth.value = CurrentHealth.maxHealth;
+        switch (monster.hp_style) {
+          case 'Growing':
+            CurrentHealth.value = 0;
+            break;
+          default:
+          case 'Fixed':
+          case 'Scaled':
+            CurrentHealth.value = CurrentHealth.maxHealth;
+            break;
+        }
         isDead = false;
         updateHealth();
-        console.log(consoleLogStyling('health', '(' + monster.id + ') Health Reset: ' + MaxHealth));
+        console.log(consoleLogStyling('health', '(' + monster.id + ') Health Reset: ' + CurrentHealth.value));
       }
     });
 
@@ -130,36 +161,61 @@ export function Monster(monster: Monster, maxHealth: number, TwitchEmitter: Even
 
     // send initial health data
     updateHealth();
-    console.log(consoleLogStyling('health', '(' + monster.id + ') Initial Health: ' + MaxHealth));
+    console.log(consoleLogStyling('health', '(' + monster.id + ') Initial Health: ' + CurrentHealth.value));
 
     return {
       id: monster.id,
       trigger_words: monster.trigger_words,
       update: function(amount: number, updatedChatterAmount: number) {
-        if (CurrentHealth.value >= 0) {
-          if (!isDead && !isPaused) {
-            const updatedMaxHealth = updatedChatterAmount * monster.hp_multiplier;
-
-            if (CurrentHealth.maxHealth !== updatedMaxHealth) {              
-              CurrentHealth.value = Math.max(0, (CurrentHealth.value / CurrentHealth.maxHealth) * updatedMaxHealth + amount);
-              CurrentHealth.maxHealth = updatedMaxHealth;
-            } else {
-              CurrentHealth.value += amount;
+        switch (monster.hp_style) {
+          case 'Growing':
+            if (!isDead && !isPaused) {
+              if ((monster.hp_multiplier === 0) || (monster.hp_multiplier > 0 && CurrentHealth.value < monster.hp_multiplier)) {
+                CurrentHealth.value -= amount;
+              } else {
+                if (CurrentHealth.value >= monster.hp_multiplier) {
+                  isDead = true;
+                  TwitchEmitter.emit('pause', {
+                    relations_id: monster.relations_id,
+                  });
+                }
+              }
             }
+            break;
 
-            if (CurrentHealth.value <= 0) {
-              isDead = true;
-              TwitchEmitter.emit('pause', {
-                relations_id: monster.relations_id,
-              });
+          default:
+          case 'Fixed':
+          case 'Scaled':
+            if (CurrentHealth.value >= 0) {
+              if (!isDead && !isPaused) {
+                if (monster.hp_style === 'Fixed') {
+                  CurrentHealth.value = Math.max(0, CurrentHealth.value + amount);
+                }
+    
+                if (monster.hp_style === 'Scaled') {
+                  const updatedMaxHealth = updatedChatterAmount * monster.hp_multiplier;
+    
+                  if (CurrentHealth.maxHealth !== updatedMaxHealth) {              
+                    CurrentHealth.value = Math.max(0, (CurrentHealth.value / CurrentHealth.maxHealth) * updatedMaxHealth + amount);
+                    CurrentHealth.maxHealth = updatedMaxHealth;
+                  } else {
+                    CurrentHealth.value += amount;
+                  }
+                }
+
+                if (CurrentHealth.value <= 0) {
+                  isDead = true;
+                  TwitchEmitter.emit('pause', {
+                    relations_id: monster.relations_id,
+                  });
+                }
+              }
             }
-          }
-
-          updateHealth();
-          console.log(consoleLogStyling('health', '(' + monster.id + ') Current Health: ' + CurrentHealth.value));
-        } else {
-
+            break;
         }
+
+        updateHealth();
+        console.log(consoleLogStyling('health', '(' + monster.id + ') Current Health: ' + CurrentHealth.value));
       }
     }
 
