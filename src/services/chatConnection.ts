@@ -113,10 +113,7 @@ export default async function ChatConnection (db: PrismaClient) {
                       case 'PRIVMSG': // chatter message
                         if (monsters.size > 0) {
                           for (let [_key, monster] of monsters) {
-                            const numOfTriggers = checkTriggerWords(parsed.parameters, monster.trigger_words);
-                            if (numOfTriggers > 0) {
-                              monster.update(-numOfTriggers, MaxHealth);
-                            }
+                            updateMonster(parsed.parameters, monster.trigger_words, monster, MaxHealth);
                           }
                         }
                         break;
@@ -157,6 +154,13 @@ export default async function ChatConnection (db: PrismaClient) {
   } catch (err) {
     console.error(err);
     return null;
+  }
+}
+
+async function updateMonster(parameters: any, trigger_words: string, monster: Monster_CB, MaxHealth: any) {
+  const numOfTriggers = checkTriggerWords(parameters, trigger_words);
+  if (numOfTriggers > 0) {
+    monster.update(-numOfTriggers, MaxHealth);
   }
 }
 

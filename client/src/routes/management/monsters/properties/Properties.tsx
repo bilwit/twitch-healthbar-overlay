@@ -78,7 +78,6 @@ function Properties(props: Props) {
     },
   });
   
-  const [infoHealthStyle, setInfoHealthStyle] = useState(false);
   const [info, setInfo] = useState<string | JSX.Element>();
   const [warning, setWarning] = useState('');
   const [error, setError] = useState('');
