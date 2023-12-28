@@ -9,20 +9,19 @@ export interface Tokens {
 }
 
 dotenv.config();
-const prisma = new PrismaClient();
 
 const TWITCH_GET_BROADCASTER_ID = 'https://api.twitch.tv/helix/users?login=';
 const TWITCH_GET_OAUTH2 = 'https://id.twitch.tv/oauth2/';
 
-export default async function auth(BroadcasterId: string, settings: Settings): Promise<Tokens> {
+export default async function auth(BroadcasterId: string, settings: Settings, db: PrismaClient): Promise<Tokens> {
 
   async function checkRefresh(): Promise<string> {
     try {
-      const refresh_token = await prisma.refresh_token.findFirst({
+      const refresh_token = await db.refresh_token.findFirst({
         select: {
           value: true,
         },
-      })
+      }); 
     
       if (refresh_token && refresh_token?.value) {
         return refresh_token.value;
@@ -64,8 +63,10 @@ export default async function auth(BroadcasterId: string, settings: Settings): P
           BroadcasterId: BroadcasterId,
         }
       } else {
-        console.log(ret);
-        await prisma.refresh_token.deleteMany();
+        if (ret) {
+          console.log(ret);
+          await db.refresh_token.deleteMany();
+        }
 
         throw new Error('Could not negotiate access tokens');
       }
@@ -100,16 +101,41 @@ export default async function auth(BroadcasterId: string, settings: Settings): P
     }
   }
 
-  try {
+  async function updateRefresh(updated_token: string): Promise<boolean> {
+    try {
+      const refresh_token = await db.refresh_token.upsert({
+        where: {
+          id: 1,
+        },
+        create: {
+          id: 1,
+          value: updated_token,
+        },
+        update: {
+          value: updated_token,
+        }
+      });
+    
+      if (refresh_token && refresh_token?.value) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
+  }
 
+  try {
     const refresh = await checkRefresh();
 
     if (refresh) {
       return await requestTokens(
           BroadcasterId,
           new URLSearchParams({
-          client_id: settings.listener_client_id || '',
-          client_secret: settings.listener_secret || '',
+          client_id: settings.listener_client_id,
+          client_secret: settings.listener_secret,
           grant_type: 'refresh_token',
           refresh_token: encodeURIComponent(refresh),
         })
@@ -118,16 +144,16 @@ export default async function auth(BroadcasterId: string, settings: Settings): P
       return await requestTokens(
         BroadcasterId,
         new URLSearchParams({
-          client_id: settings.listener_client_id || '',
-          client_secret: settings.listener_secret || '',
-          code: settings.listener_auth_code || '',
+          client_id: settings.listener_client_id,
+          client_secret: settings.listener_secret,
+          code: settings.listener_auth_code,
           grant_type: 'authorization_code',
           redirect_uri: 'http://localhost:' + process.env.PORT,
         })
       );
     }
 
-  } catch (e) {
+  } catch (e) { 
     throw(e);
   }
 
@@ -162,31 +188,3 @@ export async function validate(access_token: string): Promise<string> {
     return '';
   }
 }
-
-async function updateRefresh(updated_token: string): Promise<boolean> {
-  try {
-    const refresh_token = await prisma.refresh_token.upsert({
-      where: {
-        id: 1,
-      },
-      create: {
-        id: 1,
-        value: updated_token,
-      },
-      update: {
-        value: updated_token,
-      }
-    });
-  
-    if (refresh_token && refresh_token?.value) {
-      return true;
-    } else {
-      return false;
-    }
-  } catch (e) {
-    console.error(e);
-    return false;
-  }
-}
-
-prisma.$disconnect();

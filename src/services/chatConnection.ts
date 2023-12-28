@@ -26,10 +26,14 @@ export default async function ChatConnection (db: PrismaClient) {
     })
     if (settings) {
       // authenticate
-      const tokens = await auth('', settings);
-      const user_id = await validate(tokens.access_token);
+      const tokens = await auth('', settings, db);
 
-      if (tokens?.access_token && tokens?.refresh_token && user_id) {
+      let user_id = '';
+      if (tokens?.access_token) {
+        user_id = await validate(tokens?.access_token);
+      }
+
+      if (tokens && tokens?.access_token && tokens?.refresh_token && user_id) {
         return (TwitchEmitter: EventEmitter) => {
           let connection: connection | undefined = undefined;
           TwitchEmitter.on('disconnect', () => {
@@ -59,13 +63,18 @@ export default async function ChatConnection (db: PrismaClient) {
                 console.log(consoleLogStyling('error', '! Connection Error: ' + error.toString()));
               });
       
-              connection.on('close', () => {
+              connection.on('close', async (eCode) => {
                 console.log(consoleLogStyling('warning', '! Connection Closed'));
+                if (eCode === 1006) {
+                  const d = await db.refresh_token.deleteMany();
+                  console.log(d)
+                }
+
                 if (connection) {
                   console.log(consoleLogStyling('warning', `!   Description: ${connection.closeDescription}`));
                   console.log(consoleLogStyling('warning', `!   Code: ${connection.closeReasonCode}`));
                 }
-              });
+              }); 
       
               try {
                 // initial MaxHealth
@@ -133,7 +142,7 @@ export default async function ChatConnection (db: PrismaClient) {
               if (!isValidated) {
                 console.log(consoleLogStyling('warning', '! Access token expired'));
                 // get new tokens if invalid
-                const newTokens = await auth(tokens.BroadcasterId, settings);
+                const newTokens = await auth(tokens.BroadcasterId, settings, db);
                 console.log(consoleLogStyling('success', '* New tokens issued'));
                 tokens.access_token = newTokens.access_token;
                 tokens.refresh_token = newTokens.refresh_token;
