@@ -54,7 +54,7 @@ function Properties(props: Props) {
       hp_multiplier: props?.data?.hp_multiplier || 5,
       avatarFile: null,
       trigger_words: props?.data?.trigger_words ? props?.data?.trigger_words.split(',') : [],
-      bar_theme: props?.data?.bar_theme || 'basic',
+      bar_theme: props?.data?.bar_theme || 'bar_basic',
     },
 
     validate: {
@@ -256,7 +256,7 @@ function Properties(props: Props) {
 
             <NativeSelect 
               label="Health Bar Theme" 
-              data={['basic', 'counter_raw', 'counter_percentage']}
+              data={['bar_basic', 'counter_raw', 'counter_percentage']}
               {...CreateForm.getInputProps('bar_theme')}
             />
 

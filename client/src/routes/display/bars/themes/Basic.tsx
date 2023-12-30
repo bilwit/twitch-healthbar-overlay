@@ -4,7 +4,7 @@ interface Props {
   maxHealth: number,
 }
 
-function Basic(props: Props) {
+function BarBasic(props: Props) {
   const width = String(props.value / props.maxHealth * 100);
   
   return (
@@ -36,4 +36,4 @@ function Basic(props: Props) {
   );
 }
 
-export default Basic;
+export default BarBasic;
