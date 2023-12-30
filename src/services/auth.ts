@@ -132,8 +132,8 @@ export default async function auth(BroadcasterId: string, settings: Settings, db
 
     if (refresh) {
       return await requestTokens(
-          BroadcasterId,
-          new URLSearchParams({
+        BroadcasterId,
+        new URLSearchParams({
           client_id: settings.listener_client_id,
           client_secret: settings.listener_secret,
           grant_type: 'refresh_token',

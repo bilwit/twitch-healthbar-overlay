@@ -11,6 +11,8 @@ module.exports = Router({ mergeParams: true }).delete('/settings', async (req: a
     });
   
     if (settings && settings.count > 0) {
+      req['TwitchEmitterConnection'].disconnect();
+
       return res.status(200).json({
         success: true,
       });
