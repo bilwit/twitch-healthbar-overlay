@@ -1,7 +1,23 @@
 import { EventEmitter } from "ws";
 
-export default function socketEventHandler(eventData: any, TwitchEmitter: EventEmitter): void {
+export default function socketEventHandler(
+  eventData: any, 
+  TwitchEmitter: EventEmitter, 
+  cb: { 
+    connect: () => Promise<void>, 
+    disconnect: () => void 
+  }
+): void {
   switch (eventData?.message) {
+    case 'connect':
+      cb.disconnect();
+      cb.connect();
+      break;
+
+    case 'disconnect':
+      cb.disconnect();
+      break;
+      
     case 'reset': // reset health to default
     if (eventData?.relations_id) {
       TwitchEmitter.emit('reset', {

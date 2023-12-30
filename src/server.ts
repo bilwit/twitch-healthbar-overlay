@@ -78,22 +78,14 @@ const server = app.listen(Number(process.env.PORT), async () => {
         WsClientConnection.addEventListener('message', (event: any) => {
           if (event) {
             const eventData = JSON.parse(event.data);
-            switch (eventData?.message) {
-              // requires scope
-              case 'connect':
-                disconnectWsTwitch();
-                connectWsTwitch();
-                break;
-
-              case 'disconnect':
-                disconnectWsTwitch();
-                break;
-
-              // does not require scope
-              default:
-                wsClientEventHandler(eventData, TwitchEmitter);
-                break;
-            }
+            wsClientEventHandler(
+              eventData, 
+              TwitchEmitter, 
+              { 
+                connect: connectWsTwitch, 
+                disconnect: disconnectWsTwitch 
+              }
+            );
           }
         });
 
