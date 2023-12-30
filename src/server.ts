@@ -39,7 +39,7 @@ app.use((req: any, _res, next) => {
 
 app.use('/api', require('./routes/router')());
 
-let WsTwitchChatConnection: ((TwitchEmitter: EventEmitter) => void) | null | undefined = null;
+let WsTwitchChatConnection: ((e: EventEmitter) => void) | null | undefined = null;
 const server = app.listen(Number(process.env.PORT), async () => {
   console.log(consoleLogStyling('important', '⚡️[server]: Server is running at http://localhost:' + process.env.PORT));
 
@@ -56,7 +56,7 @@ const server = app.listen(Number(process.env.PORT), async () => {
     const WebSocketServer = websocket(server);
 
     if (WebSocketServer) {
-      WebSocketServer.on("connection", (websocketConnection, _connectionRequest) => {
+      WebSocketServer.on('connection', (websocketConnection, _connectionRequest) => {
         console.log(consoleLogStyling('black', '+ Client Connected'));
       
         TwitchEmitter.on('update', (data) => {

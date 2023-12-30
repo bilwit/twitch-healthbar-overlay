@@ -12,13 +12,14 @@ export default function socketEventHandler(eventData: any, TwitchEmitter: EventE
         id: eventData?.id,
       });
     }
-
       break;
+
     case 'current': // send current health on demand
       TwitchEmitter.emit('current', {
         id: eventData?.id,
       });
       break;
+
     case 'pause': // pause monster and related monsters health
       if (eventData?.relations_id) {
         TwitchEmitter.emit('pause', {
@@ -30,6 +31,7 @@ export default function socketEventHandler(eventData: any, TwitchEmitter: EventE
         });
       }
       break;
+
     case 'unpause': // pause monster and related monsters health
       if (eventData?.relations_id) {
         TwitchEmitter.emit('unpause', {
@@ -41,6 +43,7 @@ export default function socketEventHandler(eventData: any, TwitchEmitter: EventE
         });
       }
       break;
+      
     default:
       break;
   }
