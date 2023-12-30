@@ -20,7 +20,7 @@ model monster {
   hp_style            String    @default("Scaled")
   trigger_words       String    @db.VarChar(255)
   avatar_url          String?   @db.VarChar(255)
-  bar_theme           String    @db.VarChar(255) @default("basic")
+  bar_theme           String    @db.VarChar(255) @default("bar_basic")
   stages              stages[]
   relations           relations? @relation(fields: [relations_id], references: [id], onDelete: SetNull)
   relations_id        Int?      // relation scalar field  (used in the `@relation` attribute above)

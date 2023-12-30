@@ -27,7 +27,6 @@ app.use(
 );
 app.use(cors());
 app.use(express.static(path.join(__dirname, '..', 'client/dist')));
-app.use('/api', require('./routes/router')());
 
 const TwitchEmitter = new EventEmitter();
 
@@ -59,8 +58,9 @@ app.use((req: any, _res, next) => {
     disconnect: disconnectWsTwitch,
   };
   return next();
-})
+});
 
+app.use('/api', require('./routes/router')());
 
 const server = app.listen(Number(process.env.PORT), async () => {
   console.log(consoleLogStyling('important', '⚡️[server]: Server is running at http://localhost:' + process.env.PORT));
