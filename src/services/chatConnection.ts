@@ -92,11 +92,11 @@ export default async function ChatConnection (db: PrismaClient) {
                   }
                 }, 15000);
       
-                const monsters: Map<number, Monster_CB> = await getMonsters(MaxHealth, TwitchEmitter);
+                const monsters: Map<number, Monster_CB> = await getMonsters(TwitchEmitter, db);
 
                 TwitchEmitter.on('publish', async (data) => {
                   if (data.status === true) {
-                    const addedMonster: Monster_CB | null = await getMonster(data.id, MaxHealth, TwitchEmitter);
+                    const addedMonster: Monster_CB | null = await getMonster(data.id, TwitchEmitter, db);
                     if (addedMonster) {
                       monsters.set(Number(data.id), addedMonster) ;
                       console.log(consoleLogStyling('health', '(' + data.id + ')' + ' Monster Added'));

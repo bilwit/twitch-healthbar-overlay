@@ -8,7 +8,7 @@ import { PrismaClient } from '@prisma/client';
 import { EventEmitter } from 'stream';
 import ChatConnection from './services/chatConnection';
 import websocket from './services/websocket';
-import socketEventHandler from './utils/socketEventHandler';
+import wsClientEventHandler from './utils/wsClientEventHandler';
 
 dotenv.config();
 
@@ -56,17 +56,31 @@ const server = app.listen(Number(process.env.PORT), async () => {
     const WebSocketServer = websocket(server);
 
     if (WebSocketServer) {
-      WebSocketServer.on('connection', (websocketConnection, _connectionRequest) => {
+      WebSocketServer.on('connection', (WsClientConnection, _connectionRequest) => {
         console.log(consoleLogStyling('black', '+ Client Connected'));
       
         TwitchEmitter.on('update', (data) => {
-          websocketConnection.send(JSON.stringify({ update: data }));
+          WsClientConnection.send(JSON.stringify({ update: data }));
         })
 
-        websocketConnection.addEventListener('message', (event: any) => {
+        WsClientConnection.addEventListener('message', (event: any) => {
           if (event) {
             const eventData = JSON.parse(event.data);
-            socketEventHandler(eventData, TwitchEmitter);
+            switch (eventData?.message) {
+              // requires scope
+              case 'connect':
+                  
+                break;
+
+              case 'disconnect':
+
+                break;
+
+              // does not require scope
+              default:
+                wsClientEventHandler(eventData, TwitchEmitter);
+                break;
+            }
           }
         });
 

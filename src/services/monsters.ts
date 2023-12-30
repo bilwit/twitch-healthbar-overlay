@@ -16,12 +16,10 @@ export interface Monster_CB {
   update: (amount: number, updatedMaxHealth: number) => void,
 }
 
-const prisma = new PrismaClient();
-
-export default async function getMonsters(maxHealthInit: number, TwitchEmitter: EventEmitter): Promise<Map<number, Monster_CB>
+export default async function getMonsters(TwitchEmitter: EventEmitter, db: PrismaClient): Promise<Map<number, Monster_CB>
 > {
   try {
-    const monsters = await prisma.monster.findMany({
+    const monsters = await db.monster.findMany({
       select: {
         id: true,
         hp_multiplier: true,
@@ -38,7 +36,7 @@ export default async function getMonsters(maxHealthInit: number, TwitchEmitter: 
       const monsterDict = new Map<number, Monster_CB>();
 
       for (const monster of monsters) {
-        monsterDict.set(monster.id, Monster(monster, maxHealthInit, TwitchEmitter));
+        monsterDict.set(monster.id, Monster(monster, TwitchEmitter));
       }
 
       return monsterDict;
@@ -51,9 +49,9 @@ export default async function getMonsters(maxHealthInit: number, TwitchEmitter: 
   }
 }
 
-export async function getMonster(id: number, maxHealthInit: number, TwitchEmitter: EventEmitter): Promise<Monster_CB | null> {
+export async function getMonster(id: number, TwitchEmitter: EventEmitter, db: PrismaClient): Promise<Monster_CB | null> {
   try {
-    const monster = await prisma.monster.findFirst({
+    const monster = await db.monster.findFirst({
       select: {
         id: true,
         hp_multiplier: true,
@@ -67,7 +65,7 @@ export async function getMonster(id: number, maxHealthInit: number, TwitchEmitte
     });
 
     if (monster) {
-      return Monster(monster, maxHealthInit, TwitchEmitter);
+      return Monster(monster, TwitchEmitter);
     } else {
       throw 'Monster ID not found';
     }
@@ -77,7 +75,7 @@ export async function getMonster(id: number, maxHealthInit: number, TwitchEmitte
   }
 }
 
-export function Monster(monster: Monster, maxHealth: number, TwitchEmitter: EventEmitter): any {
+function Monster(monster: Monster, TwitchEmitter: EventEmitter): any {
   try {
     let isPaused = false;
     let isDead = false;
@@ -224,4 +222,3 @@ export function Monster(monster: Monster, maxHealth: number, TwitchEmitter: Even
   }
 }
 
-prisma.$disconnect();
