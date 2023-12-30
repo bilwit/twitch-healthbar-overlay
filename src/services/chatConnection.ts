@@ -134,31 +134,34 @@ export default async function ChatConnection (db: PrismaClient) {
               } catch (e) {
                 console.log(consoleLogStyling('error', '! Error: ' + e));
               }
-            }
 
-            // validate every hour as per TOS
-            setInterval(async () => {
-              const isValidated = await validate(tokens.access_token);
-              if (!isValidated) {
-                console.log(consoleLogStyling('warning', '! Access token expired'));
-                // get new tokens if invalid
-                const newTokens = await auth(tokens.BroadcasterId, settings, db);
-                console.log(consoleLogStyling('success', '* New tokens issued'));
-                tokens.access_token = newTokens.access_token;
-                tokens.refresh_token = newTokens.refresh_token;
-      
-                // reconnect client
-                client.connect(TWITCH_IRC_ADDRESS);
-              } else {
-                console.log(consoleLogStyling('black', '! Token validated'));
-              }
-            }, 60*60*1000-100);
+              // validate every hour as per TOS
+              setInterval(async () => {
+                const isValidated = await validate(tokens.access_token);
+                if (!isValidated) {
+                  console.log(consoleLogStyling('warning', '! Access token expired'));
+                  // get new tokens if invalid
+                  const newTokens = await auth(tokens.BroadcasterId, settings, db);
+                  console.log(consoleLogStyling('success', '* New tokens issued'));
+                  tokens.access_token = newTokens.access_token;
+                  tokens.refresh_token = newTokens.refresh_token;
+        
+                  // reconnect client
+                  client.connect(TWITCH_IRC_ADDRESS);
+                } else {
+                  console.log(consoleLogStyling('black', '! Token validated'));
+                }
+              }, 60*60*1000-100);
+
+            }
 
           });
         }
       } else {
         throw new Error('Could not authenticate');
       }
+    } else {
+      throw new Error('No authentication settings');
     }
   } catch (err) {
     console.error(err);

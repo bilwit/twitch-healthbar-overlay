@@ -30,54 +30,51 @@ app.use(express.static(path.join(__dirname, '..', 'client/dist')));
 
 const TwitchEmitter = new EventEmitter();
 
-// some reason I can't extend Request type to use custom properties
+// any: for some reason I can't extend Request type to use custom properties
 app.use((req: any, _res, next) => {
   req['db'] = prisma;
   req['TwitchEmitter'] = TwitchEmitter;
   return next();
 })
 
-// console.log(process.env) 
-
 app.use('/api', require('./routes/router')());
 
-// serve React client directly from Express
-// app.get('/', (_req: Request, res: Response) => {
-//   res.sendFile(path.join(__dirname, "../client/dist", "index.html"));
-// });
-
-const server = app.listen(Number(process.env.PORT), () => {
+let WsTwitchChatConnection: ((TwitchEmitter: EventEmitter) => void) | null | undefined = null;
+const server = app.listen(Number(process.env.PORT), async () => {
   console.log(consoleLogStyling('important', '⚡️[server]: Server is running at http://localhost:' + process.env.PORT));
 
-  ChatConnection(prisma).then((connection) => {
-    if (connection) {
-      connection(TwitchEmitter);
+  try {
+    // initialize twitch chat connection if settings exist
+    WsTwitchChatConnection = await ChatConnection(prisma);
+
+    if (WsTwitchChatConnection) {
+      WsTwitchChatConnection(TwitchEmitter);
       TwitchEmitter.emit('connect');
     }
-  }).catch((err) => {
-    console.error(err);
-  });
+
+    // websocket server for client connection
+    const WebSocketServer = websocket(server);
+
+    if (WebSocketServer) {
+      WebSocketServer.on("connection", (websocketConnection, _connectionRequest) => {
+        console.log(consoleLogStyling('black', '+ Client Connected'));
+      
+        TwitchEmitter.on('update', (data) => {
+          websocketConnection.send(JSON.stringify({ update: data }));
+        })
+
+        websocketConnection.addEventListener('message', (event: any) => {
+          if (event) {
+            const eventData = JSON.parse(event.data);
+            socketEventHandler(eventData, TwitchEmitter);
+          }
+        });
+
+      });
+    }
+
+  } catch (e) {
+    console.log(e);
+  }
   
 });
-
-// instantiate websocket server
-const WebSocketServer = websocket(server);
-
-if (WebSocketServer) {
-  WebSocketServer.on("connection", (websocketConnection, _connectionRequest) => {
-    console.log(consoleLogStyling('black', '+ Client Connected'));
-  
-    TwitchEmitter.on('update', (data) => {
-      // websocketConnection.emit('message', JSON.stringify(data.value));
-      websocketConnection.send(JSON.stringify({ update: data }));
-    })
-
-    websocketConnection.addEventListener('message', (event: any) => {
-      if (event) {
-        const eventData = JSON.parse(event.data);
-        socketEventHandler(eventData, TwitchEmitter);
-      }
-    });
-
-  });
-}
