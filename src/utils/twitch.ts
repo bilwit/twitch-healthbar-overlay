@@ -1,9 +1,6 @@
-import { PrismaClient } from '@prisma/client';
 import { Tokens } from '../services/auth';
 
 const TWITCH_GET_CHATTERS_ADDRESS = 'https://api.twitch.tv/helix/chat/chatters';
-
-const prisma = new PrismaClient();
 
 export interface Settings {
   id?: number,
@@ -45,5 +42,3 @@ export async function fetchChatters(tokens: Tokens, user_id: string, listenerCli
     throw(e);
   }
 }
-
-prisma.$disconnect();
