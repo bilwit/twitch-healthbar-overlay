@@ -13,7 +13,7 @@ interface ParsedMessage {
   parameters: any,
 }
 
-export default function parseMessage(message: any): ParsedMessage | null {
+export default function parseMessage(message: any, channel_name: string,): ParsedMessage | null {
 
   const msg = message.utf8Data.toString();
 
@@ -64,7 +64,7 @@ export default function parseMessage(message: any): ParsedMessage | null {
   }
 
   // Parse the command component of the IRC message.
-  parsedMessage.command = parseCommand(rawCommandComponent);
+  parsedMessage.command = parseCommand(rawCommandComponent, channel_name);
 
   // Only parse the rest of the components if it's a command
   // we care about; we ignore some messages.
@@ -179,7 +179,7 @@ function parseTags(tags: string) {
 
 // Parses the command component of the IRC message.
 
-function parseCommand(rawCommandComponent: string) {
+function parseCommand(rawCommandComponent: string, channel_name: string) {
   let parsedCommand = null;
   const commandParts = rawCommandComponent.split(' ');
 
@@ -231,7 +231,7 @@ function parseCommand(rawCommandComponent: string) {
         console.log(`! Unsupported IRC command: ${commandParts[2]}`)
         return null;
     case '001':  // Logged in (successfully authenticated). 
-      console.log(consoleLogStyling('success', '* Connected to ' + process.env.CHANNEL_NAME + ' Stream Chat'));
+      console.log(consoleLogStyling('success', '* Connected to #' + channel_name + ' Stream Chat'));
       parsedCommand = {
         command: commandParts[0],
         channel: commandParts[1]

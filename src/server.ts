@@ -40,17 +40,29 @@ app.use((req: any, _res, next) => {
 app.use('/api', require('./routes/router')());
 
 let WsTwitchChatConnection: ((e: EventEmitter) => void) | null | undefined = null;
+
+async function connectWsTwitch() {
+  WsTwitchChatConnection = await ChatConnection(prisma);
+
+  if (WsTwitchChatConnection) {
+    WsTwitchChatConnection(TwitchEmitter);
+    TwitchEmitter.emit('connect');
+  }
+}
+
+function disconnectWsTwitch() {
+  if (WsTwitchChatConnection) {
+    TwitchEmitter.emit('disconnect');
+    WsTwitchChatConnection = null;
+  }
+}
+
 const server = app.listen(Number(process.env.PORT), async () => {
   console.log(consoleLogStyling('important', '⚡️[server]: Server is running at http://localhost:' + process.env.PORT));
 
   try {
     // initialize twitch chat connection if settings exist
-    WsTwitchChatConnection = await ChatConnection(prisma);
-
-    if (WsTwitchChatConnection) {
-      WsTwitchChatConnection(TwitchEmitter);
-      TwitchEmitter.emit('connect');
-    }
+    await connectWsTwitch();
 
     // websocket server for client connection
     const WebSocketServer = websocket(server);
@@ -69,11 +81,12 @@ const server = app.listen(Number(process.env.PORT), async () => {
             switch (eventData?.message) {
               // requires scope
               case 'connect':
-                  
+                disconnectWsTwitch();
+                connectWsTwitch();
                 break;
 
               case 'disconnect':
-
+                disconnectWsTwitch();
                 break;
 
               // does not require scope

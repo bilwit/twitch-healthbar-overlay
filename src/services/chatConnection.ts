@@ -109,7 +109,7 @@ export default async function ChatConnection (db: PrismaClient) {
                 })
           
                 connection.on('message', (message) => {
-                  const parsed = parser(message);
+                  const parsed = parser(message, settings.channel_name);
       
                   if (parsed) {
                     switch (parsed.command.command) {
