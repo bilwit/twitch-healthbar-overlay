@@ -25,6 +25,7 @@ module.exports = Router({ mergeParams: true }).put('/settings', async (req: any,
     });
   
     if (settings && settings?.id > 0) {
+      req['TwitchEmitterConnection'].disconnect();
       req['TwitchEmitterConnection'].connect();
 
       return res.status(200).json({
