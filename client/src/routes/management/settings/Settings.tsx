@@ -365,7 +365,7 @@ function Settings(props: Props) {
                 setWarning('This will disable any active connections between the bot and Twitch chat. In order to completely remove this information, you must unregister the application in the Twitch Developer Console.');
               }}
             >
-              {warning ? 'Are you sure?' : 'Disconnect'}
+              {warning ? 'Are you sure?' : 'Delete'}
             </Button>
             {warning && (
               <Button 
@@ -403,7 +403,7 @@ function Settings(props: Props) {
                   }
                 }}
               >
-                Disconnect
+                Delete
               </Button>
             )}
           </Group>
