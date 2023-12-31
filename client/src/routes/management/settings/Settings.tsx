@@ -13,9 +13,10 @@ import { Settings as Interface_Settings } from './useGetSettings';
 import { useForm } from '@mantine/form';
 import classes from '../../../css/Nav.module.css';
 import { BiError, BiInfoCircle } from 'react-icons/bi';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { theme } from '../../../theme';
 import { useNavigate } from 'react-router-dom';
+import WsContext from '../../../wsContext';
 
 interface Props {
   settings?: Interface_Settings,
@@ -24,6 +25,7 @@ interface Props {
 }
 
 function Settings(props: Props) {
+  const WsConnection = useContext(WsContext);
   const navigate = useNavigate();
   const RegistrationForm = useForm({
     initialValues: {
@@ -77,6 +79,18 @@ function Settings(props: Props) {
       SetIsSubmitted(false);
     }
   }, [props?.settings]);
+
+  useEffect(() => {
+    if (isSubmitted && WsConnection?.isConnected && WsConnection?.connectedSocket) {
+      try {
+        WsConnection?.connectedSocket.send(JSON.stringify({ 
+          message: 'status',
+        }));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }, [isSubmitted, WsConnection?.isConnected]);
 
   return (
     <Modal 
@@ -351,17 +365,47 @@ function Settings(props: Props) {
             </Alert>
           )}
           <Group justify="flex-end" mt="md">
-            <Button 
-              disabled={warning ? true : false}
-              variant="gradient"
-              gradient={{ from: theme.colors.red[9], to: 'yellow', deg: 90 }}
-              onClick={(e) => {
-                e.preventDefault();
-                setWarning('This will disable any active connections between the bot and Twitch chat. In order to completely remove this information, you must unregister the application in the Twitch Developer Console.');
-              }}
-            >
-              Disconnect
-            </Button>
+            {WsConnection?.isConnected ? (
+              <Button 
+                disabled={warning ? true : false}
+                variant="gradient"
+                gradient={{ from: theme.colors.red[9], to: 'yellow', deg: 90 }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (WsConnection?.isConnected && WsConnection?.connectedSocket) {
+                    try {
+                      WsConnection?.connectedSocket.send(JSON.stringify({ 
+                        message: 'disconnect',
+                      }));
+                    } catch (e) {
+                      console.error(e);
+                    }
+                  }
+                }}
+              >
+                Disconnect
+              </Button>
+            ) : (
+              <Button 
+                disabled={warning ? true : false}
+                variant="gradient"
+                gradient={{ from: theme.colors.green[9], to: 'yellow', deg: 90 }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (!WsConnection?.isConnected && WsConnection?.connectedSocket) {
+                    try {
+                      WsConnection?.connectedSocket.send(JSON.stringify({ 
+                        message: 'connect',
+                      }));
+                    } catch (e) {
+                      console.error(e);
+                    }
+                  }
+                }}
+              >
+                Connect
+              </Button>
+            )}
 
             <Button 
               disabled={warning ? true : false}

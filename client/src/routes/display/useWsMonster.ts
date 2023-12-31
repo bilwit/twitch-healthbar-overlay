@@ -35,6 +35,10 @@ function useWsMonster(): ReturnData {
         socket.onmessage = (e: any) => {
           const data = JSON.parse(e?.data);
 
+          if ('status' in data) {
+            setIsConnected(data?.status);
+          }
+
           if (data?.update) {
             setData((prev) => ({
               ...prev,
