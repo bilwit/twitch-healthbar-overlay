@@ -23,12 +23,10 @@ export default async function EventConnection(TwitchEmitter: EventEmitter, acces
                 console.log(consoleLogStyling('black', '* [EventSub] KeepAlive'));
                 break;
               case 'session_welcome':
-                // TO DO: check subscriptions because they might already exist
-                const hasSubscriptions = await getSubscriptions(access_token, listener_client_id);
-                if (!hasSubscriptions) {
-                  console.log(consoleLogStyling('black', '* [EventSub] Creating new subscription'));
-                  createSubscription(msg?.payload?.session?.id, access_token, user_id, listener_client_id);
-                }
+                // find and DELETE all existing subscriptions, as each new websocket connection must have a new subscription and subscriptions persist without the ability to re-use
+                await getSubscriptions(access_token, listener_client_id);
+
+                createSubscription(msg?.payload?.session?.id, access_token, user_id, listener_client_id);
                 break;
               case 'notification':
                 if (msg.metadata.subscription_type === 'channel.channel_points_custom_reward_redemption.add') {
@@ -100,6 +98,7 @@ async function createSubscription(sessionId: string, access_token: string, user_
       if (response) {
         const ret = await response.json();
         if (ret?.total > 0) {
+          console.log(consoleLogStyling('black', '* [EventSub] Subscribed to Channel Point Redeems'));
           return true;
         } else {
           console.log(ret);
@@ -107,6 +106,7 @@ async function createSubscription(sessionId: string, access_token: string, user_
         }
       }
     } catch (e) {
+      console.log(consoleLogStyling('warning', '* [EventSub] Could not create subscription'));
       console.log(e);
     }
   }
@@ -128,8 +128,10 @@ async function getSubscriptions(access_token: string, listener_client_id: string
   
       if (response) {
         const ret = await response.json();
-        if (ret?.total > 0 && ret?.data && ret.data.filter((item: any) => item.type === 'channel.channel_points_custom_reward_redemption.add').length > 0) {
-          console.log(ret?.data)
+        if (ret?.total > 0 && ret?.data) {
+          for (const sub of ret.data) {
+            deleteSubscription(sub.id, access_token, listener_client_id);
+          }
           return true;
         } else {
           return false;
@@ -141,25 +143,25 @@ async function getSubscriptions(access_token: string, listener_client_id: string
   }
 }
 
-// async function deleteSubscription(subId: string, access_token: string, listener_client_id: string) {
-//   if (subId && access_token && listener_client_id) {
-//     try {
-//       const response = await fetch(
-//         TWITCH_EVENTSUB_SUBSCRIPTION + '?id=' + subId,
-//         {
-//           method: 'DELETE',
-//           headers: {
-//             'Authorization': 'Bearer ' + access_token,
-//             'Client-Id': listener_client_id,
-//           },
-//         }
-//       );
+async function deleteSubscription(subId: string, access_token: string, listener_client_id: string) {
+  if (subId && access_token && listener_client_id) {
+    try {
+      const response = await fetch(
+        TWITCH_EVENTSUB_SUBSCRIPTION + '?id=' + subId,
+        {
+          method: 'DELETE',
+          headers: {
+            'Authorization': 'Bearer ' + access_token,
+            'Client-Id': listener_client_id,
+          },
+        }
+      );
   
-//       if (response) {
-//         return true;
-//       }
-//     } catch (e) {
-//       console.log(e);
-//     }
-//   }
-// }
+      if (response) {
+        return true;
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+}
