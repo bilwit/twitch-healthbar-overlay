@@ -29,10 +29,12 @@ export default async function EventConnection(TwitchEmitter: EventEmitter, acces
                 createSubscription(msg?.payload?.session?.id, access_token, user_id, listener_client_id);
                 break;
               case 'notification':
-                if (msg.metadata.subscription_type === 'channel.channel_points_custom_reward_redemption.add') {
+                if (msg.metadata?.payload?.subscription?.type === 'channel.channel_points_custom_reward_redemption.add') {
                   // TO DO: check if redeem is applicable to monsters and adjust health accordingly
                   // list of available redeems & their IDs: https://dev.twitch.tv/docs/api/reference/#get-custom-reward
                   // redeem notification payload example: https://dev.twitch.tv/docs/eventsub/eventsub-subscription-types/#channelchannel_points_custom_reward_redemptionadd
+
+                  // msg.metadata?.payload?.event?.reward?.id or msg.metadata?.payload?.event?.reward?.title
                 }
                 break;
               default:
