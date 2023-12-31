@@ -16,6 +16,8 @@ import { GiMonsterGrasp } from 'react-icons/gi';
 import { VscSettingsGear } from 'react-icons/vsc';
 import useGetSettings from './settings/useGetSettings';
 import { useEffect } from 'react';
+import useWsMonster from '../display/useWsMonster';
+import WsContext from '../../wsContext';
 
 interface Routes_Icon_Dictionary {
   [key: string]: JSX.Element,
@@ -30,6 +32,12 @@ function Management() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const { 
+    data,
+    isConnected, 
+    connectedSocket
+  } = useWsMonster();  
+
   const { isLoading, settings } = useGetSettings();
   
   const [opened, { toggle }] = useDisclosure();
@@ -39,74 +47,84 @@ function Management() {
     if (!isLoading && !settings) {
       open();
     }
-  }, [isLoading])
+  }, [isLoading]);
+
+  useEffect(() => {
+    return () => {
+      if (connectedSocket) {
+        connectedSocket.close();
+      }
+    }
+  }, [connectedSocket])
 
   return (
     <MantineProvider theme={theme} defaultColorScheme="auto">
-      <Settings
-        settings={settings}
-        isOpened={settingsIsOpened}
-        close={close}
-      />
+      <WsContext.Provider value={{ data, isConnected, connectedSocket }}>
+        <Settings
+          settings={settings}
+          isOpened={settingsIsOpened}
+          close={close}
+        />
 
-      <AppShell
-        header={{ height: 60 }}
-        navbar={{ width: 300, breakpoint: 'sm', collapsed: { mobile: !opened } }}
-        padding="md"
-      >
-        <AppShell.Header className={classes['align-content-center']}>
-          <Grid>
-            <Grid.Col span={1} hiddenFrom="sm">
-              <Burger 
-                opened={opened} 
-                onClick={toggle} 
-                hiddenFrom="sm" size="sm" 
-                className={classes['nav-burger']}
-              />
-            </Grid.Col>
-            <Grid.Col span={11}>
-              <h2 className={classes['nav-header']}>Health Bar Overlay</h2>
-            </Grid.Col>
-          </Grid>          
-        </AppShell.Header>
-
-        <AppShell.Navbar 
-          p="md"
-          className={classes['nav-bar']}
+        <AppShell
+          header={{ height: 60 }}
+          navbar={{ width: 300, breakpoint: 'sm', collapsed: { mobile: !opened } }}
+          padding="md"
         >
-        {Object.keys(routes_icon_dictionary).map((item) => {
-          return (
-            <NavLink 
-              key={'nav' + item}
-              color={theme.colors.indigo[5]}
-              leftSection={routes_icon_dictionary[item]}
-              label={item[0].toUpperCase() + item.slice(1, item.length)} 
-              className={classes['nav-link']}
-              active={(item === 'settings' && settingsIsOpened) || (!settingsIsOpened && location.pathname === '/' + item)}
-              onClick={() => {
-                if (item === 'settings') {
-                  return open();
-                }
-                return navigate(item);
-              }}
-            />
-          );
-        })}
-        </AppShell.Navbar>
+          <AppShell.Header className={classes['align-content-center']}>
+            <Grid>
+              <Grid.Col span={1} hiddenFrom="sm">
+                <Burger 
+                  opened={opened} 
+                  onClick={toggle} 
+                  hiddenFrom="sm" size="sm" 
+                  className={classes['nav-burger']}
+                />
+              </Grid.Col>
+              <Grid.Col span={11}>
+                <h2 className={classes['nav-header']}>Health Bar Overlay</h2>
+              </Grid.Col>
+            </Grid>          
+          </AppShell.Header>
 
-        <AppShell.Main>
-          <Routes>
-            <Route
-              path="/*"
-              element={<Navigate to="/monsters" />}
-            />
-            <Route
-              path="/monsters/*"
-              element={<Monsters />}
-            />
-          </Routes>
-        </AppShell.Main>
-      </AppShell>
+          <AppShell.Navbar 
+            p="md"
+            className={classes['nav-bar']}
+          >
+          {Object.keys(routes_icon_dictionary).map((item) => {
+            return (
+              <NavLink 
+                key={'nav' + item}
+                color={theme.colors.indigo[5]}
+                leftSection={routes_icon_dictionary[item]}
+                label={item[0].toUpperCase() + item.slice(1, item.length)} 
+                className={classes['nav-link']}
+                active={(item === 'settings' && settingsIsOpened) || (!settingsIsOpened && location.pathname === '/' + item)}
+                onClick={() => {
+                  if (item === 'settings') {
+                    return open();
+                  }
+                  return navigate(item);
+                }}
+              />
+            );
+          })}
+          </AppShell.Navbar>
+
+          <AppShell.Main>
+            <Routes>
+              <Route
+                path="/*"
+                element={<Navigate to="/monsters" />}
+              />
+              <Route
+                path="/monsters/*"
+                element={<Monsters />}
+              />
+            </Routes>
+          </AppShell.Main>
+        </AppShell>
+      </WsContext.Provider>
     </MantineProvider>
   );
 }

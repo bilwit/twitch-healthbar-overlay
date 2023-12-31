@@ -1,5 +1,3 @@
-import { Title } from "@mantine/core";
-
 interface Props {
   isLoading: boolean,
   value: number,
@@ -7,13 +5,13 @@ interface Props {
 
 function CounterRaw(props: Props) { 
   return (
-    <>
+    <div style={{ backgroundColor: 'transparent' }}>
       {!props.isLoading && (
         <>
-          <Title order={1}>{props.value}</Title>
+          {props.value}
         </>
       )}
-    </>
+    </div>
   );
 }
 

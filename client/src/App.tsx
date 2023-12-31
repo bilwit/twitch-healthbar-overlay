@@ -2,7 +2,7 @@ import { Route, Routes } from 'react-router-dom';
 import Management from './routes/management';
 import Display from './routes/display';
 
-function App() {
+function App() {  
   return (
     <Routes>
       <Route

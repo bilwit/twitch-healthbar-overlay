@@ -160,6 +160,7 @@ function Relations(props: Props) {
           {relations
             .map((item) => item.id === props?.data?.id ? null : (
               <Item
+                key={item.id + ' _' + props?.data?.id}
                 data={item}
                 setData={setRelations}
                 setError={setError}

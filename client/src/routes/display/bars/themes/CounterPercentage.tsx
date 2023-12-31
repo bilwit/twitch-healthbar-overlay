@@ -1,4 +1,3 @@
-import { Title } from "@mantine/core";
 
 interface Props {
   isLoading: boolean,
@@ -10,13 +9,13 @@ function CounterPercentage(props: Props) {
   const value = props.value / props.maxHealth * 100;
 
   return (
-    <>
+    <div style={{ backgroundColor: 'transparent' }}>
       {!props.isLoading && (
         <>
-          <Title order={1}>{value + '%'}</Title>
+          {value + '%'}
         </>
       )}
-    </>
+    </div>
   );
 }
 

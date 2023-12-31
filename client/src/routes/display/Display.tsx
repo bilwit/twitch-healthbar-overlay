@@ -2,16 +2,20 @@ import { Route, Routes } from "react-router-dom";
 import Bars from './bars';
 import Avatars from "./avatars";
 
-function Display() {
+function Display() {  
   return (
     <Routes>
       <Route
         path="bars/*"
-        element={<Bars />}
+        element={(
+          <Bars />
+        )}
       />
       <Route
         path="avatars/*"
-        element={<Avatars />}
+        element={(
+          <Avatars />
+        )}
       />
     </Routes>
   );

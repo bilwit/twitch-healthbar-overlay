@@ -49,7 +49,6 @@ function useGetData(endpoint: string, id?: string | null): {
 
   useEffect(() => {
     const wrapDispatch = async () => {
-      setIsLoading(true);
       try {
         const res: any = await fetch('/api/' + endpoint + (id ? '/' + id : ''), {
           method: 'GET',

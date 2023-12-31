@@ -359,6 +359,18 @@ function Settings(props: Props) {
             <Button 
               disabled={warning ? true : false}
               variant="gradient"
+              gradient={{ from: theme.colors.red[9], to: 'yellow', deg: 90 }}
+              onClick={(e) => {
+                e.preventDefault();
+                setWarning('This will disable any active connections between the bot and Twitch chat. In order to completely remove this information, you must unregister the application in the Twitch Developer Console.');
+              }}
+            >
+              Disconnect
+            </Button>
+
+            <Button 
+              disabled={warning ? true : false}
+              variant="gradient"
               gradient={{ from: theme.colors.indigo[9], to: 'red', deg: 90 }}
               onClick={(e) => {
                 e.preventDefault();

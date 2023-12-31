@@ -12,7 +12,7 @@ const themeOverride = createTheme({
       "#5c5f66",
       "#373A40",
       "#2C2E33",
-      "#25262b",
+      "#25262b", // background color
       "#1A1B1E",
       "#141517",
       "#101113"

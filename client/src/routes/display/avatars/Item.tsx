@@ -1,9 +1,6 @@
-import { 
-  Image,
-} from '@mantine/core';
+import WsContext from "../../../wsContext";
 import useGetData, { Monster, Stage } from "../../management/useGetData";
-import useWebSocket from '../useWebSocket';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 interface Props {
   data: Monster,
@@ -11,10 +8,10 @@ interface Props {
 
 function Item(props: Props) {
   const { 
-    isLoading, 
+    isLoading,
     data: stages, 
   } = useGetData('monsters/stages', String(props.data.id));
-  const { data, connectedSocket } = useWebSocket(String(props.data.id));
+  const WsConnection = useContext(WsContext);
 
   const [sorted, setSorted] = useState<Stage[]>([]);
 
@@ -22,23 +19,28 @@ function Item(props: Props) {
     if (stages) {
       setSorted(stages.sort((a, b) => a.hp_value < b.hp_value ? -1 : 1));
     }
-  }, [stages])
+  }, [stages]);
 
   useEffect(() => {
-    return () => {
-      if (connectedSocket) {
-        connectedSocket.close();
+    if (props?.data?.id && WsConnection?.isConnected && WsConnection?.connectedSocket) {
+      try {
+        WsConnection?.connectedSocket.send(JSON.stringify({ 
+          message: 'current',
+          id: props?.data?.id,
+        }));
+      } catch (e) {
+        console.error(e);
       }
     }
-  }, [connectedSocket]);
+  }, [WsConnection?.connectedSocket, WsConnection?.isConnected, props?.data?.id]);
 
-  const displayHealth =  (value: number, maxHealth: number) => {
-    const percentage = value / maxHealth * 100;
+  const displayHealth = () => {
+    const percentage = WsConnection?.data ? WsConnection?.data?.[props?.data?.id]?.value / WsConnection?.data?.[props?.data?.id]?.maxHealth * 100 : 0;
 
     for (const stage of sorted) {
       if (percentage <= stage.hp_value) {
         return (
-          <Image
+          <img
             src={window.location.origin + '/api/avatar/' + stage.avatar_url}
             alt={props.data.name + ' Avatar'}
           />
@@ -47,7 +49,7 @@ function Item(props: Props) {
     }
 
     return (
-      <Image
+      <img
         src={window.location.origin + '/api/avatar/' + props.data.avatar_url}
         alt={props.data.name + ' Avatar'}
       />
@@ -58,7 +60,7 @@ function Item(props: Props) {
     <>
       {!isLoading && props.data && (
         <>
-        {displayHealth(data.value, data.maxHealth)}
+        {displayHealth()}
         </>
       )}
     </>
