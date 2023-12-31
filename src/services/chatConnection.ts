@@ -1,12 +1,12 @@
 import { client as WebSocketClient, connection } from 'websocket';
 import dotenv from 'dotenv';
 import EventEmitter from 'events';
-import auth, { validate } from './auth';
+import auth, { validate } from '../utils/chatConnection/authChat';
 import { PrismaClient } from '@prisma/client';
 import consoleLogStyling from '../utils/consoleLogStyling';
-import parser from './parser';
+import parser from '../utils/chatConnection/parser';
 import getMonsters, { Monster_CB, getMonster } from './monsters';
-import { fetchChatters } from '../utils/twitch';
+import { fetchChatters } from '../utils/chatConnection/fetchChatters';
 
 const TWITCH_IRC_ADDRESS = 'ws://irc-ws.chat.twitch.tv:80';
 

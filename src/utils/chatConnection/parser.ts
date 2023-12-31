@@ -4,7 +4,7 @@
 // Expects the caller to pass a single message. (Remember, the Twitch 
 // IRC server may send one or more IRC messages in a single message.)
 
-import consoleLogStyling from '../utils/consoleLogStyling';
+import consoleLogStyling from '../consoleLogStyling';
 
 interface ParsedMessage {
   tags: any,

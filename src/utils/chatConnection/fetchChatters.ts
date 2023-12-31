@@ -1,4 +1,4 @@
-import { Tokens } from '../services/auth';
+import { Tokens } from './authChat';
 
 const TWITCH_GET_CHATTERS_ADDRESS = 'https://api.twitch.tv/helix/chat/chatters';
 

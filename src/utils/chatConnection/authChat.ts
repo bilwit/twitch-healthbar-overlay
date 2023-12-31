@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { Settings } from '../utils/twitch';
+import { Settings } from './fetchChatters';
 import { PrismaClient } from '@prisma/client';
 
 export interface Tokens {
