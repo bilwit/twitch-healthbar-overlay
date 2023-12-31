@@ -1,4 +1,3 @@
-import dotenv from 'dotenv';
 import { Settings } from './fetchChatters';
 import { PrismaClient } from '@prisma/client';
 
@@ -7,8 +6,6 @@ export interface Tokens {
   refresh_token: string,
   BroadcasterId: string,
 }
-
-dotenv.config();
 
 const TWITCH_GET_BROADCASTER_ID = 'https://api.twitch.tv/helix/users?login=';
 const TWITCH_GET_OAUTH2 = 'https://id.twitch.tv/oauth2/';

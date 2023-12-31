@@ -7,6 +7,7 @@ import consoleLogStyling from '../utils/consoleLogStyling';
 import parser from '../utils/chatConnection/parser';
 import getMonsters, { Monster_CB, getMonster } from './monsters';
 import { fetchChatters } from '../utils/chatConnection/fetchChatters';
+import EventConnection from './eventConnection';
 
 const TWITCH_IRC_ADDRESS = 'ws://irc-ws.chat.twitch.tv:80';
 
@@ -53,6 +54,9 @@ export default async function ChatConnection (db: PrismaClient) {
             connection = await SocketConnection(client);
             
             if (connection) {
+              // subscribe to Twitch EventSub to listen for channel point redeem events
+              EventConnection(TwitchEmitter, tokens.access_token, user_id);
+              
               // authenticate
               // connection.sendUTF('CAP REQ :twitch.tv/membership'); // track chatters on join/leave -- it doesn't give you the initial list of chatters & massive delay on join/leave
               connection.sendUTF('PASS oauth:' + tokens.access_token);
