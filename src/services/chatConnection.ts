@@ -43,11 +43,6 @@ export default async function ChatConnection (db: PrismaClient) {
           })
 
           TwitchEmitter.on('connect', async () => {
-            try {
-
-            } catch (e) {
-              console.log(e);
-            }
             const client = new WebSocketClient();
             connection = await SocketConnection(client);
             
@@ -77,15 +72,16 @@ export default async function ChatConnection (db: PrismaClient) {
               }); 
       
               try {
-                // initial MaxHealth
-                let MaxHealth = (await fetchChatters(tokens, user_id, settings.listener_client_id));
+                // initial max health for viewer-scaled hp monster types
+                let MaxHealthScaled = (await fetchChatters(tokens, user_id, settings.listener_client_id));
       
+                // update MaxHealthScaled every 15s according to viewer count
                 setInterval(async () => {
                   try {
-                    const MaxHealthUpdated = (await fetchChatters(tokens, user_id, settings.listener_client_id));
-                    if (MaxHealth !== MaxHealthUpdated) {
-                      MaxHealth = MaxHealthUpdated;
-                      console.log(consoleLogStyling('health', 'Updated Max Health: ' + MaxHealthUpdated));
+                    const MaxHealthScaledUpdated = (await fetchChatters(tokens, user_id, settings.listener_client_id));
+                    if (MaxHealthScaled !== MaxHealthScaledUpdated) {
+                      MaxHealthScaled = MaxHealthScaledUpdated;
+                      console.log(consoleLogStyling('health', 'Updated Max Health: ' + MaxHealthScaledUpdated));
                     }
                   } catch (e) {
                     console.log(consoleLogStyling('warning', '! Could not update Max Health'));
@@ -122,7 +118,7 @@ export default async function ChatConnection (db: PrismaClient) {
                       case 'PRIVMSG': // chatter message
                         if (monsters.size > 0) {
                           for (let [_key, monster] of monsters) {
-                            updateMonster(parsed.parameters, monster.trigger_words, monster, MaxHealth);
+                            updateMonster(parsed.parameters, monster.trigger_words, monster, MaxHealthScaled);
                           }
                         }
                         break;
