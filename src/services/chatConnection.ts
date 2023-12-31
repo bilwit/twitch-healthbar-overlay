@@ -120,7 +120,7 @@ export default async function ChatConnection (db: PrismaClient) {
                   if (parsed) {
                     switch (parsed.command.command) {
                       case 'PING': // keepalive
-                        console.log(consoleLogStyling('black', '* [IRC] KeepAlive'));
+                        // console.log(consoleLogStyling('black', '* [IRC] KeepAlive'));
                         if (connection) {
                           connection.sendUTF('PONG ' + parsed.parameters);
                         }

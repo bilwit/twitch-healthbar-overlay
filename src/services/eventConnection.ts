@@ -20,7 +20,7 @@ export default async function EventConnection(TwitchEmitter: EventEmitter, acces
           if (msg?.metadata?.message_type) {
             switch(msg.metadata.message_type) {
               case 'session_keepalive':
-                console.log(consoleLogStyling('black', '* [EventSub] KeepAlive'));
+                // console.log(consoleLogStyling('black', '* [EventSub] KeepAlive'));
                 break;
               case 'session_welcome':
                 // find and DELETE all existing subscriptions, as each new websocket connection must have a new subscription and subscriptions persist without the ability to re-use
