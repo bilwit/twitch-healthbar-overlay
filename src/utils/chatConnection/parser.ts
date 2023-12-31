@@ -231,7 +231,7 @@ function parseCommand(rawCommandComponent: string, channel_name: string) {
         console.log(`! Unsupported IRC command: ${commandParts[2]}`)
         return null;
     case '001':  // Logged in (successfully authenticated). 
-      console.log(consoleLogStyling('success', '* Connected to #' + channel_name + ' Stream Chat'));
+      console.log(consoleLogStyling('success', '* [IRC] Connected to #' + channel_name + ' Stream Chat'));
       parsedCommand = {
         command: commandParts[0],
         channel: commandParts[1]
@@ -248,7 +248,7 @@ function parseCommand(rawCommandComponent: string, channel_name: string) {
       // console.log(`! numeric message: ${commandParts[0]}`)
       return null;
     default:
-      console.log(consoleLogStyling('warning', `\nUnexpected command: ${commandParts[0]}\n`));
+      console.log(consoleLogStyling('warning', `\n[IRC] Unexpected command: ${commandParts[0]}\n`));
       return null;
   }
 

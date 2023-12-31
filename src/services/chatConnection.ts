@@ -55,7 +55,7 @@ export default async function ChatConnection (db: PrismaClient) {
             
             if (connection) {
               // subscribe to Twitch EventSub to listen for channel point redeem events
-              EventConnection(TwitchEmitter, tokens.access_token, user_id);
+              EventConnection(TwitchEmitter, tokens.access_token, user_id, settings.listener_client_id);
               
               // authenticate
               // connection.sendUTF('CAP REQ :twitch.tv/membership'); // track chatters on join/leave -- it doesn't give you the initial list of chatters & massive delay on join/leave
@@ -65,19 +65,19 @@ export default async function ChatConnection (db: PrismaClient) {
               connection.sendUTF('JOIN #' + settings.channel_name);
       
               connection.on('error', (error) => {
-                console.log(consoleLogStyling('error', '! Connection Error: ' + error.toString()));
+                console.log(consoleLogStyling('error', '! [IRC] Connection Error: ' + error.toString()));
               });
       
               connection.on('close', async (eCode) => {
-                console.log(consoleLogStyling('warning', '! Connection Closed'));
+                console.log(consoleLogStyling('warning', '! [IRC] Connection Closed'));
                 if (eCode === 1006) {
                   const d = await db.refresh_token.deleteMany();
                   console.log(d)
                 }
 
                 if (connection) {
-                  console.log(consoleLogStyling('warning', `!   Description: ${connection.closeDescription}`));
-                  console.log(consoleLogStyling('warning', `!   Code: ${connection.closeReasonCode}`));
+                  console.log(consoleLogStyling('warning', `! [IRC]    Description: ${connection.closeDescription}`));
+                  console.log(consoleLogStyling('warning', `! [IRC]    Code: ${connection.closeReasonCode}`));
                 }
               }); 
       
@@ -91,10 +91,10 @@ export default async function ChatConnection (db: PrismaClient) {
                     const MaxHealthScaledUpdated = (await fetchChatters(tokens, user_id, settings.listener_client_id));
                     if (MaxHealthScaled !== MaxHealthScaledUpdated) {
                       MaxHealthScaled = MaxHealthScaledUpdated;
-                      console.log(consoleLogStyling('health', 'Updated Max Health: ' + MaxHealthScaledUpdated));
+                      console.log(consoleLogStyling('health', '[IRC] Updated Chatters: ' + MaxHealthScaledUpdated));
                     }
                   } catch (e) {
-                    console.log(consoleLogStyling('warning', '! Could not update Max Health'));
+                    console.log(consoleLogStyling('warning', '! [IRC]  Could not update Max Health'));
                   }
                 }, 15000);
       
@@ -105,12 +105,12 @@ export default async function ChatConnection (db: PrismaClient) {
                     const addedMonster: Monster_CB | null = await getMonster(data.id, TwitchEmitter, db);
                     if (addedMonster) {
                       monsters.set(Number(data.id), addedMonster) ;
-                      console.log(consoleLogStyling('health', '(' + data.id + ')' + ' Monster Added'));
+                      console.log(consoleLogStyling('health', '[IRC] (' + data.id + ')' + ' Monster Added'));
                     }
                   }
                   if (data.status === false) {
                     monsters.delete(Number(data.id));
-                    console.log(consoleLogStyling('health', '(' + data.id + ')' + ' Monster Disabled'));
+                    console.log(consoleLogStyling('health', '[IRC] (' + data.id + ')' + ' Monster Disabled'));
                   }
                 })
           
@@ -120,7 +120,7 @@ export default async function ChatConnection (db: PrismaClient) {
                   if (parsed) {
                     switch (parsed.command.command) {
                       case 'PING': // keepalive
-                        console.log(consoleLogStyling('black', '* KeepAlive'));
+                        console.log(consoleLogStyling('black', '* [IRC] KeepAlive'));
                         if (connection) {
                           connection.sendUTF('PONG ' + parsed.parameters);
                         }
@@ -138,24 +138,24 @@ export default async function ChatConnection (db: PrismaClient) {
                   }
                 });
               } catch (e) {
-                console.log(consoleLogStyling('error', '! Error: ' + e));
+                console.log(consoleLogStyling('error', '! [IRC] Error: ' + e));
               }
 
               // validate every hour as per TOS
               setInterval(async () => {
                 const isValidated = await validate(tokens.access_token);
                 if (!isValidated) {
-                  console.log(consoleLogStyling('warning', '! Access token expired'));
+                  console.log(consoleLogStyling('warning', '! [IRC] Access token expired'));
                   // get new tokens if invalid
                   const newTokens = await auth(tokens.BroadcasterId, settings, db);
-                  console.log(consoleLogStyling('success', '* New tokens issued'));
+                  console.log(consoleLogStyling('success', '* [IRC] New tokens issued'));
                   tokens.access_token = newTokens.access_token;
                   tokens.refresh_token = newTokens.refresh_token;
         
                   // reconnect client
                   client.connect(TWITCH_IRC_ADDRESS);
                 } else {
-                  console.log(consoleLogStyling('black', '! Token validated'));
+                  console.log(consoleLogStyling('black', '! [IRC] Token validated'));
                 }
               }, 60*60*1000-100);
 
@@ -186,7 +186,7 @@ function SocketConnection(client: WebSocketClient): Promise<connection> {
   return new Promise((resolve, _reject) => {
     client.connect(TWITCH_IRC_ADDRESS);
     client.on('connect', (connection) => {
-      console.log(consoleLogStyling('success', '* Connected to ' + TWITCH_IRC_ADDRESS));
+      console.log(consoleLogStyling('success', '* [IRC] Connected to ' + TWITCH_IRC_ADDRESS));
       resolve(connection);
     });
   })
