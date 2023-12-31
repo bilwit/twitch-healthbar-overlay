@@ -36,11 +36,17 @@ export default async function ChatConnection (db: PrismaClient) {
       if (tokens && tokens?.access_token && tokens?.refresh_token && user_id) {
         return (TwitchEmitter: EventEmitter) => {
           let connection: connection | undefined = undefined;
+
+          TwitchEmitter.on('getStatus', () => {
+            TwitchEmitter.emit('status', connection ? true : false);
+          });
+
           TwitchEmitter.on('disconnect', () => {
             if (connection) {
               connection.close(1001);
+              connection = undefined;
             }
-          })
+          });
 
           TwitchEmitter.on('connect', async () => {
             const client = new WebSocketClient();
