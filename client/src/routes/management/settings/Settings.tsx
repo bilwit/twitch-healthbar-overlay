@@ -81,16 +81,18 @@ function Settings(props: Props) {
   }, [props?.settings]);
 
   useEffect(() => {
-    if (isSubmitted && WsConnection?.isConnected && WsConnection?.connectedSocket) {
-      try {
-        WsConnection?.connectedSocket.send(JSON.stringify({ 
-          message: 'status',
-        }));
-      } catch (e) {
-        console.error(e);
+    if (props.isOpened) {
+      if (isSubmitted && WsConnection?.isConnected && WsConnection?.connectedSocket) {
+        try {
+          WsConnection?.connectedSocket.send(JSON.stringify({ 
+            message: 'status',
+          }));
+        } catch (e) {
+          console.error(e);
+        }
       }
     }
-  }, [isSubmitted, WsConnection?.isConnected]);
+  }, [props.isOpened, isSubmitted, WsConnection?.isConnected]);
 
   return (
     <Modal 

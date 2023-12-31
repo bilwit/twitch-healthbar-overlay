@@ -55,7 +55,7 @@ function Management() {
         connectedSocket.close();
       }
     }
-  }, [connectedSocket])
+  }, [connectedSocket]);
 
   return (
     <MantineProvider theme={theme} defaultColorScheme="auto">
@@ -100,7 +100,8 @@ function Management() {
                 label={item[0].toUpperCase() + item.slice(1, item.length)} 
                 className={classes['nav-link']}
                 active={(item === 'settings' && settingsIsOpened) || (!settingsIsOpened && location.pathname === '/' + item)}
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault();
                   if (item === 'settings') {
                     return open();
                   }
