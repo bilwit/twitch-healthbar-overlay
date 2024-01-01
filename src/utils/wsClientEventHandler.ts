@@ -17,6 +17,10 @@ export default function socketEventHandler(
     case 'disconnect':
       cb.disconnect();
       break;
+
+    case 'status':
+      TwitchEmitter.emit('getStatus');
+      break;
       
     case 'reset': // reset health to default
     if (eventData?.relations_id) {

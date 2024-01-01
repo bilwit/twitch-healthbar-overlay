@@ -78,7 +78,11 @@ const server = app.listen(Number(process.env.PORT), async () => {
       
         TwitchEmitter.on('update', (data) => {
           WsClientConnection.send(JSON.stringify({ update: data }));
-        })
+        });
+
+        TwitchEmitter.on('status', (data) => {
+          WsClientConnection.send(JSON.stringify({ status: data }));
+        });
 
         WsClientConnection.addEventListener('message', (event: any) => {
           if (event) {
