@@ -1,0 +1,41 @@
+.align-content-center {
+  display: grid;
+  align-content: center;
+}
+
+.align-content-end {
+  display: grid;
+  align-content: end;
+}
+
+.margin-bottom-1 {
+  margin-bottom: 1rem;
+}
+
+.margin-bottom-2 {
+  margin-bottom: 1rem;
+}
+
+.margin-top-2 {
+  margin-bottom: 1rem;
+}
+
+.nav-header {
+  margin: 0;
+  margin-left: 1rem;
+}
+
+.nav-bar {
+  /* background-color: #0e0e10 !important; */
+  padding: 0 !important;
+}
+
+.nav-burger {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.nav-link {
+  padding: 1rem !important;
+}
