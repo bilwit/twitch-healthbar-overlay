@@ -43,7 +43,9 @@ model relations {
 
 model redeems {
   id                  Int       @id @default(autoincrement())
+  redeem_id           String    @db.VarChar(255)
   title               String    @unique @db.VarChar(255)
+  default_image       String    @db.VarChar(255)
   monster             monster[]
 }
 

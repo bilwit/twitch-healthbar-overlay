@@ -4,6 +4,7 @@ import consoleLogStyling from '../utils/consoleLogStyling';
 
 const TWITCH_EVENTSUB_ADDRESS = 'wss://eventsub.wss.twitch.tv/ws';
 const TWITCH_EVENTSUB_SUBSCRIPTION = 'https://api.twitch.tv/helix/eventsub/subscriptions';
+const TWITCH_REDEEMS = 'https://api.twitch.tv/helix/channel_points/custom_rewards';
 
 export default async function EventConnection(TwitchEmitter: EventEmitter, access_token: string, user_id: string, listener_client_id: string) {
   let connection: connection | undefined = undefined;
@@ -12,6 +13,17 @@ export default async function EventConnection(TwitchEmitter: EventEmitter, acces
   connection = await SocketConnection(client);
   
   if (connection) {
+
+    TwitchEmitter.on('getRedeems', async () => {
+      try {
+        const redeems = await getRedeems(access_token, listener_client_id, user_id);
+        if (redeems) {
+          TwitchEmitter.emit('sendRedeems', redeems);
+        }
+      } catch (_e) {
+        null;
+      }
+    });
 
     try {
       connection.on('message', async (message: any) => {
@@ -169,3 +181,33 @@ async function deleteSubscription(subId: string, access_token: string, listener_
     }
   }
 }
+
+async function getRedeems(access_token: string, listener_client_id: string, user_id: string) {
+  if (access_token && listener_client_id) {
+    try {
+      const response = await fetch(
+        TWITCH_REDEEMS + '?broadcaster_id=' + user_id,
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': 'Bearer ' + access_token,
+            'Client-Id': listener_client_id,
+          },
+        }
+      );
+  
+      if (response) {
+        const ret = await response.json();
+        if (ret?.total > 0 && ret?.data) {
+          return ret.data;
+        } else {
+          return null;
+        }
+      }
+    } catch (e) {
+      console.log(e);
+      throw(e);
+    }
+  }
+}
+
