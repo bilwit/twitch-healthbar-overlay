@@ -24,6 +24,8 @@ model monster {
   stages              stages[]
   relations           relations? @relation(fields: [relations_id], references: [id], onDelete: SetNull)
   relations_id        Int?      // relation scalar field  (used in the `@relation` attribute above)
+  redeems             redeems?  @relation(fields: [redeems_id], references: [id], onDelete: SetNull)
+  redeems_id          Int?      // redeems scalar field  (used in the `@relation` attribute above)
 }
 
 model stages {
@@ -36,6 +38,12 @@ model stages {
 
 model relations {
   id                  Int       @id @default(autoincrement())
+  monster             monster[]
+}
+
+model redeems {
+  id                  Int       @id @default(autoincrement())
+  title               String    @unique @db.VarChar(255)
   monster             monster[]
 }
 
