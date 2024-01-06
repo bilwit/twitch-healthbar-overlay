@@ -1,7 +1,12 @@
+import { PrismaClient } from '@prisma/client';
 import { Router } from 'express';
 
 module.exports = Router({ mergeParams: true }).put('/monsters/redeems', async (req: any, res: any) => {
+  // to back-reference for local db item deletion (redeem may not exist anymore)
+  const redeemDict = new Map();
+
   async function upsertRedeem(item: any) {
+    redeemDict.set(item.id, true);
     try {
       const updatedRedeem = await req.db.redeems.upsert({
         where: {
@@ -44,6 +49,8 @@ module.exports = Router({ mergeParams: true }).put('/monsters/redeems', async (r
           const upsertedRedeems = await upsertRedeems(data);
 
           if (upsertedRedeems) {
+            deleteObsoleteEntries(req.db, redeemDict);
+            
             return res.status(200).json({
               success: true,
               data: upsertedRedeems,
@@ -65,3 +72,28 @@ module.exports = Router({ mergeParams: true }).put('/monsters/redeems', async (r
   }
 });
 
+async function deleteObsoleteEntries(db: PrismaClient, dictionary: Map<string, boolean>) {
+  // we do not care about the result
+  try {
+    const redeems = await db.redeems.findMany({
+      select: {
+        redeem_id: true,
+      }
+    });
+    for (const redeem of redeems) {
+      if (!dictionary.get(redeem.redeem_id)) {
+        try {
+          db.redeems.delete({
+            where: {
+              id: Number(redeem.redeem_id),
+            },
+          });
+        } catch (er) {
+          console.log(er);
+        }
+      }
+    }
+  } catch (e) {
+    console.log(e);
+  }
+}
