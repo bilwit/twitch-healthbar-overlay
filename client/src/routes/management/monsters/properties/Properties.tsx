@@ -15,13 +15,14 @@ import {
   NativeSelect,
   Accordion,
   Alert,
+  MultiSelect,
 } from '@mantine/core';
 import classes from '../../../../css/Nav.module.css'
 import { GiMonsterGrasp } from 'react-icons/gi';
 import { useForm } from '@mantine/form';
 import { useState } from 'react';
 import { theme } from '../../../../theme';
-import { Monster } from '../../useGetData';
+import useGetData, { Monster } from '../../useGetData';
 import { BsFillPersonFill } from 'react-icons/bs';
 import { AiFillDelete } from 'react-icons/ai';
 import Alerts from '../../Alerts';
@@ -77,6 +78,8 @@ function Properties(props: Props) {
       },
     },
   });
+
+  const { data: redeems, isLoading } = useGetData('redeems');
   
   const [info, setInfo] = useState<string | JSX.Element>();
   const [warning, setWarning] = useState('');
@@ -259,33 +262,42 @@ function Properties(props: Props) {
               data={['bar_basic', 'counter_raw', 'counter_percentage']}
               {...CreateForm.getInputProps('bar_theme')}
             />
-
-            <TagsInput
-              mt="md"
-              withAsterisk
-              className={classes['margin-bottom-1']}
-              label="Text Triggers" 
-              placeholder="Press ENTER per-tag" 
-              {...CreateForm.getInputProps('trigger_words')}
-            />
-
-            <Group 
-              style={{ display: 'grid' }}
-              justify="flex-center" 
-              mt="md"
-            >
-              <SegmentedControl
-                {...CreateForm.getInputProps('published')}
-                color={theme.colors.indigo[9]}
-                data={[
-                  { label: 'Enabled', value: 'true' },
-                  { label: 'Disabled', value: 'false' },
-                ]}
-              />
-            </Group>
           </Grid.Col>
 
         </Grid>
+
+        <TagsInput
+          mt="md"
+          withAsterisk
+          className={classes['margin-bottom-1']}
+          label="Text Triggers" 
+          placeholder="Press ENTER per-tag" 
+          {...CreateForm.getInputProps('trigger_words')}
+        />
+
+        <MultiSelect
+          {...CreateForm.getInputProps('redeems')}
+          label="Redeem Triggers"
+          placeholder="Select"
+          data={!isLoading ? redeems : []}
+          clearable
+          mb="xl"
+        />
+
+        <Group 
+          style={{ display: 'grid' }}
+          justify="flex-center" 
+          mt="md"
+        >
+          <SegmentedControl
+            {...CreateForm.getInputProps('published')}
+            color={theme.colors.indigo[9]}
+            data={[
+              { label: 'Enabled', value: 'true' },
+              { label: 'Disabled', value: 'false' },
+            ]}
+          />
+        </Group>
         
         {!isSubmitted && (
           <Group justify="center" mt="xl">

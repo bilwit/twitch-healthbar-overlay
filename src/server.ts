@@ -9,6 +9,7 @@ import { EventEmitter } from 'stream';
 import ChatConnection from './services/chatConnection';
 import websocket from './services/websocket';
 import wsClientEventHandler from './utils/wsClientEventHandler';
+import { deleteObsoleteEntries, upsertRedeems } from './services/redeems';
 
 dotenv.config();
 
@@ -83,6 +84,22 @@ const server = app.listen(Number(process.env.PORT), async () => {
         TwitchEmitter.on('status', (data) => {
           WsClientConnection.send(JSON.stringify({ status: data }));
         });
+
+        // sync local redeem database with Twitch
+        TwitchEmitter.emit('getRedeems');
+        TwitchEmitter.on('sendRedeems', async (data: any) => {
+          try {
+            if (data) {
+              const upsertedRedeems = await upsertRedeems(data, prisma);
+      
+              if (upsertedRedeems) {
+                deleteObsoleteEntries(upsertedRedeems, prisma);
+              }
+            }
+          } catch (_e) {
+            null;
+          }
+        })
 
         WsClientConnection.addEventListener('message', (event: any) => {
           if (event) {

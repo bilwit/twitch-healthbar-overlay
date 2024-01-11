@@ -42,7 +42,7 @@ model relations {
 
 model redeems {
   id                  Int       @id @default(autoincrement())
-  twitch_id           String    @db.VarChar(255)
+  twitch_id           String    @unique @db.VarChar(255)
   title               String    @unique @db.VarChar(255)
   default_image       String    @db.VarChar(255)
   monsters            monsters_on_redeems[]

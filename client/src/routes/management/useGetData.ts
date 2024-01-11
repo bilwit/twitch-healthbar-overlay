@@ -30,6 +30,13 @@ export interface Monster {
   relations_id?: number,
 }
 
+export interface Redeems {
+  id: number,
+  twitch_id: string,
+  title: string,
+  default_image: string,
+}
+
 interface ResponseData {
   success: boolean,
   data: any[],
